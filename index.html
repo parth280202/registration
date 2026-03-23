@@ -150,7 +150,6 @@
             box-shadow: 0 4px 15px rgba(255, 107, 129, 0.15);
         }
 
-        /* Beautiful Clickable Cards for Options */
         .question-title {
             text-align: left;
             font-weight: 600;
@@ -232,7 +231,7 @@
             flex-wrap: wrap;
             gap: 15px;
             margin-top: 30px;
-            position: relative; /* Important for the moving NO button */
+            position: relative; 
         }
 
         #btn-yes {
@@ -257,7 +256,7 @@
             box-shadow: none;
             padding: 15px 30px;
             width: auto;
-            transition: all 0.2s ease; /* Makes it jump smoothly */
+            transition: all 0.2s ease; 
             z-index: 15;
         }
 
@@ -463,7 +462,7 @@
             <h2 style="color: #ff4757;">YESSS! 🎉❤️</h2>
             <p style="font-size: 16px; color: #576574; margin-top: 10px;">I can't wait! You know where to find me 🥰</p>
             <a href="https://instagram.com/_.parthgangan._" target="_blank" class="insta-btn">Text me on Instagram 📸</a>
-        </div>
+            </div>
     </div>
 
     <script>
@@ -483,15 +482,11 @@
                     return;
                 }
                 girlName = nameInput.split(' ')[0]; 
-
-                // Note: If you want to use the Web3Forms email trick from earlier, 
-                // you would put that fetch() code right here!
             }
 
             document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
             document.getElementById('step' + stepNumber).classList.add('active');
             
-            // Scroll to top when changing steps
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -509,14 +504,40 @@
             food = q2Option.value;
             time = q3Option.value;
 
+            // --- WEB3FORMS EMAIL ROUTING ---
+            let dob = document.getElementById('userDob').value;
+            let mobile = document.getElementById('userMobile').value;
+            
+            const formData = new FormData();
+            
+            // ==============================================
+            // PASTE YOUR WEB3FORMS ACCESS KEY BELOW
+            formData.append("access_key", "bbd67653-cc36-42ef-9bf4-75ce95191cf2"); 
+            // ==============================================
+
+            formData.append("subject", "🎉 New Date Locked In: " + girlName);
+            formData.append("Name", girlName);
+            formData.append("Phone Number", mobile);
+            formData.append("Date of Birth", dob);
+            formData.append("Date Setting", act);
+            formData.append("Food Vibe", food);
+            formData.append("Time Preference", time);
+
+            fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => console.log("Data routed successfully!"))
+            .catch(error => console.log("Transmission failed.", error));
+            // --------------------------------------------------
+
             goToStep(3); 
         }
 
         function generateProposal() {
-            // Start the background music!
             let audio = document.getElementById('bg-music');
-            audio.volume = 0.5; // Set volume to 50%
-            audio.play().catch(error => console.log("Audio play prevented by browser until user interacts more."));
+            audio.volume = 0.5; 
+            audio.play().catch(error => console.log("Audio play prevented by browser."));
 
             let finalQText = `Hey ${girlName}, since these are your absolute favorites... <br><br> Would you do me the honor of going for <strong>${act}</strong>, where we can spend time <strong>${food}</strong>, <strong>${time}</strong>?`;
             
@@ -524,13 +545,10 @@
             goToStep(4); 
         }
 
-        // The "Catch Me If You Can" No Button Script
         function moveNoButton() {
             const noBtn = document.getElementById('btn-no');
-            // Change position to fixed so it can fly anywhere on the screen
             noBtn.style.position = 'fixed';
             
-            // Calculate random coordinates ensuring it stays within the screen
             const maxX = window.innerWidth - noBtn.offsetWidth - 20;
             const maxY = window.innerHeight - noBtn.offsetHeight - 20;
             
@@ -541,16 +559,14 @@
             noBtn.style.top = randomY + 'px';
         }
 
-        // Also make it run away on mobile touch
         document.getElementById('btn-no').addEventListener('touchstart', function(e) {
-            e.preventDefault(); // Prevents the click from registering immediately
+            e.preventDefault(); 
             moveNoButton();
         });
 
         function showModal(modalId) {
             document.getElementById(modalId).style.display = 'flex';
             
-            // Trigger Confetti if it's the YES modal!
             if(modalId === 'officeModal') {
                 var duration = 3000;
                 var end = Date.now() + duration;
@@ -580,7 +596,6 @@
 
         function closeModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
-            // Put the NO button back in its place so she can try clicking YES
             const noBtn = document.getElementById('btn-no');
             noBtn.style.position = 'static';
         }
