@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For You...</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Dancing+Script:wght@700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px; 
+            box-sizing: border-box;
+            background: linear-gradient(-45deg, #ffdde1, #ee9ca7, #ffdde1, #fdfbfb);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden; 
+            position: relative;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating Hearts Background */
+        .floating-heart {
+            position: absolute;
+            bottom: -10vh;
+            color: rgba(255, 71, 87, 0.3);
+            font-size: 24px;
+            animation: floatUp linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Glassmorphism Container */
+        .container {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(255, 107, 129, 0.25), 0 5px 15px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            margin: auto;
+        }
+
+        .step {
+            display: none;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        h2 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 38px;
+            color: #ff4757;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        p.subtitle {
+            font-size: 15px;
+            color: #576574;
+            margin-bottom: 25px;
+        }
+
+        .romantic-text {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 20px;
+            color: #2c3e50;
+            line-height: 1.6;
+            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .romantic-text strong {
+            color: #ff4757;
+        }
+
+        .heart-icon {
+            font-size: 60px;
+            color: #ff4757;
+            animation: heartbeat 1.5s infinite;
+            margin-bottom: -10px;
+        }
+
+        @keyframes heartbeat {
+            0%, 28%, 70% { transform: scale(1); }
+            14%, 42% { transform: scale(1.15); }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label.field-label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"], input[type="date"], input[type="tel"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            transition: 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        input[type="text"]:focus, input[type="date"]:focus, input[type="tel"]:focus {
+            border-color: #ff6b81;
+            outline: none;
+            background: #fff;
+            box-shadow: 0 4px 15px rgba(255, 107, 129, 0.15);
+        }
+
+        /* Beautiful Clickable Cards for Options */
+        .question-title {
+            text-align: left;
+            font-weight: 600;
+            font-size: 16px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            margin-top: 25px;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-label {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .radio-label input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .radio-card {
+            display: block;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #ffe4e8;
+            border-radius: 12px;
+            text-align: left;
+            font-size: 14px;
+            color: #576574;
+            transition: all 0.3s ease;
+        }
+
+        .radio-label:hover .radio-card {
+            background: #fff0f3;
+            transform: translateY(-2px);
+        }
+
+        .radio-label input[type="radio"]:checked ~ .radio-card {
+            background: #ffdde1;
+            border-color: #ff4757;
+            color: #ff4757;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(255, 71, 87, 0.1);
+        }
+
+        button {
+            background: linear-gradient(135deg, #ff6b81 0%, #ff4757 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.3);
+            letter-spacing: 0.5px;
+            width: 100%; 
+            max-width: 250px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 71, 87, 0.4);
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 30px;
+            position: relative; /* Important for the moving NO button */
+        }
+
+        #btn-yes {
+            font-size: 22px;
+            padding: 15px 45px;
+            background: linear-gradient(135deg, #2ed573 0%, #2bad5e 100%);
+            box-shadow: 0 8px 20px rgba(46, 213, 115, 0.4);
+            animation: pulseYes 2s infinite;
+            width: auto;
+            z-index: 20;
+        }
+
+        @keyframes pulseYes {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        #btn-no {
+            background: #ced6e0;
+            color: #576574;
+            box-shadow: none;
+            padding: 15px 30px;
+            width: auto;
+            transition: all 0.2s ease; /* Makes it jump smoothly */
+            z-index: 15;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 35px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            border: 2px solid #ffe4e8;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .modal-content h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .insta-btn {
+            display: inline-block;
+            margin-top: 20px;
+            color: #fff;
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            padding: 14px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+            transition: transform 0.2s;
+            box-shadow: 0 8px 20px rgba(220, 39, 67, 0.3);
+        }
+
+        .insta-btn:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/01/26/audio_d0c6ff1bc8.mp3?filename=just-relax-11157.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Floating hearts generation
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.querySelector('body');
+            for(let i = 0; i < 20; i++) {
+                let heart = document.createElement('div');
+                heart.classList.add('floating-heart');
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                body.appendChild(heart);
+            }
+        });
+    </script>
+
+    <div class="container">
+        
+        <div id="step1" class="step active">
+            <h2>A Tiny Quiz...</h2>
+            <p class="subtitle">Just a few questions for someone special ✨</p>
+            
+            <div class="input-group">
+                <label class="field-label">What should I call you?</label>
+                <input type="text" id="userName" placeholder="Your pretty name" required>
+            </div>
+            <div class="input-group">
+                <label class="field-label">When were you born?</label>
+                <input type="date" id="userDob" required>
+            </div>
+            <div class="input-group">
+                <label class="field-label">Where can I text you?</label>
+                <input type="tel" id="userMobile" placeholder="Your phone number" required>
+            </div>
+            <button onclick="goToStep(2)">Let's Begin 🤍</button>
+        </div>
+
+        <div id="step2" class="step">
+            <h2>Your Vibe 🦋</h2>
+            <p class="subtitle">Pick what sounds perfect to you.</p>
+            
+            <div class="question-title">1. What's your ideal date setting?</div>
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" name="q1" value="a walk on Marine Drive">
+                    <span class="radio-card">🌊 Walk on Marine Drive / Seaface</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="q1" value="a long relaxing drive">
+                    <span class="radio-card">🚗 Long car / bike ride</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="q1" value="playing some arcade games">
+                    <span class="radio-card">🎳 Bowling / Arcade games</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="q1" value="a cozy coffee date">
+                    <span class="radio-card">☕ Cozy coffee date</span>
+                </label>
+            </div>
+
+            <div class="question-title">2. What are we eating?</div>
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" name="q2" value="enjoying some street food">
+                    <span class="radio-card">🥟 Street food hopping</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="q2" value="chilling at an aesthetic cafe">
+                    <span class="radio-card">🥐 A quiet, aesthetic cafe</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="q2" value="having a lovely dinner">
+                    <span class="radio-card">🍝 Fancy dinner</span>
+                </label>
+            </div>
+
+            <div class="question-title">3. When are we going?</div>
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" name="q3" value="early in the morning">
+                    <span class="radio-card">🌅 Early morning / Sunrise</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="q3" value="during the golden hour">
+                    <span class="radio-card">🌇 Golden hour / Sunset</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="q3" value="late at night under the stars">
+                    <span class="radio-card">🌃 Late night stargazing</span>
+                </label>
+            </div>
+
+            <button onclick="submitSurvey()">Lock it in 🔒</button>
+        </div>
+
+        <div id="step3" class="step">
+            <h2>Just a second...</h2>
+            <p class="subtitle">Creating something special based on your answers ✨</p>
+            <br>
+            <button onclick="generateProposal()">Open your surprise 🎁</button>
+        </div>
+
+        <div id="step4" class="step">
+            <div class="heart-icon">❤️</div>
+            <h2>For You...</h2>
+            <div id="finalQuestion" class="romantic-text">Loading your special request...</div>
+            <p style="color: #a4b0be; font-size: 13px; margin-top: -5px;">(Say yes, please? 🥺)</p>
+            
+            <div class="btn-group" id="final-buttons">
+                <button id="btn-yes" onclick="showModal('officeModal')">YES! 🥰</button>
+                <button id="btn-no" onmouseover="moveNoButton()" onclick="showModal('joeyModal')">No 🙈</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="joeyModal" class="modal">
+        <div class="modal-content">
+            <img src="https://media.giphy.com/media/L13yIps1BPAueYBEek/giphy.gif" alt="Joey Please">
+            <h2 style="color: #2c3e50; font-size: 24px; margin-top: 15px;">Are you sure?</h2>
+            <p style="color: #576574; font-size: 15px;">Break my heart just like that?</p>
+            <button onclick="closeModal('joeyModal')" style="width: 100%; max-width: 100%;">Okay, let me rethink 🙄</button>
+        </div>
+    </div>
+
+    <div id="officeModal" class="modal">
+        <div class="modal-content">
+            <img src="https://media.giphy.com/media/dsGcvvBPzXJ9KSnLPg/giphy.gif" alt="The Office Yes">
+            <h2 style="color: #ff4757;">YESSS! 🎉❤️</h2>
+            <p style="font-size: 16px; color: #576574; margin-top: 10px;">I can't wait! You know where to find me 🥰</p>
+            <a href="https://instagram.com/_.parthgangan._" target="_blank" class="insta-btn">Text me on Instagram 📸</a>
+        </div>
+    </div>
+
+    <script>
+        let girlName = "";
+        let act = "";
+        let food = "";
+        let time = "";
+
+        function goToStep(stepNumber) {
+            if(stepNumber === 2) {
+                let nameInput = document.getElementById('userName').value.trim();
+                let dob = document.getElementById('userDob').value;
+                let mobile = document.getElementById('userMobile').value;
+                
+                if(!nameInput || !dob || !mobile) {
+                    alert("Please fill out the details so I know it's really you! 😉");
+                    return;
+                }
+                girlName = nameInput.split(' ')[0]; 
+
+                // Note: If you want to use the Web3Forms email trick from earlier, 
+                // you would put that fetch() code right here!
+            }
+
+            document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+            document.getElementById('step' + stepNumber).classList.add('active');
+            
+            // Scroll to top when changing steps
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function submitSurvey() {
+            let q1Option = document.querySelector('input[name="q1"]:checked');
+            let q2Option = document.querySelector('input[name="q2"]:checked');
+            let q3Option = document.querySelector('input[name="q3"]:checked');
+            
+            if(!q1Option || !q2Option || !q3Option) {
+                alert("Please answer all 3 questions! Don't leave me guessing. 😅");
+                return;
+            }
+
+            act = q1Option.value;
+            food = q2Option.value;
+            time = q3Option.value;
+
+            goToStep(3); 
+        }
+
+        function generateProposal() {
+            // Start the background music!
+            let audio = document.getElementById('bg-music');
+            audio.volume = 0.5; // Set volume to 50%
+            audio.play().catch(error => console.log("Audio play prevented by browser until user interacts more."));
+
+            let finalQText = `Hey ${girlName}, since these are your absolute favorites... <br><br> Would you do me the honor of going for <strong>${act}</strong>, where we can spend time <strong>${food}</strong>, <strong>${time}</strong>?`;
+            
+            document.getElementById('finalQuestion').innerHTML = finalQText;
+            goToStep(4); 
+        }
+
+        // The "Catch Me If You Can" No Button Script
+        function moveNoButton() {
+            const noBtn = document.getElementById('btn-no');
+            // Change position to fixed so it can fly anywhere on the screen
+            noBtn.style.position = 'fixed';
+            
+            // Calculate random coordinates ensuring it stays within the screen
+            const maxX = window.innerWidth - noBtn.offsetWidth - 20;
+            const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+            
+            const randomX = Math.max(20, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(20, Math.floor(Math.random() * maxY));
+            
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+        }
+
+        // Also make it run away on mobile touch
+        document.getElementById('btn-no').addEventListener('touchstart', function(e) {
+            e.preventDefault(); // Prevents the click from registering immediately
+            moveNoButton();
+        });
+
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+            
+            // Trigger Confetti if it's the YES modal!
+            if(modalId === 'officeModal') {
+                var duration = 3000;
+                var end = Date.now() + duration;
+
+                (function frame() {
+                    confetti({
+                        particleCount: 5,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: ['#ff4757', '#ffdde1', '#2ed573']
+                    });
+                    confetti({
+                        particleCount: 5,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: ['#ff4757', '#ffdde1', '#2ed573']
+                    });
+
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame);
+                    }
+                }());
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            // Put the NO button back in its place so she can try clicking YES
+            const noBtn = document.getElementById('btn-no');
+            noBtn.style.position = 'static';
+        }
+    </script>
+</body>
+</html>
