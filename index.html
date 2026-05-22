@@ -1,406 +1,417 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>For Gauri 💌</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Player 2 Request</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #0b0b1a;
+            color: #00ffcc;
+            font-family: 'Press Start 2P', cursive;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            overflow: hidden;
+            background-image: radial-gradient(circle, #1a1a2e 10%, #000 90%);
+        }
 
-<style>
-body {
-  margin: 0;
-  font-family: 'Segoe UI', cursive;
-  background: linear-gradient(135deg, #ffdde1, #ee9ca7);
-  overflow: hidden;
-}
+        /* The Main Screen */
+        #gameboy-screen {
+            background: #0f0f1a;
+            border: 4px solid #ff0055;
+            border-radius: 15px;
+            padding: 20px;
+            width: 85%;
+            max-width: 500px;
+            box-shadow: 0px 0px 20px rgba(255, 0, 85, 0.6), inset 0px 0px 20px rgba(0, 255, 204, 0.1);
+            min-height: 350px;
+            max-height: 85vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+            animation: pulse-border 3s infinite alternate;
+        }
 
-/* overlay */
-.overlay {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.3);
-  z-index: 1;
-}
+        @keyframes pulse-border {
+            0% { box-shadow: 0px 0px 20px rgba(255, 0, 85, 0.4), inset 0px 0px 10px rgba(0, 255, 204, 0.1); }
+            100% { box-shadow: 0px 0px 35px rgba(255, 0, 85, 0.8), inset 0px 0px 25px rgba(0, 255, 204, 0.2); }
+        }
 
-/* hearts */
-.hearts {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-}
+        /* CRT Scanline Effect */
+        #gameboy-screen::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            z-index: 100;
+            pointer-events: none;
+            border-radius: 10px;
+        }
 
-.heart {
-  position: absolute;
-  animation: floatUp linear infinite;
-}
+        .content-wrapper { z-index: 10; position: relative; width: 100%; }
 
-@keyframes floatUp {
-  0% { transform: translateY(100vh); opacity: 0; }
-  30% { opacity: 1; }
-  100% { transform: translateY(-10vh); opacity: 0; }
-}
+        /* Custom scrollbar for desktop */
+        #gameboy-screen::-webkit-scrollbar { width: 6px; }
+        #gameboy-screen::-webkit-scrollbar-thumb { background: #ff0055; border-radius: 5px; }
 
-/* containers */
-.container {
-  display: none;
-  height: 100vh;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  z-index: 2;
-  position: relative;
-  text-align: center;
-  padding: 20px;
-}
+        .hidden { display: none !important; }
 
-.active {
-  display: flex;
-  animation: fadeScene 0.8s ease;
-}
+        /* Smooth fade in for scene changes */
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-@keyframes fadeScene {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
+        /* Pixel art style Gift with heartbeat */
+        .envelope {
+            font-size: 70px;
+            cursor: pointer;
+            animation: heartbeat 1.5s infinite;
+            filter: drop-shadow(0px 0px 15px #ff0055);
+            margin: 20px 0;
+        }
 
-/* envelope */
-.envelope {
-  width: 260px;
-  height: 160px;
-  background: white;
-  border-radius: 10px;
-  position: relative;
-  box-shadow: 0 0 40px rgba(255,255,255,0.6);
-  overflow: hidden;
-}
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.15); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.15); }
+            60% { transform: scale(1); }
+            100% { transform: scale(1); }
+        }
 
-.flap {
-  position: absolute;
-  width: 100%;
-  height: 80px;
-  background: #ff6b81;
-  clip-path: polygon(0 0, 50% 100%, 100% 0);
-}
+        /* Typewriter & Text */
+        #message {
+            font-size: 11px;
+            line-height: 2.2;
+            text-align: left;
+            margin-bottom: 25px;
+            color: #fff;
+            text-shadow: 1px 1px 0px #ff0055;
+        }
 
-.inner-letter {
-  position: absolute;
-  width: 90%;
-  height: 140px;
-  background: #fff;
-  left: 5%;
-  top: 20px;
-  border-radius: 10px;
-  transform: translateY(100%);
-  transition: 1.2s ease;
-}
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap; 
+        }
 
-.envelope.open .inner-letter {
-  transform: translateY(-20%);
-}
+        .btn {
+            font-family: 'Press Start 2P', cursive;
+            background: #0f0f1a;
+            color: #ff0055;
+            border: 3px solid #ff0055;
+            padding: 12px 15px;
+            cursor: pointer;
+            font-size: 10px;
+            transition: 0.2s;
+            text-transform: uppercase;
+            z-index: 100;
+        }
 
-/* buttons */
-button {
-  margin-top: 20px;
-  padding: 12px 25px;
-  border-radius: 25px;
-  border: none;
-  background: #ff6b81;
-  color: white;
-  cursor: pointer;
-}
+        .btn:active { transform: scale(0.95); }
 
-/* letter */
-.letter {
-  width: 340px;
-  max-width: 90%;
-  padding: 20px;
-  background: rgba(255,255,255,0.95);
-  border-radius: 20px;
-  opacity: 0;
-  transform: scale(0.8);
-  transition: 0.6s;
-}
+        #btn-yes:hover {
+            background: #ff0055;
+            color: #0f0f1a;
+            box-shadow: 0px 0px 15px #ff0055;
+        }
 
-.letter.show {
-  opacity: 1;
-  transform: scale(1);
-  animation: heartbeat 2s infinite;
-}
+        #btn-no { transition: top 0.1s, left 0.1s; }
 
-@keyframes heartbeat {
-  0%,100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-}
+        /* RPG Form Styling */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+            width: 100%;
+        }
 
-/* options */
-.options {
-  display: grid;
-  grid-template-columns: repeat(2,1fr);
-  gap: 12px;
-  max-width: 400px;
-}
+        .form-group label {
+            display: block;
+            color: #ff0055;
+            font-size: 9px;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 0px #000;
+            line-height: 1.4;
+        }
 
-.option {
-  padding: 18px;
-  border-radius: 18px;
-  cursor: pointer;
-  backdrop-filter: blur(10px);
-  background: rgba(255,255,255,0.2);
-  color: white;
-  transition: 0.4s;
-  border: 1px solid rgba(255,255,255,0.3);
-}
+        .retro-input {
+            font-family: 'Press Start 2P', cursive;
+            background: rgba(0, 255, 204, 0.05);
+            color: #00ffcc;
+            border: 2px dashed #00ffcc;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 9px;
+            outline: none;
+            cursor: pointer;
+            transition: 0.3s;
+            appearance: none; 
+            -webkit-appearance: none;
+        }
 
-.option:hover {
-  transform: scale(1.08);
-  background: rgba(255,255,255,0.4);
-  box-shadow: 0 0 20px rgba(255,255,255,0.6);
-}
+        .retro-input:focus { border-style: solid; background: rgba(0, 255, 204, 0.1); }
 
-/* NEW time UI */
-.time-options {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 10px;
-}
+        .blink-text {
+            animation: blinker 1s linear infinite;
+            color: #ffff00;
+        }
 
-.time-card {
-  padding: 10px 15px;
-  border-radius: 15px;
-  background: rgba(255,255,255,0.2);
-  color: white;
-  cursor: pointer;
-  transition: 0.3s;
-}
+        @keyframes blinker { 50% { opacity: 0; } }
 
-.time-card.active {
-  background: #ff6b81;
-  transform: scale(1.1);
-}
+        /* Falling Emojis CSS */
+        .falling-emoji {
+            position: fixed;
+            top: -50px;
+            font-size: 24px;
+            animation: fall linear forwards;
+            z-index: 1;
+            user-select: none;
+            pointer-events: none;
+        }
 
-/* final */
-.thankyou {
-  font-size: 22px;
-  color: white;
-}
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
 
-/* confetti */
-.confetti {
-  position: fixed;
-  width: 8px;
-  height: 8px;
-  top: 0;
-  animation: fall linear forwards;
-}
+        /* Party Avatars */
+        .party-box {
+            display: flex;
+            justify-content: space-evenly;
+            background: rgba(26, 26, 46, 0.8);
+            border: 2px solid #ffff00;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 9px;
+            line-height: 1.8;
+            border-radius: 8px;
+        }
 
-@keyframes fall {
-  to {
-    transform: translateY(100vh) rotate(720deg);
-    opacity: 0;
-  }
-}
-
-/* mobile */
-@media(max-width:600px){
-  .options{grid-template-columns:1fr;}
-}
-</style>
+        /* --- MOBILE MEDIA QUERIES --- */
+        @media (max-width: 480px) {
+            #gameboy-screen { width: 90%; padding: 15px; border-width: 3px; }
+            .envelope { font-size: 55px; margin: 15px 0; }
+            #message { font-size: 9px; line-height: 2; }
+            .btn { font-size: 9px; padding: 10px 12px; }
+            h2 { font-size: 14px !important; }
+            h3 { font-size: 11px !important; }
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="overlay"></div>
-<div class="hearts" id="hearts"></div>
+    <div id="gameboy-screen">
+        <div class="content-wrapper">
+            
+            <!-- Scene 1: Envelope / Gift -->
+            <div id="scene-envelope" class="fade-in">
+                <p style="font-size: 10px; color: #fff; line-height: 1.8;">* BIRTHDAY LOOT DROP DISCOVERED *</p>
+                <div class="envelope" onclick="openLetter()">🎁</div>
+                <p class="blink-text" style="font-size: 9px; margin-top: 15px;">TAP TO OPEN</p>
+            </div>
 
-<!-- Step 1 -->
-<div id="step1" class="container active">
-  <div class="envelope" id="envelope">
-    <div class="flap"></div>
-    <div class="inner-letter"></div>
-  </div>
-  <button onclick="openEnvelope()">Open 💌</button>
-</div>
+            <!-- Scene 2: Typewriter -->
+            <div id="scene-letter" class="hidden fade-in">
+                <div id="message"></div>
+                
+                <div id="question-scene" class="hidden fade-in">
+                    <p style="color: #ff0055; font-size: 10px; line-height: 1.6; margin-top: 15px; text-shadow: 1px 1px #000;">WILL YOU GO ON A DATE WITH ME?</p>
+                    <div class="btn-container">
+                        <button id="btn-yes" class="btn" onclick="clickYes()">[ HELL YES ]</button>
+                        <!-- Added ontouchstart for mobile dodging -->
+                        <button id="btn-no" class="btn" onmouseover="dodgeButton(event)" ontouchstart="dodgeButton(event)" onclick="clickNo()">[ NO ]</button>
+                    </div>
+                </div>
+            </div>
 
-<!-- Step 2 -->
-<div id="step2" class="container">
-  <div id="letter" class="letter">
-    <p id="typewriter"></p>
-    <button onclick="goToOptions()">Yes 💖</button>
-    <button id="noBtn">No 🙈</button>
-  </div>
-</div>
+            <!-- Scene 3: The Planning Phase -->
+            <div id="scene-planning" class="hidden fade-in">
+                <h3 style="color: #fff; font-size: 12px; text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">INVENTORY & STATS</h3>
+                
+                <div class="form-group">
+                    <label>📍 SELECT MISSION MAP:</label>
+                    <select id="date-type" class="retro-input">
+                        <option value="Late Night Drive">🚗 Late Night Drive (Vibes)</option>
+                        <option value="Arcade & Gaming">🕹️ Arcade (Prepare to lose!)</option>
+                        <option value="Movie Night">🍿 Movie Night (No talking!)</option>
+                        <option value="Coffee & Chat">☕ Coffee & Chat (Cozy)</option>
+                    </select>
+                </div>
 
-<!-- Step 3 -->
-<div id="step3" class="container">
-  <h2>Pick our vibe 🌸</h2>
-  <div class="options">
-    <div class="option" onclick="selectOption('Sunset Drive')">🌅 Sunset Drive</div>
-    <div class="option" onclick="selectOption('Coastal Ride')">🌊 Coastal Ride</div>
-    <div class="option" onclick="selectOption('Night Ride')">🌙 Night Ride</div>
-    <div class="option" onclick="selectOption('Arcade & Bowling')">🎳 Arcade</div>
-    <div class="option" onclick="selectOption('Bike Ride')">🏍️ Bike Ride</div>
-    <div class="option" onclick="selectOption('Cafe Date')">☕ Cafe</div>
-    <div class="option" onclick="selectOption('Movie Date')">🎬 Movie</div>
-  </div>
-</div>
+                <div class="form-group">
+                    <label>HP RECOVERY (FOOD):</label>
+                    <select id="food-type" class="retro-input">
+                        <option value="Italian">🍕 Italian (Pizza/Pasta)</option>
+                        <option value="Asian">🍜 Pan-Asian (Noodles/Sushi)</option>
+                        <option value="Street Food">🌮 Street Food & Chaos</option>
+                        <option value="Desserts">🍰 Just Desserts & Sugar</option>
+                    </select>
+                </div>
 
-<!-- Step 4 -->
-<div id="step4" class="container">
-  <h2>Select Date 💫</h2>
-  <input type="date" id="date">
+                <div class="form-group">
+                    <label>⏰ SELECT SERVER TIME:</label>
+                    <input type="datetime-local" id="date-time" class="retro-input">
+                </div>
 
-  <div class="time-options">
-    <div class="time-card" onclick="selectTime(this,'Morning')">☀️ Morning</div>
-    <div class="time-card" onclick="selectTime(this,'Afternoon')">🌤️ Afternoon</div>
-    <div class="time-card" onclick="selectTime(this,'Evening')">🌆 Evening</div>
-    <div class="time-card" onclick="selectTime(this,'Night')">🌙 Night</div>
-  </div>
+                <div style="text-align: center; margin-top: 25px;">
+                    <button class="btn" style="width: 100%; border-color: #00ffcc; color: #00ffcc;" onclick="finishPlanning()">[ LOCK IN CHOICES ]</button>
+                </div>
+            </div>
 
-  <button onclick="finish()">Done 💖</button>
-</div>
+            <!-- Scene 4: Saving Loading Screen -->
+            <div id="scene-loading" class="hidden fade-in">
+                <h2 class="blink-text" style="font-size: 14px;">SAVING PROGRESS...</h2>
+                <p style="font-size: 8px; color: #888; margin-top: 15px;">DO NOT TURN OFF THE POWER</p>
+            </div>
 
-<!-- Step 5 -->
-<div id="step5" class="container">
-  <div id="finalMessage" class="thankyou"></div>
-</div>
+            <!-- Scene 5: Final Victory Screen -->
+            <div id="scene-success" class="hidden fade-in">
+                <h2 style="color: #ff0055; margin-bottom: 15px; font-size: 16px;">QUEST ACCEPTED! 🏆</h2>
+                
+                <!-- Cute Player Avatars -->
+                <div class="party-box">
+                    <div>
+                        <span style="font-size: 18px;">🧑‍💻</span><br>
+                        <span style="color: #00ffcc;">P1: PARTH</span>
+                    </div>
+                    <div>
+                        <span style="font-size: 18px;">👸</span><br>
+                        <span style="color: #ff0055;">P2: GAURI</span>
+                    </div>
+                </div>
+                
+                <div id="mission-log" style="text-align: left; background: rgba(0, 0, 0, 0.6); border: 2px dashed #00ffcc; padding: 15px; font-size: 9px; line-height: 2.2; margin-bottom: 15px;">
+                    <!-- Filled via JS -->
+                </div>
+                
+                <p class="blink-text" style="font-size: 9px;">I'll see you soon!</p>
+            </div>
 
-<audio id="bgMusic" loop>
-  <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3">
-</audio>
+        </div>
+    </div>
 
-<script>
-document.body.addEventListener("click",()=>{
-  document.getElementById("bgMusic").play();
-},{once:true});
+    <script>
+        // The newly updated sincere and sweet message
+        const textToType = "Hi Gauri,\n\nHappy Belated Birthday!\n\nI figured your special day was fully booked with friends and family, so I waited for things to settle down a bit.\n\nI would really love to take you out on a date and celebrate properly, just the two of us.\n\nSo... ready for Player 2 to join your game?";
+        let charIndex = 0;
 
-// hearts
-setInterval(()=>{
-  const h=document.createElement("div");
-  h.className="heart";
-  h.innerHTML="💖";
-  h.style.left=Math.random()*100+"vw";
-  h.style.fontSize=(15+Math.random()*20)+"px";
-  h.style.animationDuration=(4+Math.random()*4)+"s";
-  document.getElementById("hearts").appendChild(h);
-  setTimeout(()=>h.remove(),8000);
-},300);
+        function openLetter() {
+            document.getElementById('scene-envelope').classList.add('hidden');
+            document.getElementById('scene-letter').classList.remove('hidden');
+            typeWriter();
+        }
 
-// typewriter
-const text=`Hey Gauri 💖
+        function typeWriter() {
+            if (charIndex < textToType.length) {
+                let char = textToType.charAt(charIndex);
+                if (char === '\n') {
+                    document.getElementById("message").innerHTML += "<br>";
+                } else {
+                    document.getElementById("message").innerHTML += char;
+                }
+                charIndex++;
+                setTimeout(typeWriter, 35); 
+            } else {
+                setTimeout(() => {
+                    document.getElementById('question-scene').classList.remove('hidden');
+                }, 600);
+            }
+        }
 
-I know we haven't talked much…
-but something about you made me want to do this differently.
+        function dodgeButton(e) {
+            if (e && e.type === 'touchstart') {
+                e.preventDefault(); 
+            }
+            
+            const btn = document.getElementById('btn-no');
+            btn.style.position = 'fixed';
+            
+            const safeWidth = window.innerWidth - btn.offsetWidth - 20;
+            const safeHeight = window.innerHeight - btn.offsetHeight - 20;
+            
+            const randomX = Math.max(10, Math.random() * safeWidth);
+            const randomY = Math.max(10, Math.random() * safeHeight);
+            
+            btn.style.left = randomX + 'px';
+            btn.style.top = randomY + 'px';
+        }
 
-So here I am 🙂
+        function clickNo() {
+            alert("⚠️ SYSTEM OVERRIDE: You are destined to click YES.");
+        }
 
-Would you go on a cute little date with me? ✨`;
+        function clickYes() {
+            document.getElementById('scene-letter').classList.add('hidden');
+            document.getElementById('scene-planning').classList.remove('hidden');
+        }
 
-let i=0,selectedPlan="",selectedTime="";
+        function startRaining() {
+            const emojis = ['💖', '✨', '🎮', '👾', '🎁', '🎉', '🍰'];
+            setInterval(() => {
+                const drop = document.createElement('div');
+                drop.classList.add('falling-emoji');
+                drop.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                drop.style.left = Math.random() * 100 + 'vw';
+                drop.style.animationDuration = (Math.random() * 2 + 2.5) + 's';
+                document.body.appendChild(drop);
+                setTimeout(() => { drop.remove(); }, 4500);
+            }, 250);
+        }
 
-function typeWriter(){
-  if(i<text.length){
-    document.getElementById("typewriter").innerHTML+=text[i++];
-    setTimeout(typeWriter,35);
-  }
-}
+        async function finishPlanning() {
+            const type = document.getElementById("date-type").value;
+            const food = document.getElementById("food-type").value;
+            const timeVal = document.getElementById("date-time").value;
+            let timeDisplay = timeVal ? timeVal.replace("T", " at ") : "To Be Determined";
 
-function openEnvelope(){
-  document.getElementById("envelope").classList.add("open");
+            document.getElementById('scene-planning').classList.add('hidden');
+            document.getElementById('scene-loading').classList.remove('hidden');
 
-  setTimeout(()=>{
-    step1.classList.remove("active");
-    step2.classList.add("active");
+            try {
+                await fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({
+                        access_key: 'bbd67653-cc36-42ef-9bf4-75ce95191cf2',
+                        subject: '🎮 PLAYER 2 ALERT: Gauri Accepted the Quest!',
+                        Mission_Type: type,
+                        Food_Choice: food,
+                        Date_and_Time: timeDisplay,
+                    })
+                });
+            } catch (error) {
+                console.log("Email background error, moving to success.");
+            }
 
-    setTimeout(()=>{
-      letter.classList.add("show");
-      typeWriter();
-    },200);
-  },1200);
-}
-
-// no button
-noBtn.onmouseover=()=>{
-  noBtn.style.left=Math.random()*(window.innerWidth-100)+"px";
-  noBtn.style.top=Math.random()*(window.innerHeight-50)+"px";
-};
-
-function goToOptions(){
-  step2.classList.remove("active");
-  step3.classList.add("active");
-}
-
-function selectOption(opt){
-  selectedPlan=opt;
-  step3.classList.remove("active");
-  step4.classList.add("active");
-}
-
-function selectTime(el,time){
-  document.querySelectorAll(".time-card").forEach(c=>c.classList.remove("active"));
-  el.classList.add("active");
-  selectedTime=time;
-}
-
-// confetti
-function confetti(){
-  for(let i=0;i<100;i++){
-    let c=document.createElement("div");
-    c.className="confetti";
-    c.style.left=(Math.random()>0.5?0:window.innerWidth)+"px";
-    c.style.background=["#ff6b81","#ffd93d","#6bcB77","#4d96ff"][Math.floor(Math.random()*4)];
-    c.style.animationDuration=(2+Math.random()*2)+"s";
-    document.body.appendChild(c);
-    setTimeout(()=>c.remove(),4000);
-  }
-}
-
-// FINAL
-function finish(){
-  let date=document.getElementById("date").value;
-
-  if(!date || !selectedTime){
-    alert("Pick date & time 😄");
-    return;
-  }
-
-  const formData=new FormData();
-  formData.append("access_key","bbd67653-cc36-42ef-9bf4-75ce95191cf2");
-  formData.append("subject","Date Plan 💖");
-  formData.append("message",
-`Plan: ${selectedPlan}
-Date: ${date}
-Time: ${selectedTime}`);
-
-  fetch("https://api.web3forms.com/submit",{
-    method:"POST",
-    body:formData
-  })
-  .then(res=>res.json())
-  .then(data=>{
-    if(data.success){
-      document.getElementById("finalMessage").innerText=
-`Hi Gauri 💖
-
-For our ${selectedPlan} 💫  
-Be ready on ${date} (${selectedTime}) ✨  
-It's going to be special… I hope 😉`;
-
-      confetti();
-
-      step4.classList.remove("active");
-      step5.classList.add("active");
-    } else {
-      alert("Submission failed 😅");
-    }
-  })
-  .catch(()=>{
-    alert("Network issue 😅");
-  });
-}
-</script>
-
+            setTimeout(() => {
+                document.getElementById('scene-loading').classList.add('hidden');
+                
+                document.getElementById('mission-log').innerHTML = `
+                    <span style="color: #ff0055;">> MAP:</span> ${type}<br>
+                    <span style="color: #ff0055;">> BUFF:</span> ${food}<br>
+                    <span style="color: #ff0055;">> ETA:</span> ${timeDisplay}
+                `;
+                
+                document.getElementById('scene-success').classList.remove('hidden');
+                startRaining();
+            }, 2000);
+        }
+    </script>
 </body>
 </html>
