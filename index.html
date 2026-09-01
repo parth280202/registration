@@ -1,417 +1,1633 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Player 2 Request</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    
-    <style>
-        body {
-            background-color: #0b0b1a;
-            color: #00ffcc;
-            font-family: 'Press Start 2P', cursive;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            text-align: center;
-            overflow: hidden;
-            background-image: radial-gradient(circle, #1a1a2e 10%, #000 90%);
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>so... when are we finally going on a date?</title>
 
-        /* The Main Screen */
-        #gameboy-screen {
-            background: #0f0f1a;
-            border: 4px solid #ff0055;
-            border-radius: 15px;
-            padding: 20px;
-            width: 85%;
-            max-width: 500px;
-            box-shadow: 0px 0px 20px rgba(255, 0, 85, 0.6), inset 0px 0px 20px rgba(0, 255, 204, 0.1);
-            min-height: 350px;
-            max-height: 85vh;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            z-index: 10;
-            animation: pulse-border 3s infinite alternate;
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-        @keyframes pulse-border {
-            0% { box-shadow: 0px 0px 20px rgba(255, 0, 85, 0.4), inset 0px 0px 10px rgba(0, 255, 204, 0.1); }
-            100% { box-shadow: 0px 0px 35px rgba(255, 0, 85, 0.8), inset 0px 0px 25px rgba(0, 255, 204, 0.2); }
-        }
+<style>
+/* ==========================================================================
+   DESIGN TOKENS
+   ========================================================================== */
+:root{
+  --midnight:      #090b18;
+  --midnight-2:    #11132a;
+  --midnight-3:    #171a38;
+  --purple:        #8b7bf0;
+  --purple-deep:   #5f4fd6;
+  --pink:          #ff86b3;
+  --pink-hot:      #ff4f7e;
+  --warm-white:    #f7f1e6;
+  --warm-white-dim:#cfc9ce;
 
-        /* CRT Scanline Effect */
-        #gameboy-screen::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-            background-size: 100% 4px;
-            z-index: 100;
-            pointer-events: none;
-            border-radius: 10px;
-        }
+  --glass-bg:      rgba(255,255,255,0.045);
+  --glass-bg-hi:   rgba(255,255,255,0.09);
+  --glass-border:  rgba(255,255,255,0.10);
+  --glass-border-hi: rgba(255,255,255,0.22);
 
-        .content-wrapper { z-index: 10; position: relative; width: 100%; }
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
 
-        /* Custom scrollbar for desktop */
-        #gameboy-screen::-webkit-scrollbar { width: 6px; }
-        #gameboy-screen::-webkit-scrollbar-thumb { background: #ff0055; border-radius: 5px; }
+  --ease-spring: cubic-bezier(.2,.9,.25,1.15);
+  --ease-smooth: cubic-bezier(.4,0,.2,1);
 
-        .hidden { display: none !important; }
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+}
 
-        /* Smooth fade in for scene changes */
-        .fade-in {
-            animation: fadeIn 0.8s ease-in-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+*,*::before,*::after{ box-sizing:border-box; }
 
-        /* Pixel art style Gift with heartbeat */
-        .envelope {
-            font-size: 70px;
-            cursor: pointer;
-            animation: heartbeat 1.5s infinite;
-            filter: drop-shadow(0px 0px 15px #ff0055);
-            margin: 20px 0;
-        }
+html,body{
+  margin:0; padding:0;
+  background:var(--midnight);
+  color:var(--warm-white);
+  font-family:var(--font-body);
+  overflow-x:hidden;
+  scroll-behavior:smooth;
+  -webkit-tap-highlight-color:transparent;
+}
 
-        @keyframes heartbeat {
-            0% { transform: scale(1); }
-            15% { transform: scale(1.15); }
-            30% { transform: scale(1); }
-            45% { transform: scale(1.15); }
-            60% { transform: scale(1); }
-            100% { transform: scale(1); }
-        }
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% -10%, rgba(139,123,240,0.22), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 90% 10%, rgba(255,79,126,0.14), transparent 55%),
+    radial-gradient(ellipse 90% 70% at 50% 110%, rgba(95,79,214,0.18), transparent 60%),
+    var(--midnight);
+}
 
-        /* Typewriter & Text */
-        #message {
-            font-size: 11px;
-            line-height: 2.2;
-            text-align: left;
-            margin-bottom: 25px;
-            color: #fff;
-            text-shadow: 1px 1px 0px #ff0055;
-        }
+h1,h2,h3{ font-family:var(--font-display); font-weight:500; margin:0; letter-spacing:-0.01em; }
+p{ margin:0; }
+button{ font-family:var(--font-body); }
 
-        .btn-container {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 15px;
-            flex-wrap: wrap; 
-        }
+::selection{ background:var(--pink-hot); color:var(--midnight); }
 
-        .btn {
-            font-family: 'Press Start 2P', cursive;
-            background: #0f0f1a;
-            color: #ff0055;
-            border: 3px solid #ff0055;
-            padding: 12px 15px;
-            cursor: pointer;
-            font-size: 10px;
-            transition: 0.2s;
-            text-transform: uppercase;
-            z-index: 100;
-        }
+/* focus visibility for accessibility */
+a:focus-visible, button:focus-visible, input:focus-visible, .option-card:focus-visible, .like-card:focus-visible{
+  outline:2px solid var(--pink);
+  outline-offset:3px;
+  border-radius:8px;
+}
 
-        .btn:active { transform: scale(0.95); }
+/* ==========================================================================
+   BACKGROUND CANVAS + GRAIN
+   ========================================================================== */
+#bg-canvas{
+  position:fixed; inset:0; width:100%; height:100%;
+  z-index:0; pointer-events:none;
+}
+.grain{
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  opacity:0.035; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 
-        #btn-yes:hover {
-            background: #ff0055;
-            color: #0f0f1a;
-            box-shadow: 0px 0px 15px #ff0055;
-        }
+/* ==========================================================================
+   CORNER CONTROLS
+   ========================================================================== */
+.corner-btn{
+  position:fixed; top:20px; right:20px; z-index:50;
+  width:46px; height:46px; border-radius:50%;
+  background:var(--glass-bg); border:1px solid var(--glass-border);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  color:var(--warm-white); font-size:1.1rem; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:transform .25s var(--ease-spring), background .2s;
+}
+.corner-btn:hover{ transform:scale(1.08); background:var(--glass-bg-hi); }
+.corner-btn .icon-on{ display:none; }
+.corner-btn[aria-pressed="true"] .icon-muted{ display:none; }
+.corner-btn[aria-pressed="true"] .icon-on{ display:inline; }
 
-        #btn-no { transition: top 0.1s, left 0.1s; }
+/* progress thread */
+#progress-thread{
+  position:fixed; left:20px; top:50%; transform:translateY(-50%);
+  z-index:50; display:flex; align-items:center;
+}
+#progress-dots{
+  list-style:none; margin:0; padding:0;
+  display:flex; flex-direction:column; gap:14px;
+}
+#progress-dots li{
+  width:8px; height:8px; border-radius:50%;
+  background:rgba(255,255,255,0.18);
+  transition:all .35s var(--ease-spring);
+}
+#progress-dots li.done{ background:var(--pink); }
+#progress-dots li.current{ background:var(--warm-white); width:10px; height:10px; box-shadow:0 0 12px var(--pink); }
+@media (max-width: 720px){ #progress-thread{ display:none; } }
 
-        /* RPG Form Styling */
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-            width: 100%;
-        }
+/* ==========================================================================
+   SCENES — layout & transitions
+   ========================================================================== */
+#app{ position:relative; z-index:2; }
 
-        .form-group label {
-            display: block;
-            color: #ff0055;
-            font-size: 9px;
-            margin-bottom: 10px;
-            text-shadow: 1px 1px 0px #000;
-            line-height: 1.4;
-        }
+.scene{
+  min-height:100vh;
+  width:100%;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:100px 24px 90px;
+  opacity:0;
+}
+.scene.active{
+  display:flex;
+  animation:sceneIn .7s var(--ease-smooth) forwards;
+}
+@keyframes sceneIn{
+  from{ opacity:0; transform:translateY(18px) scale(.99); filter:blur(6px); }
+  to{ opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
+}
+.scene.leaving{
+  animation:sceneOut .45s var(--ease-smooth) forwards;
+}
+@keyframes sceneOut{
+  from{ opacity:1; transform:translateY(0); filter:blur(0); }
+  to{ opacity:0; transform:translateY(-14px); filter:blur(6px); }
+}
 
-        .retro-input {
-            font-family: 'Press Start 2P', cursive;
-            background: rgba(0, 255, 204, 0.05);
-            color: #00ffcc;
-            border: 2px dashed #00ffcc;
-            padding: 10px;
-            width: 100%;
-            box-sizing: border-box;
-            font-size: 9px;
-            outline: none;
-            cursor: pointer;
-            transition: 0.3s;
-            appearance: none; 
-            -webkit-appearance: none;
-        }
+.scene-inner{
+  max-width:720px; width:100%;
+  display:flex; flex-direction:column; gap:22px;
+}
+.scene-inner-center{ align-items:center; text-align:center; }
 
-        .retro-input:focus { border-style: solid; background: rgba(0, 255, 204, 0.1); }
+.eyebrow{
+  font-family:var(--font-body); font-weight:700; font-size:.72rem;
+  letter-spacing:.22em; text-transform:uppercase; color:var(--pink);
+  opacity:.85;
+}
 
-        .blink-text {
-            animation: blinker 1s linear infinite;
-            color: #ffff00;
-        }
+.display-xl{ font-size:clamp(2.1rem, 6vw, 3.6rem); line-height:1.08; }
+.display-lg{ font-size:clamp(1.7rem, 4.4vw, 2.6rem); line-height:1.12; }
+.display-xl .em, .display-lg .em{ color:var(--pink); }
+.dots{ color:var(--pink); }
 
-        @keyframes blinker { 50% { opacity: 0; } }
+.lede{ font-size:clamp(1rem, 2vw, 1.2rem); color:var(--warm-white-dim); max-width:56ch; }
 
-        /* Falling Emojis CSS */
-        .falling-emoji {
-            position: fixed;
-            top: -50px;
-            font-size: 24px;
-            animation: fall linear forwards;
-            z-index: 1;
-            user-select: none;
-            pointer-events: none;
-        }
+/* ==========================================================================
+   BUTTONS
+   ========================================================================== */
+.btn{
+  border:none; cursor:pointer; border-radius:999px;
+  padding:14px 30px; font-size:.98rem; font-weight:700;
+  font-family:var(--font-body);
+  transition:transform .25s var(--ease-spring), box-shadow .25s, background .25s;
+  position:relative;
+}
+.btn-primary{
+  background:linear-gradient(135deg, var(--pink-hot), var(--purple-deep));
+  color:var(--warm-white);
+  box-shadow:0 8px 30px -8px rgba(255,79,126,.55);
+}
+.btn-primary:hover{ transform:translateY(-3px) scale(1.02); box-shadow:0 14px 34px -8px rgba(255,79,126,.7); }
+.btn-primary:active{ transform:translateY(0) scale(.98); }
 
-        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+.btn-ghost{
+  background:var(--glass-bg); border:1px solid var(--glass-border-hi);
+  color:var(--warm-white); backdrop-filter:blur(10px);
+}
+.btn-ghost:hover{ background:var(--glass-bg-hi); transform:translateY(-2px); }
 
-        /* Party Avatars */
-        .party-box {
-            display: flex;
-            justify-content: space-evenly;
-            background: rgba(26, 26, 46, 0.8);
-            border: 2px solid #ffff00;
-            padding: 10px;
-            margin-bottom: 20px;
-            font-size: 9px;
-            line-height: 1.8;
-            border-radius: 8px;
-        }
+.scene-actions{ display:flex; gap:14px; flex-wrap:wrap; margin-top:8px; }
 
-        /* --- MOBILE MEDIA QUERIES --- */
-        @media (max-width: 480px) {
-            #gameboy-screen { width: 90%; padding: 15px; border-width: 3px; }
-            .envelope { font-size: 55px; margin: 15px 0; }
-            #message { font-size: 9px; line-height: 2; }
-            .btn { font-size: 9px; padding: 10px 12px; }
-            h2 { font-size: 14px !important; }
-            h3 { font-size: 11px !important; }
-        }
-    </style>
+/* magnetic cursor glow on primary buttons */
+.btn-primary::after{
+  content:""; position:absolute; inset:-1px; border-radius:999px;
+  background:radial-gradient(120px 60px at var(--mx,50%) var(--my,50%), rgba(255,255,255,.35), transparent 60%);
+  opacity:0; transition:opacity .3s; pointer-events:none;
+}
+.btn-primary:hover::after{ opacity:1; }
+
+/* ==========================================================================
+   LOADING SCREEN
+   ========================================================================== */
+.scene-loading{
+  flex-direction:column; gap:26px; text-align:center;
+}
+.loading-shuttle-track{
+  position:relative; width:min(320px, 70vw); height:60px;
+}
+.loading-shuttle-track::before{
+  content:""; position:absolute; left:0; right:0; top:50%;
+  height:1px; background:linear-gradient(90deg, transparent, var(--glass-border-hi), transparent);
+}
+.loading-shuttle{
+  position:absolute; top:50%; left:0; font-size:1.6rem;
+  transform:translate(0,-50%);
+  animation:shuttleFly 1.8s ease-in-out infinite;
+  filter:drop-shadow(0 0 10px rgba(255,134,179,.6));
+}
+@keyframes shuttleFly{
+  0%{ left:0%; transform:translate(0,-50%) rotate(0deg); }
+  48%{ left:calc(100% - 28px); transform:translate(0,-70%) rotate(25deg); }
+  50%{ left:calc(100% - 28px); transform:translate(0,-70%) rotate(25deg); }
+  98%{ left:0%; transform:translate(0,-30%) rotate(-15deg); }
+  100%{ left:0%; transform:translate(0,-50%) rotate(0deg); }
+}
+.loading-text{
+  font-family:var(--font-display); font-size:clamp(1.1rem,3vw,1.5rem);
+  color:var(--warm-white-dim); min-height:2.4em;
+}
+.loading-bar{ width:min(260px, 60vw); height:3px; background:rgba(255,255,255,.1); border-radius:99px; overflow:hidden; }
+.loading-bar-fill{ height:100%; width:0%; background:linear-gradient(90deg,var(--pink-hot),var(--purple)); transition:width .4s var(--ease-smooth); }
+
+/* ==========================================================================
+   3D HERO CANVASES
+   ========================================================================== */
+.hero-3d{
+  position:relative; width:100%; height:min(320px, 42vh);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));
+  border:1px solid var(--glass-border);
+}
+.hero-3d canvas{ width:100%; height:100%; display:block; }
+.hero-3d-tap{ cursor:pointer; }
+.tap-hint{
+  position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
+  font-size:.78rem; color:var(--warm-white-dim); background:var(--glass-bg);
+  padding:6px 14px; border-radius:99px; border:1px solid var(--glass-border);
+  pointer-events:none;
+}
+
+/* ==========================================================================
+   TIMELINE (Scene 1)
+   ========================================================================== */
+.timeline{
+  list-style:none; margin:0; padding:0;
+  display:flex; flex-wrap:wrap; gap:10px 8px;
+  font-size:.92rem; color:var(--warm-white-dim);
+}
+.timeline li{
+  display:flex; align-items:center; gap:8px;
+  background:var(--glass-bg); border:1px solid var(--glass-border);
+  padding:8px 14px; border-radius:99px;
+}
+.timeline li:not(:last-child)::after{
+  content:"→"; margin-left:10px; color:var(--purple); opacity:.7;
+}
+.tl-icon{ filter:drop-shadow(0 0 6px rgba(255,134,179,.4)); }
+
+/* ==========================================================================
+   DIALOGUE (Scene 2/3)
+   ========================================================================== */
+.dialogue-stack{ display:flex; flex-direction:column; gap:10px; }
+.dialogue-line{
+  font-size:1.08rem; color:var(--warm-white-dim);
+  opacity:0; transform:translateY(10px);
+  transition:opacity .5s var(--ease-smooth), transform .5s var(--ease-smooth);
+}
+.dialogue-line.shown{ opacity:1; transform:translateY(0); }
+.dialogue-emph{ color:var(--pink); font-weight:700; font-size:1.25rem; font-family:var(--font-display); }
+
+.reveal-box{
+  background:var(--glass-bg); border:1px solid var(--glass-border-hi);
+  border-radius:var(--radius-md); padding:18px 22px;
+  backdrop-filter:blur(10px);
+  animation:popIn .4s var(--ease-spring);
+}
+.reveal-box .soft{ color:var(--warm-white-dim); margin-top:6px; }
+@keyframes popIn{ from{ opacity:0; transform:scale(.94) translateY(6px); } to{ opacity:1; transform:scale(1) translateY(0); } }
+
+/* ==========================================================================
+   LUDO BOARD (Scene 3)
+   ========================================================================== */
+.ludo-stage{
+  display:flex; align-items:center; justify-content:center; gap:34px;
+  flex-wrap:wrap; padding:20px 0;
+}
+.ludo-board{
+  width:220px; height:220px; position:relative;
+  border-radius:20px; overflow:hidden;
+  display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr);
+  transform:perspective(900px) rotateX(38deg) rotateZ(-4deg);
+  box-shadow:0 40px 60px -25px rgba(0,0,0,.6);
+  border:1px solid var(--glass-border-hi);
+  transition:transform .6s var(--ease-spring);
+}
+.ludo-board:hover{ transform:perspective(900px) rotateX(30deg) rotateZ(-2deg) scale(1.03); }
+.ludo-cell{ position:relative; }
+.ludo-cell.tl{ background:linear-gradient(135deg,#ff4f7e,#c22c53); }
+.ludo-cell.tr{ background:linear-gradient(135deg,#8b7bf0,#5f4fd6); }
+.ludo-cell.bl{ background:linear-gradient(135deg,#ffd166,#e8a33d); }
+.ludo-cell.br{ background:linear-gradient(135deg,#5fd699,#2f9e6b); }
+.ludo-cell.mid{ background:var(--midnight-3); grid-column:2; grid-row:2; display:flex; align-items:center; justify-content:center; font-size:1.4rem; }
+.ludo-cell.path{ background:#f7f1e6; grid-column:2; }
+.ludo-cell.pathrow{ background:#f7f1e6; grid-row:2; }
+
+.token{
+  position:absolute; width:16px; height:16px; border-radius:50% 50% 50% 0;
+  background:var(--warm-white); box-shadow:0 4px 8px rgba(0,0,0,.4);
+  transform:rotate(45deg); cursor:pointer;
+  transition:transform .3s var(--ease-spring), opacity .3s, filter .3s;
+}
+.token.smashed{ animation:smash .5s var(--ease-spring) forwards; }
+@keyframes smash{
+  0%{ transform:rotate(45deg) scale(1); }
+  40%{ transform:rotate(200deg) scale(1.5); filter:brightness(1.6); }
+  100%{ transform:rotate(45deg) scale(0) translateY(30px); opacity:0; }
+}
+
+.dice-wrap{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+.dice{
+  width:64px; height:64px; border-radius:16px;
+  background:linear-gradient(145deg, var(--warm-white), #d8d0c4);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.8rem; cursor:pointer; user-select:none;
+  box-shadow:0 14px 24px -10px rgba(0,0,0,.6);
+  transition:transform .15s;
+}
+.dice:active{ transform:scale(.92); }
+.dice.rolling{ animation:diceRoll .6s ease-out; }
+@keyframes diceRoll{
+  0%{ transform:rotate(0) scale(1); }
+  30%{ transform:rotate(120deg) scale(1.15); }
+  60%{ transform:rotate(280deg) scale(.95); }
+  100%{ transform:rotate(360deg) scale(1); }
+}
+.dice-hint{ font-size:.78rem; color:var(--warm-white-dim); }
+
+/* ==========================================================================
+   LIKE CARDS (Scene 4)
+   ========================================================================== */
+.like-cards{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+  gap:16px; perspective:1000px;
+}
+.like-card{
+  background:var(--glass-bg); border:1px solid var(--glass-border);
+  border-radius:var(--radius-md); padding:20px;
+  backdrop-filter:blur(10px);
+  opacity:0; transform:translateY(24px) rotateX(8deg);
+  transition:transform .35s var(--ease-spring), border-color .3s, background .3s;
+  cursor:default;
+}
+.like-card.revealed{ opacity:1; transform:translateY(0) rotateX(0); }
+.like-card:hover{ border-color:var(--glass-border-hi); background:var(--glass-bg-hi); transform:translateY(-6px) rotateX(0); }
+.like-card h3{ font-size:1.05rem; margin-bottom:8px; color:var(--pink); }
+.like-card p{ color:var(--warm-white-dim); font-size:.94rem; line-height:1.5; }
+#joke-card{ cursor:pointer; }
+.joke-secret{ margin-top:8px; color:var(--pink-hot) !important; font-weight:700; }
+
+/* ==========================================================================
+   CHOICE ROW (Scene 5 / 8)
+   ========================================================================== */
+.choice-row{ display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
+.fade-line{ opacity:0; animation:fadeUp .6s var(--ease-smooth) forwards; }
+@keyframes fadeUp{ from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:translateY(0); } }
+
+/* ==========================================================================
+   OPTION GRIDS (Scene 6)
+   ========================================================================== */
+.option-grid{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr));
+  gap:10px; width:100%;
+}
+.option-card{
+  background:var(--glass-bg); border:1px solid var(--glass-border);
+  color:var(--warm-white); padding:14px 12px; border-radius:var(--radius-sm);
+  cursor:pointer; font-size:.92rem; font-weight:600;
+  transition:transform .25s var(--ease-spring), background .2s, border-color .2s;
+}
+.option-card:hover{ transform:translateY(-3px); border-color:var(--glass-border-hi); }
+.option-card.selected{
+  background:linear-gradient(135deg, var(--pink-hot), var(--purple-deep));
+  border-color:transparent;
+}
+.custom-field{ display:flex; flex-direction:column; gap:6px; max-width:260px; }
+.custom-field label{ font-size:.8rem; color:var(--warm-white-dim); }
+.custom-field input{
+  background:var(--glass-bg); border:1px solid var(--glass-border);
+  color:var(--warm-white); padding:10px 12px; border-radius:var(--radius-sm);
+  font-family:var(--font-body); font-size:.9rem; color-scheme:dark;
+}
+.micro-confirm{ color:var(--pink); font-size:.9rem; font-weight:600; }
+.time-suggestion{ color:var(--warm-white-dim); font-size:.92rem; min-height:1.4em; }
+.divider{ height:1px; background:linear-gradient(90deg, transparent, var(--glass-border-hi), transparent); margin:6px 0; }
+
+/* ==========================================================================
+   DESTINATIONS (Scene 7)
+   ========================================================================== */
+.destination-grid{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr));
+  gap:16px; perspective:1200px;
+}
+.dest-card{
+  background:var(--glass-bg); border:1px solid var(--glass-border);
+  border-radius:var(--radius-md); padding:20px; cursor:pointer;
+  transition:transform .18s var(--ease-smooth), border-color .25s, background .25s;
+  transform-style:preserve-3d;
+}
+.dest-card:hover{ border-color:var(--glass-border-hi); background:var(--glass-bg-hi); }
+.dest-card.selected{ border-color:var(--pink); box-shadow:0 0 0 1px var(--pink), 0 20px 40px -18px rgba(255,79,126,.5); }
+.dest-name{ font-family:var(--font-display); font-size:1.15rem; color:var(--warm-white); margin-bottom:4px; }
+.dest-timing{ font-size:.82rem; color:var(--pink); margin-bottom:8px; }
+.dest-plan{ font-size:.86rem; color:var(--warm-white-dim); line-height:1.5; margin-bottom:8px; }
+.dest-vibe{ font-size:.78rem; color:var(--warm-white-dim); font-style:italic; opacity:.8; }
+.dest-pick{
+  margin-top:12px; width:100%; padding:9px; border-radius:99px;
+  background:var(--glass-bg); border:1px solid var(--glass-border-hi);
+  color:var(--warm-white); font-weight:700; cursor:pointer; font-size:.85rem;
+}
+.dest-card.selected .dest-pick{ background:linear-gradient(135deg, var(--pink-hot), var(--purple-deep)); border-color:transparent; }
+
+.activity-grid{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr));
+  gap:8px;
+}
+.activity-chip{
+  background:var(--glass-bg); border:1px solid var(--glass-border);
+  padding:10px; border-radius:var(--radius-sm); text-align:center;
+  cursor:pointer; font-size:.86rem; transition:all .2s var(--ease-spring);
+}
+.activity-chip.selected{ background:linear-gradient(135deg, var(--purple-deep), var(--pink-hot)); border-color:transparent; }
+
+.summary-card{
+  background:var(--glass-bg-hi); border:1px solid var(--glass-border-hi);
+  border-radius:var(--radius-lg); padding:24px; backdrop-filter:blur(14px);
+  animation:popIn .4s var(--ease-spring);
+}
+.summary-card h3{ font-size:1.2rem; margin-bottom:10px; color:var(--pink); }
+.summary-card p{ font-size:.94rem; color:var(--warm-white-dim); margin-bottom:4px; }
+.summary-status{ margin-top:10px !important; color:var(--warm-white) !important; font-weight:700; }
+
+/* ==========================================================================
+   FINALE (Scene 8)
+   ========================================================================== */
+#finale-canvas{ position:absolute; inset:0; z-index:0; pointer-events:none; }
+#scene-8 .scene-inner{ position:relative; z-index:1; }
+.finale-reveal{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+.finale-reveal p{ color:var(--warm-white-dim); }
+.finale-reveal .soft{ opacity:.8; }
+.final-summary{
+  margin-top:14px; background:var(--glass-bg); border:1px solid var(--glass-border-hi);
+  border-radius:var(--radius-md); padding:16px 22px; color:var(--warm-white-dim); font-size:.92rem;
+}
+
+/* ==========================================================================
+   SECRET EASTER EGG BUTTON
+   ========================================================================== */
+#secret-btn{
+  position:fixed; bottom:14px; right:14px; z-index:40;
+  width:14px; height:14px; border-radius:50%;
+  background:transparent; border:none; cursor:pointer;
+  opacity:0.15;
+}
+#secret-btn:hover{ opacity:0.4; }
+#egg-toast{
+  position:fixed; bottom:30px; left:50%; transform:translate(-50%, 20px);
+  background:var(--glass-bg-hi); border:1px solid var(--glass-border-hi);
+  backdrop-filter:blur(14px); padding:12px 22px; border-radius:99px;
+  font-size:.9rem; z-index:60; opacity:0; pointer-events:none;
+  transition:all .35s var(--ease-spring);
+}
+#egg-toast.show{ opacity:1; transform:translate(-50%, 0); }
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 560px){
+  .scene{ padding:88px 18px 80px; }
+  .ludo-stage{ gap:20px; }
+  .ludo-board{ width:170px; height:170px; }
+  .choice-row{ flex-direction:column; width:100%; }
+  .choice-row .btn{ width:100%; }
+  .scene-actions{ flex-direction:column; }
+  .scene-actions .btn{ width:100%; }
+}
+
+/* ==========================================================================
+   REDUCED MOTION
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration:0.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.001ms !important;
+    scroll-behavior:auto !important;
+  }
+  .loading-shuttle{ animation:none; left:0; }
+}
+
+/* utility */
+[hidden]{ display:none !important; }
+</style>
 </head>
 <body>
 
-    <div id="gameboy-screen">
-        <div class="content-wrapper">
-            
-            <!-- Scene 1: Envelope / Gift -->
-            <div id="scene-envelope" class="fade-in">
-                <p style="font-size: 10px; color: #fff; line-height: 1.8;">* BIRTHDAY LOOT DROP DISCOVERED *</p>
-                <div class="envelope" onclick="openLetter()">🎁</div>
-                <p class="blink-text" style="font-size: 9px; margin-top: 15px;">TAP TO OPEN</p>
-            </div>
+<!-- ambient background canvas (persists across all scenes) -->
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
 
-            <!-- Scene 2: Typewriter -->
-            <div id="scene-letter" class="hidden fade-in">
-                <div id="message"></div>
-                
-                <div id="question-scene" class="hidden fade-in">
-                    <p style="color: #ff0055; font-size: 10px; line-height: 1.6; margin-top: 15px; text-shadow: 1px 1px #000;">WILL YOU GO ON A DATE WITH ME?</p>
-                    <div class="btn-container">
-                        <button id="btn-yes" class="btn" onclick="clickYes()">[ HELL YES ]</button>
-                        <!-- Added ontouchstart for mobile dodging -->
-                        <button id="btn-no" class="btn" onmouseover="dodgeButton(event)" ontouchstart="dodgeButton(event)" onclick="clickNo()">[ NO ]</button>
-                    </div>
-                </div>
-            </div>
+<!-- sound toggle, always visible -->
+<button id="sound-toggle" class="corner-btn" aria-label="Toggle sound" aria-pressed="false">
+  <span class="icon-muted">🔇</span>
+  <span class="icon-on">🔊</span>
+</button>
 
-            <!-- Scene 3: The Planning Phase -->
-            <div id="scene-planning" class="hidden fade-in">
-                <h3 style="color: #fff; font-size: 12px; text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">INVENTORY & STATS</h3>
-                
-                <div class="form-group">
-                    <label>📍 SELECT MISSION MAP:</label>
-                    <select id="date-type" class="retro-input">
-                        <option value="Late Night Drive">🚗 Late Night Drive (Vibes)</option>
-                        <option value="Arcade & Gaming">🕹️ Arcade (Prepare to lose!)</option>
-                        <option value="Movie Night">🍿 Movie Night (No talking!)</option>
-                        <option value="Coffee & Chat">☕ Coffee & Chat (Cozy)</option>
-                    </select>
-                </div>
+<!-- progress thread: little dots showing story progress -->
+<nav id="progress-thread" aria-label="Story progress">
+  <span class="thread-line"></span>
+  <ol id="progress-dots"></ol>
+</nav>
 
-                <div class="form-group">
-                    <label>HP RECOVERY (FOOD):</label>
-                    <select id="food-type" class="retro-input">
-                        <option value="Italian">🍕 Italian (Pizza/Pasta)</option>
-                        <option value="Asian">🍜 Pan-Asian (Noodles/Sushi)</option>
-                        <option value="Street Food">🌮 Street Food & Chaos</option>
-                        <option value="Desserts">🍰 Just Desserts & Sugar</option>
-                    </select>
-                </div>
+<main id="app">
 
-                <div class="form-group">
-                    <label>⏰ SELECT SERVER TIME:</label>
-                    <input type="datetime-local" id="date-time" class="retro-input">
-                </div>
-
-                <div style="text-align: center; margin-top: 25px;">
-                    <button class="btn" style="width: 100%; border-color: #00ffcc; color: #00ffcc;" onclick="finishPlanning()">[ LOCK IN CHOICES ]</button>
-                </div>
-            </div>
-
-            <!-- Scene 4: Saving Loading Screen -->
-            <div id="scene-loading" class="hidden fade-in">
-                <h2 class="blink-text" style="font-size: 14px;">SAVING PROGRESS...</h2>
-                <p style="font-size: 8px; color: #888; margin-top: 15px;">DO NOT TURN OFF THE POWER</p>
-            </div>
-
-            <!-- Scene 5: Final Victory Screen -->
-            <div id="scene-success" class="hidden fade-in">
-                <h2 style="color: #ff0055; margin-bottom: 15px; font-size: 16px;">QUEST ACCEPTED! 🏆</h2>
-                
-                <!-- Cute Player Avatars -->
-                <div class="party-box">
-                    <div>
-                        <span style="font-size: 18px;">🧑‍💻</span><br>
-                        <span style="color: #00ffcc;">P1: PARTH</span>
-                    </div>
-                    <div>
-                        <span style="font-size: 18px;">👸</span><br>
-                        <span style="color: #ff0055;">P2: GAURI</span>
-                    </div>
-                </div>
-                
-                <div id="mission-log" style="text-align: left; background: rgba(0, 0, 0, 0.6); border: 2px dashed #00ffcc; padding: 15px; font-size: 9px; line-height: 2.2; margin-bottom: 15px;">
-                    <!-- Filled via JS -->
-                </div>
-                
-                <p class="blink-text" style="font-size: 9px;">I'll see you soon!</p>
-            </div>
-
-        </div>
+  <!-- ============ LOADING SCREEN ============ -->
+  <section id="scene-loading" class="scene scene-loading active" aria-live="polite">
+    <div class="loading-shuttle-track" aria-hidden="true">
+      <div class="loading-shuttle">🏸</div>
     </div>
+    <p id="loading-text" class="loading-text"></p>
+    <div class="loading-bar"><div class="loading-bar-fill" id="loading-bar-fill"></div></div>
+  </section>
 
-    <script>
-        // The newly updated sincere and sweet message
-        const textToType = "Hi Gauri,\n\nHappy Belated Birthday!\n\nI figured your special day was fully booked with friends and family, so I waited for things to settle down a bit.\n\nI would really love to take you out on a date and celebrate properly, just the two of us.\n\nSo... ready for Player 2 to join your game?";
-        let charIndex = 0;
+  <!-- ============ SCENE 1 — HOW IT STARTED ============ -->
+  <section id="scene-1" class="scene" data-scene="1">
+    <div class="scene-inner">
+      <p class="eyebrow">chapter one</p>
+      <h1 class="display-xl">It started pretty randomly<span class="dots">&hellip;</span></h1>
+      <p class="lede">Two months ago. One badminton court. One completely unsuspecting person.</p>
 
-        function openLetter() {
-            document.getElementById('scene-envelope').classList.add('hidden');
-            document.getElementById('scene-letter').classList.remove('hidden');
-            typeWriter();
-        }
+      <div class="hero-3d" id="court-canvas-wrap">
+        <canvas id="court-canvas"></canvas>
+      </div>
 
-        function typeWriter() {
-            if (charIndex < textToType.length) {
-                let char = textToType.charAt(charIndex);
-                if (char === '\n') {
-                    document.getElementById("message").innerHTML += "<br>";
-                } else {
-                    document.getElementById("message").innerHTML += char;
-                }
-                charIndex++;
-                setTimeout(typeWriter, 35); 
-            } else {
-                setTimeout(() => {
-                    document.getElementById('question-scene').classList.remove('hidden');
-                }, 600);
-            }
-        }
+      <ol class="timeline" aria-label="How we got here">
+        <li><span class="tl-icon">🏸</span><span>First meeting</span></li>
+        <li><span class="tl-icon">🏸</span><span>More badminton</span></li>
+        <li><span class="tl-icon">🎲</span><span>Ludo happened</span></li>
+        <li><span class="tl-icon">😈</span><span>Chaos followed</span></li>
+        <li><span class="tl-icon">❤️</span><span>Somehow&hellip; here we are</span></li>
+      </ol>
 
-        function dodgeButton(e) {
-            if (e && e.type === 'touchstart') {
-                e.preventDefault(); 
-            }
-            
-            const btn = document.getElementById('btn-no');
-            btn.style.position = 'fixed';
-            
-            const safeWidth = window.innerWidth - btn.offsetWidth - 20;
-            const safeHeight = window.innerHeight - btn.offsetHeight - 20;
-            
-            const randomX = Math.max(10, Math.random() * safeWidth);
-            const randomY = Math.max(10, Math.random() * safeHeight);
-            
-            btn.style.left = randomX + 'px';
-            btn.style.top = randomY + 'px';
-        }
+      <div class="scene-actions">
+        <button class="btn btn-ghost" id="rewind-btn">Let&rsquo;s rewind&hellip;</button>
+        <button class="btn btn-primary next-btn" data-next="scene-2">Keep going</button>
+      </div>
+    </div>
+  </section>
 
-        function clickNo() {
-            alert("⚠️ SYSTEM OVERRIDE: You are destined to click YES.");
-        }
+  <!-- ============ SCENE 2 — THE BADMINTON ERA ============ -->
+  <section id="scene-2" class="scene" data-scene="2">
+    <div class="scene-inner">
+      <p class="eyebrow">chapter two</p>
+      <h2 class="display-lg">Our Badminton Era <span class="em">🏸</span></h2>
 
-        function clickYes() {
-            document.getElementById('scene-letter').classList.add('hidden');
-            document.getElementById('scene-planning').classList.remove('hidden');
-        }
+      <div class="hero-3d hero-3d-tap" id="rally-canvas-wrap">
+        <canvas id="rally-canvas"></canvas>
+        <p class="tap-hint">tap / click to rally</p>
+      </div>
 
-        function startRaining() {
-            const emojis = ['💖', '✨', '🎮', '👾', '🎁', '🎉', '🍰'];
-            setInterval(() => {
-                const drop = document.createElement('div');
-                drop.classList.add('falling-emoji');
-                drop.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-                drop.style.left = Math.random() * 100 + 'vw';
-                drop.style.animationDuration = (Math.random() * 2 + 2.5) + 's';
-                document.body.appendChild(drop);
-                setTimeout(() => { drop.remove(); }, 4500);
-            }, 250);
-        }
+      <div class="dialogue-stack" id="dialogue-2">
+        <p class="dialogue-line" data-line="0">Started with badminton.</p>
+        <p class="dialogue-line" data-line="1">Didn&rsquo;t know it would eventually lead to&hellip;</p>
+        <p class="dialogue-line dialogue-emph" data-line="2">Ludo.</p>
+      </div>
 
-        async function finishPlanning() {
-            const type = document.getElementById("date-type").value;
-            const food = document.getElementById("food-type").value;
-            const timeVal = document.getElementById("date-time").value;
-            let timeDisplay = timeVal ? timeVal.replace("T", " at ") : "To Be Determined";
+      <div class="scene-actions">
+        <button class="btn btn-primary next-btn" data-next="scene-3">And then it got worse</button>
+      </div>
+    </div>
+  </section>
 
-            document.getElementById('scene-planning').classList.add('hidden');
-            document.getElementById('scene-loading').classList.remove('hidden');
+  <!-- ============ SCENE 3 — THE LUDO WAR ============ -->
+  <section id="scene-3" class="scene" data-scene="3">
+    <div class="scene-inner">
+      <p class="eyebrow">chapter three</p>
+      <h2 class="display-lg">The Ludo War <span class="em">🎲</span></h2>
 
-            try {
-                await fetch('https://api.web3forms.com/submit', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({
-                        access_key: 'bbd67653-cc36-42ef-9bf4-75ce95191cf2',
-                        subject: '🎮 PLAYER 2 ALERT: Gauri Accepted the Quest!',
-                        Mission_Type: type,
-                        Food_Choice: food,
-                        Date_and_Time: timeDisplay,
-                    })
-                });
-            } catch (error) {
-                console.log("Email background error, moving to success.");
-            }
+      <div class="ludo-stage">
+        <div class="ludo-board" id="ludo-board" aria-hidden="true">
+          <!-- board built by JS -->
+        </div>
+        <div class="dice-wrap">
+          <div class="dice" id="dice">
+            <div class="dice-face">🎲</div>
+          </div>
+          <p class="dice-hint">tap the dice</p>
+        </div>
+      </div>
 
-            setTimeout(() => {
-                document.getElementById('scene-loading').classList.add('hidden');
-                
-                document.getElementById('mission-log').innerHTML = `
-                    <span style="color: #ff0055;">> MAP:</span> ${type}<br>
-                    <span style="color: #ff0055;">> BUFF:</span> ${food}<br>
-                    <span style="color: #ff0055;">> ETA:</span> ${timeDisplay}
-                `;
-                
-                document.getElementById('scene-success').classList.remove('hidden');
-                startRaining();
-            }, 2000);
-        }
-    </script>
+      <div class="dialogue-stack" id="dialogue-3">
+        <p class="dialogue-line" data-line="0">Then we started playing Ludo&hellip;</p>
+        <p class="dialogue-line" data-line="1">And that&rsquo;s when things got unnecessarily competitive.</p>
+        <p class="dialogue-line" data-line="2">I may have smashed a few of your pieces&hellip;</p>
+        <p class="dialogue-line" data-line="3">Okay.</p>
+        <p class="dialogue-line dialogue-emph" data-line="4">Maybe more than a few.</p>
+        <p class="dialogue-line" data-line="5">And yes&hellip; sometimes I irritated you on purpose.</p>
+      </div>
+
+      <button class="btn btn-ghost" id="expose-btn">Expose me further</button>
+      <div class="reveal-box" id="expose-reveal" hidden>
+        <p>I enjoyed seeing you get annoyed. 😭</p>
+        <p class="soft">But honestly&hellip;</p>
+      </div>
+
+      <div class="scene-actions">
+        <button class="btn btn-primary next-btn" data-next="scene-4">Honestly, what?</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCENE 4 — WHAT I ACTUALLY LIKE ============ -->
+  <section id="scene-4" class="scene" data-scene="4">
+    <div class="scene-inner">
+      <p class="eyebrow">chapter four</p>
+      <h2 class="display-lg">But here&rsquo;s the problem&hellip;</h2>
+      <p class="lede">I actually started liking the chaos.</p>
+
+      <div class="like-cards" id="like-cards">
+        <article class="like-card" data-joke="false">
+          <h3>Your funny noises</h3>
+          <p>I don&rsquo;t know how you make some of those sounds, but somehow they&rsquo;re entertaining.</p>
+        </article>
+        <article class="like-card" data-joke="false">
+          <h3>You making fun of me</h3>
+          <p>Annoying? Sometimes.<br>Entertaining? Absolutely.</p>
+        </article>
+        <article class="like-card" id="joke-card" data-joke="true">
+          <h3>Your double-meaning jokes</h3>
+          <p>I pretend to be innocent.<br>We both know that&rsquo;s a lie.</p>
+          <p class="joke-secret" hidden>I am NOT explaining this one. 😂</p>
+        </article>
+        <article class="like-card" data-joke="false">
+          <h3>Your random energy</h3>
+          <p>You somehow make normal conversations unnecessarily fun.</p>
+        </article>
+        <article class="like-card" data-joke="false">
+          <h3>The way we tease each other</h3>
+          <p>Probably my favourite part.</p>
+        </article>
+      </div>
+
+      <div class="scene-actions">
+        <button class="btn btn-primary next-btn" data-next="scene-5">So&hellip;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCENE 5 — OKAY... SERIOUS QUESTION ============ -->
+  <section id="scene-5" class="scene" data-scene="5">
+    <div class="scene-inner scene-inner-center">
+      <p class="eyebrow">chapter five</p>
+      <p class="lede fade-line" id="q5-lead">So I have a small question&hellip;</p>
+      <h2 class="display-xl fade-line" id="q5-main" hidden>Would you let me take you out?</h2>
+
+      <div class="choice-row fade-line" id="q5-choices" hidden>
+        <button class="btn btn-primary" id="q5-yes">YES ❤️</button>
+        <button class="btn btn-ghost" id="q5-maybe">MAYBE 👀</button>
+      </div>
+
+      <div class="reveal-box" id="q5-yes-reveal" hidden>
+        <p>Okay&hellip; now we&rsquo;re getting somewhere. ❤️</p>
+        <button class="btn btn-primary next-btn" data-next="scene-6">Let&rsquo;s plan it</button>
+      </div>
+
+      <div class="reveal-box" id="q5-maybe-reveal" hidden>
+        <p>Fair enough 👀<br>Then let&rsquo;s make this easier.</p>
+        <button class="btn btn-primary next-btn" data-next="scene-6">Help me plan it</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCENE 6 — CHOOSE OUR DATE (when + time) ============ -->
+  <section id="scene-6" class="scene" data-scene="6">
+    <div class="scene-inner">
+      <p class="eyebrow">chapter six</p>
+      <h2 class="display-lg">First question&hellip;</h2>
+      <p class="lede">When should we go?</p>
+
+      <div class="option-grid" id="when-grid" role="group" aria-label="When should we go">
+        <button class="option-card" data-when="This weekend">This weekend</button>
+        <button class="option-card" data-when="Next weekend">Next weekend</button>
+        <button class="option-card" data-when="A weekday evening">Weekday evening</button>
+        <button class="option-card" data-when="Whenever you decide">Let you decide</button>
+        <button class="option-card" data-when="Surprise me">Surprise me</button>
+      </div>
+
+      <div class="custom-field">
+        <label for="custom-date">Or pick an exact date</label>
+        <input type="date" id="custom-date" />
+      </div>
+
+      <p class="micro-confirm" id="when-confirm" hidden>Perfect. Noted. 👀</p>
+
+      <div class="divider"></div>
+
+      <p class="lede">And what time sounds good?</p>
+      <div class="option-grid" id="time-grid" role="group" aria-label="What time">
+        <button class="option-card" data-time="Morning">🌅 Morning</button>
+        <button class="option-card" data-time="Afternoon">☀️ Afternoon</button>
+        <button class="option-card" data-time="Sunset">🌇 Sunset</button>
+        <button class="option-card" data-time="Evening">🌙 Evening</button>
+        <button class="option-card" data-time="Late-night">✨ Late-night</button>
+      </div>
+      <div class="custom-field">
+        <label for="custom-time">Or set an exact time</label>
+        <input type="time" id="custom-time" />
+      </div>
+      <p class="time-suggestion" id="time-suggestion" aria-live="polite"></p>
+
+      <div class="scene-actions">
+        <button class="btn btn-primary next-btn" id="to-scene-7" data-next="scene-7">Now, where?</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCENE 7 — WHERE SHOULD WE GO? ============ -->
+  <section id="scene-7" class="scene" data-scene="7">
+    <div class="scene-inner">
+      <p class="eyebrow">chapter seven</p>
+      <h2 class="display-lg">Where should we go?</h2>
+      <p class="lede">A few options around Mumbai &mdash; pick whatever feels right.</p>
+
+      <div class="destination-grid" id="destination-grid"><!-- built by JS --></div>
+
+      <div class="divider"></div>
+
+      <p class="lede" id="builder-lead" hidden>Okay, what&rsquo;s our plan?</p>
+      <div class="activity-grid" id="activity-grid" hidden><!-- built by JS --></div>
+
+      <div class="summary-card" id="summary-card" hidden>
+        <h3>Our Date</h3>
+        <p id="summary-location">📍 &mdash;</p>
+        <p id="summary-when">🗓 &mdash;</p>
+        <p id="summary-time">⏰ &mdash;</p>
+        <p id="summary-activities">&mdash;</p>
+        <p class="summary-status">Sounds like a date. 👀</p>
+      </div>
+
+      <div class="scene-actions">
+        <button class="btn btn-primary next-btn" data-next="scene-8" id="to-scene-8" disabled>One last question</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCENE 8 — FINAL DATE CONFIRMATION ============ -->
+  <section id="scene-8" class="scene" data-scene="8">
+    <canvas id="finale-canvas" aria-hidden="true"></canvas>
+    <div class="scene-inner scene-inner-center">
+      <p class="fade-line" id="f-line-1">Okay&hellip;</p>
+      <p class="fade-line" id="f-line-2" hidden>Enough planning.</p>
+      <h2 class="display-xl fade-line" id="f-line-3" hidden>One last question.</h2>
+      <p class="lede fade-line" id="f-line-4" hidden>Will you actually go on this date with me? ❤️</p>
+
+      <div class="choice-row fade-line" id="f-choices" hidden>
+        <button class="btn btn-primary" id="f-yes">YES ❤️</button>
+        <button class="btn btn-ghost" id="f-thinking">I&rsquo;M THINKING 👀</button>
+      </div>
+
+      <div class="finale-reveal" id="finale-yes" hidden>
+        <h2 class="display-xl">DATE LOCKED. ❤️</h2>
+        <p>Badminton started this.</p>
+        <p>Ludo made it chaotic.</p>
+        <p>Maybe the date can be the next chapter.</p>
+        <div class="final-summary" id="final-summary"></div>
+      </div>
+
+      <div class="finale-reveal" id="finale-thinking" hidden>
+        <h2 class="display-lg">That&rsquo;s completely fair. ❤️</h2>
+        <p>No pressure. I just wanted to ask.</p>
+        <p class="soft">But I&rsquo;ll still consider this a very respectable attempt.</p>
+        <button class="btn btn-ghost" id="restart-btn">Back to the beginning</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- hidden easter egg trigger -->
+  <button id="secret-btn" aria-label="secret">Press if you think I&rsquo;m annoying</button>
+  <div id="egg-toast" role="status" aria-live="polite"></div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ==========================================================================
+   PERSONALIZATION — edit this and the rest of the site updates itself
+   ========================================================================== */
+const dateConfig = {
+  herName: "Gauri",          // e.g. "Ananya" — leave blank to keep it generic
+  myName: "Parth",           // e.g. "Rohan"  — leave blank to keep it generic
+  firstMeeting: "Badminton",
+  favoriteMemories: [
+    "Playing badminton",
+    "Ludo chaos",
+    "Teasing each other",
+    "Your funny noises",
+    "Our random conversations"
+  ],
+  // Mumbai date destinations shown in Scene 7. Add / remove / edit freely.
+  destinations: [
+    {
+      id: "marine-drive",
+      name: "Marine Drive",
+      emoji: "🌅",
+      timing: "5:30 PM – 8:00 PM",
+      plan: "Sunset walk, sit by the promenade, talk, grab food nearby, take photos.",
+      vibe: "Romantic + relaxed + classic Mumbai"
+    },
+    {
+      id: "sgnp",
+      name: "Sanjay Gandhi National Park",
+      emoji: "🌿",
+      timing: "8:00 AM – 12:00 PM",
+      plan: "Morning walk, explore nature, breakfast afterward.",
+      vibe: "Peaceful + outdoorsy"
+    },
+    {
+      id: "bandstand",
+      name: "Bandra Bandstand",
+      emoji: "🌊",
+      timing: "5:00 PM – 8:00 PM",
+      plan: "Sunset walk, sit near the sea, explore Bandra after, food or coffee.",
+      vibe: "Chill + scenic + conversational"
+    },
+    {
+      id: "kalaghoda",
+      name: "Kala Ghoda",
+      emoji: "🎨",
+      timing: "4:00 PM – 8:00 PM",
+      plan: "Walk around, a bit of art and culture, cafés, dinner.",
+      vibe: "Creative + classy + relaxed"
+    },
+    {
+      id: "juhu",
+      name: "Juhu",
+      emoji: "🌴",
+      timing: "5:00 PM – 9:00 PM",
+      plan: "Beach walk, food, sunset, long conversation.",
+      vibe: "Casual + fun"
+    },
+    {
+      id: "powai",
+      name: "Powai",
+      emoji: "☕",
+      timing: "5:00 PM – 9:00 PM",
+      plan: "Lakeside walk, café, dinner, long conversations.",
+      vibe: "Relaxed + cute + comfortable"
+    },
+    {
+      id: "south-mumbai",
+      name: "South Mumbai Evening",
+      emoji: "🌃",
+      timing: "4:30 PM – 9:00 PM",
+      plan: "Explore Fort, Gateway area, a café, Marine Drive, dinner.",
+      vibe: "Full-day mini adventure"
+    }
+  ]
+};
+
+/* ==========================================================================
+   GLOBAL STATE
+   ========================================================================== */
+const state = {
+  soundOn: false,
+  when: null,
+  time: null,
+  destination: null,
+  activities: [],
+  eggCounts: { tokenClicks: 0, shuttleClicks: 0, diceClicks: 0 }
+};
+
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ==========================================================================
+   AUDIO — tiny procedural sound effects, muted by default
+   ========================================================================== */
+let audioCtx = null;
+function ensureAudio(){
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch(e){ audioCtx = null; }
+  }
+}
+function blip(freq = 440, dur = 0.08, type = "sine", gain = 0.05){
+  if (!state.soundOn || !audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  g.gain.value = gain;
+  osc.connect(g); g.connect(audioCtx.destination);
+  osc.start();
+  g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+  osc.stop(audioCtx.currentTime + dur + 0.02);
+}
+const sfx = {
+  click: () => blip(520, 0.06, "sine", 0.04),
+  hit: () => blip(720, 0.1, "triangle", 0.06),
+  dice: () => blip(300, 0.12, "square", 0.03),
+  smash: () => blip(180, 0.18, "sawtooth", 0.05),
+  celebrate: () => { blip(660,0.15,"sine",0.05); setTimeout(()=>blip(880,0.18,"sine",0.05),120); setTimeout(()=>blip(990,0.22,"sine",0.05),260); }
+};
+
+const soundToggle = document.getElementById("sound-toggle");
+soundToggle.addEventListener("click", () => {
+  state.soundOn = !state.soundOn;
+  soundToggle.setAttribute("aria-pressed", String(state.soundOn));
+  ensureAudio();
+  if (state.soundOn) blip(600,0.08,"sine",0.05);
+});
+
+/* ==========================================================================
+   SCENE NAVIGATION
+   ========================================================================== */
+const SCENE_ORDER = ["scene-1","scene-2","scene-3","scene-4","scene-5","scene-6","scene-7","scene-8"];
+
+function buildProgressDots(){
+  const ol = document.getElementById("progress-dots");
+  ol.innerHTML = "";
+  SCENE_ORDER.forEach((id) => {
+    const li = document.createElement("li");
+    li.dataset.scene = id;
+    ol.appendChild(li);
+  });
+}
+buildProgressDots();
+
+function updateProgress(activeId){
+  const idx = SCENE_ORDER.indexOf(activeId);
+  document.querySelectorAll("#progress-dots li").forEach((li, i) => {
+    li.classList.toggle("done", i < idx);
+    li.classList.toggle("current", i === idx);
+  });
+}
+
+function goToScene(id){
+  const current = document.querySelector(".scene.active");
+  const next = document.getElementById(id);
+  if (!next || current === next) return;
+
+  sfx.click();
+
+  if (current) {
+    current.classList.add("leaving");
+    current.classList.remove("active");
+    setTimeout(() => current.classList.remove("leaving"), 500);
+  }
+  next.classList.add("active");
+  updateProgress(id);
+  window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
+
+  // scene-specific entry hooks
+  if (id === "scene-2") startDialogueReveal("dialogue-2");
+  if (id === "scene-3") { startDialogueReveal("dialogue-3"); buildLudoBoard(); }
+  if (id === "scene-4") revealLikeCards();
+  if (id === "scene-5") runScene5Intro();
+  if (id === "scene-8") runScene8Intro();
+}
+
+document.querySelectorAll(".next-btn").forEach(btn => {
+  btn.addEventListener("click", () => goToScene(btn.dataset.next));
+});
+
+/* ==========================================================================
+   EASTER EGG TOAST
+   ========================================================================== */
+let toastTimer = null;
+function showEggToast(msg){
+  const toast = document.getElementById("egg-toast");
+  toast.textContent = msg;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+}
+
+document.getElementById("secret-btn").addEventListener("click", () => {
+  showEggToast("I knew it. 😭");
+  sfx.click();
+});
+
+/* ==========================================================================
+   LOADING SCREEN SEQUENCE
+   ========================================================================== */
+(function runLoadingSequence(){
+  const textEl = document.getElementById("loading-text");
+  const barFill = document.getElementById("loading-bar-fill");
+  const finalLine = dateConfig.herName ? `For ${dateConfig.herName} ❤️` : "For you ❤️";
+  const lines = [
+    "Loading something slightly suspicious…",
+    "Preparing badminton memories…",
+    "Calculating Ludo revenge…",
+    "Okay… almost ready.",
+    finalLine
+  ];
+  let i = 0;
+  const stepTime = reducedMotion ? 550 : 900;
+
+  function showNext(){
+    textEl.style.opacity = 0;
+    setTimeout(() => {
+      textEl.textContent = lines[i];
+      textEl.style.transition = "opacity .35s ease";
+      textEl.style.opacity = 1;
+      barFill.style.width = `${((i + 1) / lines.length) * 100}%`;
+      i++;
+      if (i < lines.length) {
+        setTimeout(showNext, stepTime);
+      } else {
+        setTimeout(() => goToScene("scene-1"), stepTime + 300);
+      }
+    }, 200);
+  }
+  showNext();
+})();
+
+/* ==========================================================================
+   THREE.JS — shared helpers
+   ========================================================================== */
+const hasThree = typeof THREE !== "undefined";
+
+function makeRenderer(canvas){
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  return renderer;
+}
+function sizeToParent(renderer, camera, canvas){
+  const parent = canvas.parentElement;
+  const w = parent.clientWidth, h = parent.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+
+/* ---- Ambient background particle field (persists across whole site) ---- */
+(function initBackground(){
+  if (!hasThree) return;
+  const canvas = document.getElementById("bg-canvas");
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 100);
+  camera.position.z = 12;
+
+  const count = reducedMotion ? 60 : 160;
+  const geo = new THREE.BufferGeometry();
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const palette = [[0.55,0.48,0.94],[1,0.53,0.7],[0.37,0.31,0.84]];
+  for (let i=0;i<count;i++){
+    positions[i*3] = (Math.random()-0.5) * 22;
+    positions[i*3+1] = (Math.random()-0.5) * 14;
+    positions[i*3+2] = (Math.random()-0.5) * 10;
+    const c = palette[Math.floor(Math.random()*palette.length)];
+    colors[i*3]=c[0]; colors[i*3+1]=c[1]; colors[i*3+2]=c[2];
+  }
+  geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  const mat = new THREE.PointsMaterial({ size: 0.09, vertexColors: true, transparent: true, opacity: 0.65, blending: THREE.AdditiveBlending, depthWrite:false });
+  const points = new THREE.Points(geo, mat);
+  scene.add(points);
+
+  let mx = 0, my = 0;
+  window.addEventListener("mousemove", (e) => {
+    mx = (e.clientX / window.innerWidth - 0.5);
+    my = (e.clientY / window.innerHeight - 0.5);
+  });
+
+  function animate(){
+    requestAnimationFrame(animate);
+    points.rotation.y += reducedMotion ? 0.0003 : 0.0012;
+    points.rotation.x += 0.0002;
+    camera.position.x += (mx * 1.2 - camera.position.x) * 0.02;
+    camera.position.y += (-my * 1.2 - camera.position.y) * 0.02;
+    camera.lookAt(0,0,0);
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener("resize", () => {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+  });
+})();
+
+/* ---- Scene 1: stylized badminton court + shuttle crossing net ---- */
+let replayCourt = () => {};
+(function initCourtScene(){
+  if (!hasThree) return;
+  const canvas = document.getElementById("court-canvas");
+  const renderer = makeRenderer(canvas);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 50);
+  camera.position.set(0, 3.4, 6.2);
+  camera.lookAt(0,0,0);
+
+  // court
+  const courtGeo = new THREE.PlaneGeometry(8, 4.4);
+  const courtMat = new THREE.MeshBasicMaterial({ color: 0x171a38, transparent:true, opacity:0.9 });
+  const court = new THREE.Mesh(courtGeo, courtMat);
+  court.rotation.x = -Math.PI/2.4;
+  court.position.y = -0.6;
+  scene.add(court);
+
+  // court lines
+  const lineMat = new THREE.LineBasicMaterial({ color: 0xf7f1e6, transparent:true, opacity:0.5 });
+  const outline = new THREE.EdgesGeometry(new THREE.PlaneGeometry(7.6, 4.0));
+  const lines = new THREE.LineSegments(outline, lineMat);
+  lines.rotation.x = -Math.PI/2.4;
+  lines.position.y = -0.59;
+  scene.add(lines);
+
+  // net
+  const netGeo = new THREE.PlaneGeometry(6.4, 1.1);
+  const netMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity:0.12, side: THREE.DoubleSide });
+  const net = new THREE.Mesh(netGeo, netMat);
+  net.position.set(0, 0.05, 0);
+  scene.add(net);
+  const netEdge = new THREE.LineSegments(new THREE.EdgesGeometry(netGeo), new THREE.LineBasicMaterial({color:0xff86b3, transparent:true, opacity:0.6}));
+  netEdge.position.copy(net.position);
+  scene.add(netEdge);
+
+  // floating lights (points)
+  const lightGeo = new THREE.BufferGeometry();
+  const lp = new Float32Array(24*3);
+  for (let i=0;i<24;i++){ lp[i*3]=(Math.random()-0.5)*8; lp[i*3+1]=Math.random()*3; lp[i*3+2]=(Math.random()-0.5)*4; }
+  lightGeo.setAttribute("position", new THREE.BufferAttribute(lp,3));
+  const lightMat = new THREE.PointsMaterial({ color:0xff86b3, size:0.06, transparent:true, opacity:0.7, blending:THREE.AdditiveBlending });
+  scene.add(new THREE.Points(lightGeo, lightMat));
+
+  // shuttlecock (cone + sphere)
+  const shuttle = new THREE.Group();
+  const cork = new THREE.Mesh(new THREE.SphereGeometry(0.09,10,10), new THREE.MeshBasicMaterial({color:0xffffff}));
+  const skirt = new THREE.Mesh(new THREE.ConeGeometry(0.16,0.32,8,1,true), new THREE.MeshBasicMaterial({color:0xf7f1e6, transparent:true, opacity:0.85, side:THREE.DoubleSide}));
+  skirt.position.y = 0.22; skirt.rotation.x = Math.PI;
+  shuttle.add(cork, skirt);
+  scene.add(shuttle);
+
+  let t = 0; let playing = true;
+  function shuttlePath(progress){
+    const x = THREE.MathUtils.lerp(-3.4, 3.4, progress);
+    const y = 0.4 + Math.sin(progress * Math.PI) * 1.6;
+    const z = Math.sin(progress * Math.PI * 2) * 0.3;
+    return {x,y,z};
+  }
+  shuttle.userData.clicks = 0;
+  canvas.addEventListener("click", () => {
+    state.eggCounts.shuttleClicks++;
+    sfx.click();
+    if (state.eggCounts.shuttleClicks === 6) showEggToast("This is basically how our conversations go.");
+  });
+
+  function animate(){
+    requestAnimationFrame(animate);
+    sizeToParent(renderer, camera, canvas);
+    if (playing && !reducedMotion) {
+      t += 0.006;
+      if (t > 1) t = 0;
+    } else if (playing && reducedMotion) {
+      t += 0.002; if (t>1) t=0;
+    }
+    const p = shuttlePath(t);
+    shuttle.position.set(p.x, p.y, p.z);
+    shuttle.rotation.z = Math.sin(t*Math.PI)*0.6;
+    shuttle.rotation.x = t * Math.PI * 2;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  replayCourt = () => { t = 0; sfx.hit(); };
+})();
+
+document.getElementById("rewind-btn").addEventListener("click", replayCourt);
+
+/* ---- Scene 2: tap-to-rally shuttlecock ---- */
+(function initRallyScene(){
+  if (!hasThree) return;
+  const canvas = document.getElementById("rally-canvas");
+  const renderer = makeRenderer(canvas);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 50);
+  camera.position.set(0, 0.6, 5.2);
+  camera.lookAt(0,0,0);
+
+  const bgGlow = new THREE.Mesh(
+    new THREE.PlaneGeometry(10,6),
+    new THREE.MeshBasicMaterial({ color:0x11132a, transparent:true, opacity:0.5 })
+  );
+  bgGlow.position.z = -2;
+  scene.add(bgGlow);
+
+  // two rackets, left and right
+  function makeRacket(color){
+    const g = new THREE.Group();
+    const head = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.06, 8, 20), new THREE.MeshBasicMaterial({color}));
+    const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.6,8), new THREE.MeshBasicMaterial({color:0x5f4fd6}));
+    handle.position.y = -0.55;
+    g.add(head, handle);
+    return g;
+  }
+  const racketL = makeRacket(0xff86b3); racketL.position.set(-2.4, -0.2, 0);
+  const racketR = makeRacket(0x8b7bf0); racketR.position.set(2.4, -0.2, 0);
+  scene.add(racketL, racketR);
+
+  const shuttle = new THREE.Group();
+  shuttle.add(new THREE.Mesh(new THREE.SphereGeometry(0.1,10,10), new THREE.MeshBasicMaterial({color:0xffffff})));
+  const skirt = new THREE.Mesh(new THREE.ConeGeometry(0.18,0.34,8,1,true), new THREE.MeshBasicMaterial({color:0xf7f1e6, transparent:true, opacity:0.85, side:THREE.DoubleSide}));
+  skirt.position.y = 0.24; skirt.rotation.x = Math.PI;
+  shuttle.add(skirt);
+  shuttle.position.set(0,0,0);
+  scene.add(shuttle);
+
+  let target = new THREE.Vector3(0,0,0);
+  let from = new THREE.Vector3(0,0,0);
+  let anim = 0;
+  let side = 1;
+
+  function hit(){
+    from.copy(shuttle.position);
+    side *= -1;
+    target.set(side * 2.1, (Math.random()*0.8), 0);
+    anim = 0;
+    sfx.hit();
+    (side > 0 ? racketR : racketL).rotation.z = 0.6;
+  }
+
+  canvas.addEventListener("click", hit);
+  canvas.addEventListener("touchstart", (e) => { e.preventDefault(); hit(); }, {passive:false});
+
+  function animate(){
+    requestAnimationFrame(animate);
+    sizeToParent(renderer, camera, canvas);
+    if (anim < 1){
+      anim = Math.min(1, anim + (reducedMotion ? 0.05 : 0.045));
+      const arc = Math.sin(anim * Math.PI) * 1.1;
+      shuttle.position.lerpVectors(from, target, anim);
+      shuttle.position.y += arc;
+      shuttle.rotation.z += 0.2;
+    }
+    racketL.rotation.z += (0 - racketL.rotation.z) * 0.1;
+    racketR.rotation.z += (0 - racketR.rotation.z) * 0.1;
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+
+/* ==========================================================================
+   DIALOGUE REVEAL (scene 2 & 3)
+   ========================================================================== */
+function startDialogueReveal(containerId){
+  const container = document.getElementById(containerId);
+  const lines = container.querySelectorAll(".dialogue-line");
+  lines.forEach(l => l.classList.remove("shown"));
+  lines.forEach((line, i) => {
+    setTimeout(() => line.classList.add("shown"), 350 + i * (reducedMotion ? 150 : 550));
+  });
+}
+
+/* ==========================================================================
+   SCENE 3 — LUDO BOARD, DICE, EXPOSE BUTTON
+   ========================================================================== */
+function buildLudoBoard(){
+  const board = document.getElementById("ludo-board");
+  if (board.dataset.built) return;
+  board.dataset.built = "true";
+
+  const layout = [
+    "tl","pathrow","tr",
+    "path","mid","path",
+    "bl","pathrow","br"
+  ];
+  layout.forEach((cls) => {
+    const cell = document.createElement("div");
+    cell.className = `ludo-cell ${cls}`;
+    if (cls === "mid") cell.textContent = "🎲";
+    board.appendChild(cell);
+  });
+
+  // scatter a few tokens across colored corners for the "smash" interaction
+  const corners = board.querySelectorAll(".tl, .tr, .bl, .br");
+  corners.forEach((corner) => {
+    for (let i=0;i<2;i++){
+      const token = document.createElement("div");
+      token.className = "token";
+      token.style.left = `${20 + Math.random()*40}%`;
+      token.style.top = `${20 + Math.random()*40}%`;
+      token.addEventListener("click", () => smashToken(token));
+      corner.appendChild(token);
+    }
+  });
+}
+
+function smashToken(token){
+  if (token.classList.contains("smashed")) return;
+  token.classList.add("smashed");
+  sfx.smash();
+  state.eggCounts.tokenClicks++;
+  if (state.eggCounts.tokenClicks === 5){
+    showEggToast("Okay okay, you've had enough revenge. 😭");
+  }
+}
+
+const dice = document.getElementById("dice");
+const diceFace = dice.querySelector(".dice-face");
+const DICE_FACES = ["⚀","⚁","⚂","⚃","⚄","⚅"];
+dice.addEventListener("click", () => {
+  dice.classList.remove("rolling"); void dice.offsetWidth; dice.classList.add("rolling");
+  sfx.dice();
+  const roll = Math.floor(Math.random()*6);
+  diceFace.textContent = DICE_FACES[roll];
+  state.eggCounts.diceClicks++;
+  if (state.eggCounts.diceClicks === 6){
+    showEggToast("Obviously you rolled a six when it mattered.");
+  }
+});
+
+document.getElementById("expose-btn").addEventListener("click", (e) => {
+  document.getElementById("expose-reveal").hidden = false;
+  e.target.hidden = true;
+});
+
+/* ==========================================================================
+   SCENE 4 — LIKE CARDS
+   ========================================================================== */
+let cardsRevealed = false;
+function revealLikeCards(){
+  if (cardsRevealed) return;
+  cardsRevealed = true;
+  const cards = document.querySelectorAll(".like-card");
+  cards.forEach((card, i) => {
+    setTimeout(() => card.classList.add("revealed"), 200 + i * (reducedMotion ? 100 : 220));
+  });
+}
+document.getElementById("joke-card").addEventListener("click", function(){
+  const secret = this.querySelector(".joke-secret");
+  secret.hidden = !secret.hidden;
+  sfx.click();
+});
+
+/* ==========================================================================
+   SCENE 5 — SERIOUS QUESTION
+   ========================================================================== */
+let scene5Started = false;
+function runScene5Intro(){
+  if (scene5Started) return;
+  scene5Started = true;
+  const main = document.getElementById("q5-main");
+  const choices = document.getElementById("q5-choices");
+  setTimeout(() => { main.hidden = false; }, reducedMotion ? 300 : 1100);
+  setTimeout(() => { choices.hidden = false; }, reducedMotion ? 500 : 1800);
+}
+document.getElementById("q5-yes").addEventListener("click", () => {
+  document.getElementById("q5-choices").hidden = true;
+  document.getElementById("q5-yes-reveal").hidden = false;
+  sfx.celebrate();
+});
+document.getElementById("q5-maybe").addEventListener("click", () => {
+  document.getElementById("q5-choices").hidden = true;
+  document.getElementById("q5-maybe-reveal").hidden = false;
+  sfx.click();
+});
+
+/* ==========================================================================
+   SCENE 6 — WHEN / TIME PICKER
+   ========================================================================== */
+const TIME_SUGGESTIONS = {
+  "Morning": "Perfect for a relaxed breakfast or walk.",
+  "Afternoon": "Food, exploring, and absolutely unnecessary amounts of gossip.",
+  "Sunset": "Probably the prettiest option.",
+  "Evening": "Dinner, lights, and a little city chaos.",
+  "Late-night": "Only if we're both prepared to lose track of time."
+};
+
+document.getElementById("when-grid").addEventListener("click", (e) => {
+  const btn = e.target.closest(".option-card");
+  if (!btn) return;
+  document.querySelectorAll("#when-grid .option-card").forEach(b => b.classList.remove("selected"));
+  btn.classList.add("selected");
+  state.when = btn.dataset.when;
+  document.getElementById("custom-date").value = "";
+  document.getElementById("when-confirm").hidden = false;
+  sfx.click();
+});
+document.getElementById("custom-date").addEventListener("change", (e) => {
+  if (!e.target.value) return;
+  document.querySelectorAll("#when-grid .option-card").forEach(b => b.classList.remove("selected"));
+  const d = new Date(e.target.value + "T00:00:00");
+  state.when = d.toLocaleDateString(undefined, { weekday:"long", month:"long", day:"numeric" });
+  document.getElementById("when-confirm").hidden = false;
+});
+
+document.getElementById("time-grid").addEventListener("click", (e) => {
+  const btn = e.target.closest(".option-card");
+  if (!btn) return;
+  document.querySelectorAll("#time-grid .option-card").forEach(b => b.classList.remove("selected"));
+  btn.classList.add("selected");
+  state.time = btn.dataset.time;
+  document.getElementById("custom-time").value = "";
+  document.getElementById("time-suggestion").textContent = TIME_SUGGESTIONS[state.time] || "";
+  sfx.click();
+});
+document.getElementById("custom-time").addEventListener("change", (e) => {
+  if (!e.target.value) return;
+  document.querySelectorAll("#time-grid .option-card").forEach(b => b.classList.remove("selected"));
+  state.time = e.target.value;
+  document.getElementById("time-suggestion").textContent = "";
+});
+
+/* ==========================================================================
+   SCENE 7 — DESTINATIONS + ACTIVITY BUILDER
+   ========================================================================== */
+const ACTIVITIES = ["Food","Coffee","Long walk","Sunset","Explore","Shopping","Movies","Street food","Photography","Just sit and talk","You decide"];
+
+function buildDestinations(){
+  const grid = document.getElementById("destination-grid");
+  dateConfig.destinations.forEach((d) => {
+    const card = document.createElement("div");
+    card.className = "dest-card";
+    card.tabIndex = 0;
+    card.setAttribute("role","button");
+    card.dataset.id = d.id;
+    card.innerHTML = `
+      <div class="dest-name">${d.emoji} ${d.name}</div>
+      <div class="dest-timing">${d.timing}</div>
+      <div class="dest-plan">${d.plan}</div>
+      <div class="dest-vibe">${d.vibe}</div>
+      <button type="button" class="dest-pick">Pick this</button>
+    `;
+    function pick(){
+      document.querySelectorAll(".dest-card").forEach(c => c.classList.remove("selected"));
+      card.classList.add("selected");
+      state.destination = d;
+      document.getElementById("builder-lead").hidden = false;
+      document.getElementById("activity-grid").hidden = false;
+      document.getElementById("to-scene-8").disabled = false;
+      updateSummary();
+      sfx.click();
+    }
+    card.addEventListener("click", pick);
+    card.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+    grid.appendChild(card);
+  });
+}
+buildDestinations();
+
+function buildActivities(){
+  const grid = document.getElementById("activity-grid");
+  ACTIVITIES.forEach((a) => {
+    const chip = document.createElement("div");
+    chip.className = "activity-chip";
+    chip.textContent = a;
+    chip.tabIndex = 0;
+    chip.setAttribute("role","button");
+    function toggle(){
+      chip.classList.toggle("selected");
+      if (chip.classList.contains("selected")) state.activities.push(a);
+      else state.activities = state.activities.filter(x => x !== a);
+      updateSummary();
+      sfx.click();
+    }
+    chip.addEventListener("click", toggle);
+    chip.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
+    grid.appendChild(chip);
+  });
+}
+buildActivities();
+
+function updateSummary(){
+  const card = document.getElementById("summary-card");
+  if (!state.destination) return;
+  card.hidden = false;
+  document.getElementById("summary-location").textContent = `📍 ${state.destination.emoji} ${state.destination.name}`;
+  document.getElementById("summary-when").textContent = `🗓 ${state.when || "Whenever works"}`;
+  document.getElementById("summary-time").textContent = `⏰ ${state.time || "TBD"}`;
+  document.getElementById("summary-activities").textContent = state.activities.length
+    ? state.activities.join(" · ")
+    : "Details TBD — we'll figure it out";
+}
+
+/* ==========================================================================
+   SCENE 8 — FINALE
+   ========================================================================== */
+let scene8Started = false;
+function runScene8Intro(){
+  if (scene8Started) return;
+  scene8Started = true;
+  const seq = ["f-line-2","f-line-3","f-line-4","f-choices"];
+  seq.forEach((id, i) => {
+    setTimeout(() => { document.getElementById(id).hidden = false; }, (reducedMotion ? 250 : 700) * (i+1));
+  });
+  initFinaleCanvas();
+}
+
+document.getElementById("f-yes").addEventListener("click", async () => {
+  document.getElementById("f-choices").hidden = true;
+  document.getElementById("finale-yes").hidden = false;
+  const summary = document.getElementById("final-summary");
+  const d = state.destination;
+  summary.innerHTML = `
+    <p>📍 ${d ? `${d.emoji} ${d.name}` : "Location: to be decided"}</p>
+    <p>🗓 ${state.when || "Whenever works"} &nbsp; ⏰ ${state.time || "TBD"}</p>
+    <p>${state.activities.length ? state.activities.join(" · ") : "The rest, we'll figure out together"}</p>
+  `;
+  celebrate();
+  sfx.celebrate();
+
+  try {
+    await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: 'bbd67653-cc36-42ef-9bf4-75ce95191cf2',
+        subject: '🎮 PLAYER 2 ALERT: Gauri Accepted the Quest!',
+        Destination: d ? `${d.emoji} ${d.name}` : "To be decided",
+        Date: state.when || "Whenever works",
+        Time: state.time || "TBD",
+        Activities: state.activities.length ? state.activities.join(", ") : "TBD",
+      })
+    });
+  } catch (err) {
+    console.error("Web3Forms submission failed:", err);
+  }
+});
+
+document.getElementById("f-thinking").addEventListener("click", () => {
+  document.getElementById("f-choices").hidden = true;
+  document.getElementById("finale-thinking").hidden = false;
+  sfx.click();
+});
+
+document.getElementById("restart-btn").addEventListener("click", () => {
+  location.reload();
+});
+
+/* ---- confetti / floating emoji celebration (DOM based, reliable + light) ---- */
+function celebrate(){
+  if (reducedMotion) return;
+  const items = ["❤️","✨","🏸","🎲","💗","⭐"];
+  const total = 34;
+  for (let i=0;i<total;i++){
+    const span = document.createElement("span");
+    span.textContent = items[Math.floor(Math.random()*items.length)];
+    span.style.position = "fixed";
+    span.style.left = Math.random()*100 + "vw";
+    span.style.top = "-40px";
+    span.style.fontSize = (14 + Math.random()*18) + "px";
+    span.style.zIndex = 200;
+    span.style.pointerEvents = "none";
+    span.style.opacity = "0.95";
+    span.style.willChange = "transform, opacity";
+    document.body.appendChild(span);
+
+    const duration = 2600 + Math.random()*1800;
+    const drift = (Math.random()-0.5) * 160;
+    const rotation = (Math.random()-0.5) * 720;
+    const delay = Math.random()*400;
+
+    span.animate([
+      { transform: `translate(0,0) rotate(0deg)`, opacity: 0.95 },
+      { transform: `translate(${drift}px, ${window.innerHeight + 80}px) rotate(${rotation}deg)`, opacity: 0.2 }
+    ], { duration, delay, easing: "cubic-bezier(.2,.6,.4,1)", fill: "forwards" });
+
+    setTimeout(() => span.remove(), duration + delay + 100);
+  }
+}
+
+/* ---- subtle Three.js glow burst behind the finale text ---- */
+function initFinaleCanvas(){
+  if (!hasThree) return;
+  const canvas = document.getElementById("finale-canvas");
+  if (canvas.dataset.built) return;
+  canvas.dataset.built = "true";
+
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha:true, antialias:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 30);
+  camera.position.z = 6;
+
+  const geo = new THREE.SphereGeometry(1, 24, 24);
+  const mat = new THREE.MeshBasicMaterial({ color: 0xff4f7e, transparent:true, opacity:0.06, wireframe:true });
+  const heart = new THREE.Mesh(geo, mat);
+  scene.add(heart);
+
+  function size(){
+    const w = canvas.parentElement.clientWidth, h = canvas.parentElement.clientHeight;
+    renderer.setSize(w,h,false);
+    camera.aspect = w/h; camera.updateProjectionMatrix();
+  }
+  window.addEventListener("resize", size); size();
+
+  function animate(){
+    requestAnimationFrame(animate);
+    heart.rotation.y += reducedMotion ? 0.001 : 0.004;
+    heart.rotation.x += 0.0015;
+    heart.scale.setScalar(1.6 + Math.sin(Date.now()*0.001)*0.15);
+    renderer.render(scene, camera);
+  }
+  animate();
+}
+</script>
 </body>
 </html>
