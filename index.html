@@ -3,1631 +3,1664 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>so... when are we finally going on a date?</title>
+<title>The Match Log — for Gauri</title>
+<meta name="description" content="18 July to now, in innings." />
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Karla:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
 <style>
-/* ==========================================================================
-   DESIGN TOKENS
-   ========================================================================== */
+/* =========================================================================
+   THE MATCH LOG
+   A scorebook that changes its light as the story moves through the day:
+   daylight court  ->  4am indigo  ->  candle-warm letter  ->  dawn
+   ========================================================================= */
+
 :root{
-  --midnight:      #090b18;
-  --midnight-2:    #11132a;
-  --midnight-3:    #171a38;
-  --purple:        #8b7bf0;
-  --purple-deep:   #5f4fd6;
-  --pink:          #ff86b3;
-  --pink-hot:      #ff4f7e;
-  --warm-white:    #f7f1e6;
-  --warm-white-dim:#cfc9ce;
+  /* base ink + paper */
+  --paper:        #F2EDE3;
+  --paper-2:      #E7E0D2;
+  --ink:          #16231F;
+  --ink-soft:     #4E5A55;
+  --rule:         rgba(22,35,31,.14);
+  --rule-hard:    rgba(22,35,31,.30);
 
-  --glass-bg:      rgba(255,255,255,0.045);
-  --glass-bg-hi:   rgba(255,255,255,0.09);
-  --glass-border:  rgba(255,255,255,0.10);
-  --glass-border-hi: rgba(255,255,255,0.22);
+  /* court + game colours */
+  --court:        #1F6F5C;
+  --court-deep:   #14503F;
+  --clay:         #C8452F;   /* ludo red */
+  --saffron:      #E0A32B;   /* ludo yellow */
+  --cobalt:       #2F5AA8;   /* ludo blue */
+  --accent:       var(--clay);
 
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --font-body:    'Karla', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-  --ease-spring: cubic-bezier(.2,.9,.25,1.15);
-  --ease-smooth: cubic-bezier(.4,0,.2,1);
+  --measure: 60ch;
+  --ease: cubic-bezier(.22,.7,.28,1);
 
-  --radius-lg: 28px;
-  --radius-md: 18px;
-  --radius-sm: 12px;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-*,*::before,*::after{ box-sizing:border-box; }
-
-html,body{
-  margin:0; padding:0;
-  background:var(--midnight);
-  color:var(--warm-white);
-  font-family:var(--font-body);
-  overflow-x:hidden;
-  scroll-behavior:smooth;
-  -webkit-tap-highlight-color:transparent;
+/* --- light states ------------------------------------------------------ */
+body[data-light="night"]{
+  --paper:      #141A31;
+  --paper-2:    #1B2242;
+  --ink:        #E8EAF6;
+  --ink-soft:   #A3A9CC;
+  --rule:       rgba(232,234,246,.16);
+  --rule-hard:  rgba(232,234,246,.34);
+  --accent:     #F0A6C0;
 }
+body[data-light="candle"]{
+  --paper:      #F6EBD9;
+  --paper-2:    #EEDFC6;
+  --ink:        #33251A;
+  --ink-soft:   #6B5949;
+  --rule:       rgba(51,37,26,.16);
+  --rule-hard:  rgba(51,37,26,.32);
+  --accent:     #A8552C;
+}
+body[data-light="dawn"]{
+  --paper:      #F7E3DE;
+  --paper-2:    #F0D2CB;
+  --ink:        #2A1B20;
+  --ink-soft:   #6A4F55;
+  --rule:       rgba(42,27,32,.16);
+  --rule-hard:  rgba(42,27,32,.32);
+  --accent:     #C8452F;
+}
+
+*,*::before,*::after{ box-sizing:inherit; }
+
+html{ scroll-padding-top: env(safe-area-inset-top, 0px); }
+
+html,body{ margin:0; padding:0; }
 
 body{
-  min-height:100vh;
-  background:
-    radial-gradient(ellipse 80% 60% at 20% -10%, rgba(139,123,240,0.22), transparent 60%),
-    radial-gradient(ellipse 70% 50% at 90% 10%, rgba(255,79,126,0.14), transparent 55%),
-    radial-gradient(ellipse 90% 70% at 50% 110%, rgba(95,79,214,0.18), transparent 60%),
-    var(--midnight);
-}
-
-h1,h2,h3{ font-family:var(--font-display); font-weight:500; margin:0; letter-spacing:-0.01em; }
-p{ margin:0; }
-button{ font-family:var(--font-body); }
-
-::selection{ background:var(--pink-hot); color:var(--midnight); }
-
-/* focus visibility for accessibility */
-a:focus-visible, button:focus-visible, input:focus-visible, .option-card:focus-visible, .like-card:focus-visible{
-  outline:2px solid var(--pink);
-  outline-offset:3px;
-  border-radius:8px;
-}
-
-/* ==========================================================================
-   BACKGROUND CANVAS + GRAIN
-   ========================================================================== */
-#bg-canvas{
-  position:fixed; inset:0; width:100%; height:100%;
-  z-index:0; pointer-events:none;
-}
-.grain{
-  position:fixed; inset:0; z-index:1; pointer-events:none;
-  opacity:0.035; mix-blend-mode:overlay;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* ==========================================================================
-   CORNER CONTROLS
-   ========================================================================== */
-.corner-btn{
-  position:fixed; top:20px; right:20px; z-index:50;
-  width:46px; height:46px; border-radius:50%;
-  background:var(--glass-bg); border:1px solid var(--glass-border);
-  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-  color:var(--warm-white); font-size:1.1rem; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  transition:transform .25s var(--ease-spring), background .2s;
-}
-.corner-btn:hover{ transform:scale(1.08); background:var(--glass-bg-hi); }
-.corner-btn .icon-on{ display:none; }
-.corner-btn[aria-pressed="true"] .icon-muted{ display:none; }
-.corner-btn[aria-pressed="true"] .icon-on{ display:inline; }
-
-/* progress thread */
-#progress-thread{
-  position:fixed; left:20px; top:50%; transform:translateY(-50%);
-  z-index:50; display:flex; align-items:center;
-}
-#progress-dots{
-  list-style:none; margin:0; padding:0;
-  display:flex; flex-direction:column; gap:14px;
-}
-#progress-dots li{
-  width:8px; height:8px; border-radius:50%;
-  background:rgba(255,255,255,0.18);
-  transition:all .35s var(--ease-spring);
-}
-#progress-dots li.done{ background:var(--pink); }
-#progress-dots li.current{ background:var(--warm-white); width:10px; height:10px; box-shadow:0 0 12px var(--pink); }
-@media (max-width: 720px){ #progress-thread{ display:none; } }
-
-/* ==========================================================================
-   SCENES — layout & transitions
-   ========================================================================== */
-#app{ position:relative; z-index:2; }
-
-.scene{
-  min-height:100vh;
-  width:100%;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:100px 24px 90px;
-  opacity:0;
-}
-.scene.active{
-  display:flex;
-  animation:sceneIn .7s var(--ease-smooth) forwards;
-}
-@keyframes sceneIn{
-  from{ opacity:0; transform:translateY(18px) scale(.99); filter:blur(6px); }
-  to{ opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
-}
-.scene.leaving{
-  animation:sceneOut .45s var(--ease-smooth) forwards;
-}
-@keyframes sceneOut{
-  from{ opacity:1; transform:translateY(0); filter:blur(0); }
-  to{ opacity:0; transform:translateY(-14px); filter:blur(6px); }
-}
-
-.scene-inner{
-  max-width:720px; width:100%;
-  display:flex; flex-direction:column; gap:22px;
-}
-.scene-inner-center{ align-items:center; text-align:center; }
-
-.eyebrow{
-  font-family:var(--font-body); font-weight:700; font-size:.72rem;
-  letter-spacing:.22em; text-transform:uppercase; color:var(--pink);
-  opacity:.85;
-}
-
-.display-xl{ font-size:clamp(2.1rem, 6vw, 3.6rem); line-height:1.08; }
-.display-lg{ font-size:clamp(1.7rem, 4.4vw, 2.6rem); line-height:1.12; }
-.display-xl .em, .display-lg .em{ color:var(--pink); }
-.dots{ color:var(--pink); }
-
-.lede{ font-size:clamp(1rem, 2vw, 1.2rem); color:var(--warm-white-dim); max-width:56ch; }
-
-/* ==========================================================================
-   BUTTONS
-   ========================================================================== */
-.btn{
-  border:none; cursor:pointer; border-radius:999px;
-  padding:14px 30px; font-size:.98rem; font-weight:700;
+  background:var(--paper);
+  color:var(--ink);
   font-family:var(--font-body);
-  transition:transform .25s var(--ease-spring), box-shadow .25s, background .25s;
-  position:relative;
-}
-.btn-primary{
-  background:linear-gradient(135deg, var(--pink-hot), var(--purple-deep));
-  color:var(--warm-white);
-  box-shadow:0 8px 30px -8px rgba(255,79,126,.55);
-}
-.btn-primary:hover{ transform:translateY(-3px) scale(1.02); box-shadow:0 14px 34px -8px rgba(255,79,126,.7); }
-.btn-primary:active{ transform:translateY(0) scale(.98); }
-
-.btn-ghost{
-  background:var(--glass-bg); border:1px solid var(--glass-border-hi);
-  color:var(--warm-white); backdrop-filter:blur(10px);
-}
-.btn-ghost:hover{ background:var(--glass-bg-hi); transform:translateY(-2px); }
-
-.scene-actions{ display:flex; gap:14px; flex-wrap:wrap; margin-top:8px; }
-
-/* magnetic cursor glow on primary buttons */
-.btn-primary::after{
-  content:""; position:absolute; inset:-1px; border-radius:999px;
-  background:radial-gradient(120px 60px at var(--mx,50%) var(--my,50%), rgba(255,255,255,.35), transparent 60%);
-  opacity:0; transition:opacity .3s; pointer-events:none;
-}
-.btn-primary:hover::after{ opacity:1; }
-
-/* ==========================================================================
-   LOADING SCREEN
-   ========================================================================== */
-.scene-loading{
-  flex-direction:column; gap:26px; text-align:center;
-}
-.loading-shuttle-track{
-  position:relative; width:min(320px, 70vw); height:60px;
-}
-.loading-shuttle-track::before{
-  content:""; position:absolute; left:0; right:0; top:50%;
-  height:1px; background:linear-gradient(90deg, transparent, var(--glass-border-hi), transparent);
-}
-.loading-shuttle{
-  position:absolute; top:50%; left:0; font-size:1.6rem;
-  transform:translate(0,-50%);
-  animation:shuttleFly 1.8s ease-in-out infinite;
-  filter:drop-shadow(0 0 10px rgba(255,134,179,.6));
-}
-@keyframes shuttleFly{
-  0%{ left:0%; transform:translate(0,-50%) rotate(0deg); }
-  48%{ left:calc(100% - 28px); transform:translate(0,-70%) rotate(25deg); }
-  50%{ left:calc(100% - 28px); transform:translate(0,-70%) rotate(25deg); }
-  98%{ left:0%; transform:translate(0,-30%) rotate(-15deg); }
-  100%{ left:0%; transform:translate(0,-50%) rotate(0deg); }
-}
-.loading-text{
-  font-family:var(--font-display); font-size:clamp(1.1rem,3vw,1.5rem);
-  color:var(--warm-white-dim); min-height:2.4em;
-}
-.loading-bar{ width:min(260px, 60vw); height:3px; background:rgba(255,255,255,.1); border-radius:99px; overflow:hidden; }
-.loading-bar-fill{ height:100%; width:0%; background:linear-gradient(90deg,var(--pink-hot),var(--purple)); transition:width .4s var(--ease-smooth); }
-
-/* ==========================================================================
-   3D HERO CANVASES
-   ========================================================================== */
-.hero-3d{
-  position:relative; width:100%; height:min(320px, 42vh);
-  border-radius:var(--radius-lg);
-  overflow:hidden;
-  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));
-  border:1px solid var(--glass-border);
-}
-.hero-3d canvas{ width:100%; height:100%; display:block; }
-.hero-3d-tap{ cursor:pointer; }
-.tap-hint{
-  position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
-  font-size:.78rem; color:var(--warm-white-dim); background:var(--glass-bg);
-  padding:6px 14px; border-radius:99px; border:1px solid var(--glass-border);
-  pointer-events:none;
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+  transition:background-color 1.1s var(--ease), color 1.1s var(--ease);
+  overflow-x:hidden;
 }
 
-/* ==========================================================================
-   TIMELINE (Scene 1)
-   ========================================================================== */
-.timeline{
-  list-style:none; margin:0; padding:0;
-  display:flex; flex-wrap:wrap; gap:10px 8px;
-  font-size:.92rem; color:var(--warm-white-dim);
-}
-.timeline li{
-  display:flex; align-items:center; gap:8px;
-  background:var(--glass-bg); border:1px solid var(--glass-border);
-  padding:8px 14px; border-radius:99px;
-}
-.timeline li:not(:last-child)::after{
-  content:"→"; margin-left:10px; color:var(--purple); opacity:.7;
-}
-.tl-icon{ filter:drop-shadow(0 0 6px rgba(255,134,179,.4)); }
+h1,h2,h3{ font-family:var(--font-display); font-weight:400; margin:0; line-height:1.02; letter-spacing:-.01em; }
+p{ margin:0; }
+em{ font-style:italic; }
+::selection{ background:var(--accent); color:var(--paper); }
 
-/* ==========================================================================
-   DIALOGUE (Scene 2/3)
-   ========================================================================== */
-.dialogue-stack{ display:flex; flex-direction:column; gap:10px; }
-.dialogue-line{
-  font-size:1.08rem; color:var(--warm-white-dim);
-  opacity:0; transform:translateY(10px);
-  transition:opacity .5s var(--ease-smooth), transform .5s var(--ease-smooth);
-}
-.dialogue-line.shown{ opacity:1; transform:translateY(0); }
-.dialogue-emph{ color:var(--pink); font-weight:700; font-size:1.25rem; font-family:var(--font-display); }
+button{ font-family:var(--font-body); color:inherit; }
+:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:2px; }
 
-.reveal-box{
-  background:var(--glass-bg); border:1px solid var(--glass-border-hi);
-  border-radius:var(--radius-md); padding:18px 22px;
-  backdrop-filter:blur(10px);
-  animation:popIn .4s var(--ease-spring);
+/* =========================================================================
+   COURT LINES — the page background is a badminton court, faintly
+   ========================================================================= */
+#court-lines{
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  opacity:.22;
+  transition:opacity 1.1s var(--ease);
 }
-.reveal-box .soft{ color:var(--warm-white-dim); margin-top:6px; }
-@keyframes popIn{ from{ opacity:0; transform:scale(.94) translateY(6px); } to{ opacity:1; transform:scale(1) translateY(0); } }
+body[data-light="night"] #court-lines{ opacity:.16; }
+body[data-light="candle"] #court-lines,
+body[data-light="dawn"] #court-lines{ opacity:.10; }
+#court-lines line, #court-lines rect{ stroke:var(--ink); fill:none; stroke-width:1; vector-effect:non-scaling-stroke; }
 
-/* ==========================================================================
-   LUDO BOARD (Scene 3)
-   ========================================================================== */
-.ludo-stage{
-  display:flex; align-items:center; justify-content:center; gap:34px;
-  flex-wrap:wrap; padding:20px 0;
+/* =========================================================================
+   SPINE — the scorebook index down the left
+   ========================================================================= */
+#spine{
+  position:fixed; left:26px; top:50%; transform:translateY(-50%);
+  z-index:40; width:132px;
 }
-.ludo-board{
-  width:220px; height:220px; position:relative;
-  border-radius:20px; overflow:hidden;
-  display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr);
-  transform:perspective(900px) rotateX(38deg) rotateZ(-4deg);
-  box-shadow:0 40px 60px -25px rgba(0,0,0,.6);
-  border:1px solid var(--glass-border-hi);
-  transition:transform .6s var(--ease-spring);
-}
-.ludo-board:hover{ transform:perspective(900px) rotateX(30deg) rotateZ(-2deg) scale(1.03); }
-.ludo-cell{ position:relative; }
-.ludo-cell.tl{ background:linear-gradient(135deg,#ff4f7e,#c22c53); }
-.ludo-cell.tr{ background:linear-gradient(135deg,#8b7bf0,#5f4fd6); }
-.ludo-cell.bl{ background:linear-gradient(135deg,#ffd166,#e8a33d); }
-.ludo-cell.br{ background:linear-gradient(135deg,#5fd699,#2f9e6b); }
-.ludo-cell.mid{ background:var(--midnight-3); grid-column:2; grid-row:2; display:flex; align-items:center; justify-content:center; font-size:1.4rem; }
-.ludo-cell.path{ background:#f7f1e6; grid-column:2; }
-.ludo-cell.pathrow{ background:#f7f1e6; grid-row:2; }
-
-.token{
-  position:absolute; width:16px; height:16px; border-radius:50% 50% 50% 0;
-  background:var(--warm-white); box-shadow:0 4px 8px rgba(0,0,0,.4);
-  transform:rotate(45deg); cursor:pointer;
-  transition:transform .3s var(--ease-spring), opacity .3s, filter .3s;
-}
-.token.smashed{ animation:smash .5s var(--ease-spring) forwards; }
-@keyframes smash{
-  0%{ transform:rotate(45deg) scale(1); }
-  40%{ transform:rotate(200deg) scale(1.5); filter:brightness(1.6); }
-  100%{ transform:rotate(45deg) scale(0) translateY(30px); opacity:0; }
-}
-
-.dice-wrap{ display:flex; flex-direction:column; align-items:center; gap:10px; }
-.dice{
-  width:64px; height:64px; border-radius:16px;
-  background:linear-gradient(145deg, var(--warm-white), #d8d0c4);
-  display:flex; align-items:center; justify-content:center;
-  font-size:1.8rem; cursor:pointer; user-select:none;
-  box-shadow:0 14px 24px -10px rgba(0,0,0,.6);
-  transition:transform .15s;
-}
-.dice:active{ transform:scale(.92); }
-.dice.rolling{ animation:diceRoll .6s ease-out; }
-@keyframes diceRoll{
-  0%{ transform:rotate(0) scale(1); }
-  30%{ transform:rotate(120deg) scale(1.15); }
-  60%{ transform:rotate(280deg) scale(.95); }
-  100%{ transform:rotate(360deg) scale(1); }
-}
-.dice-hint{ font-size:.78rem; color:var(--warm-white-dim); }
-
-/* ==========================================================================
-   LIKE CARDS (Scene 4)
-   ========================================================================== */
-.like-cards{
-  display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
-  gap:16px; perspective:1000px;
-}
-.like-card{
-  background:var(--glass-bg); border:1px solid var(--glass-border);
-  border-radius:var(--radius-md); padding:20px;
-  backdrop-filter:blur(10px);
-  opacity:0; transform:translateY(24px) rotateX(8deg);
-  transition:transform .35s var(--ease-spring), border-color .3s, background .3s;
+#spine ol{ list-style:none; margin:0; padding:0; }
+#spine li{
+  font-size:11.5px; line-height:1.35; letter-spacing:.01em;
+  color:var(--ink-soft); opacity:.38;
+  padding:5px 0 5px 16px; position:relative;
+  transition:opacity .4s var(--ease), color .4s var(--ease);
   cursor:default;
 }
-.like-card.revealed{ opacity:1; transform:translateY(0) rotateX(0); }
-.like-card:hover{ border-color:var(--glass-border-hi); background:var(--glass-bg-hi); transform:translateY(-6px) rotateX(0); }
-.like-card h3{ font-size:1.05rem; margin-bottom:8px; color:var(--pink); }
-.like-card p{ color:var(--warm-white-dim); font-size:.94rem; line-height:1.5; }
-#joke-card{ cursor:pointer; }
-.joke-secret{ margin-top:8px; color:var(--pink-hot) !important; font-weight:700; }
+#spine li::before{
+  content:""; position:absolute; left:0; top:11px;
+  width:7px; height:1px; background:var(--ink-soft);
+  transition:width .4s var(--ease), background .4s var(--ease);
+}
+#spine li.seen{ opacity:.62; }
+#spine li.here{ opacity:1; color:var(--ink); font-weight:700; }
+#spine li.here::before{ width:12px; height:2px; background:var(--accent); }
+@media (max-width:1080px){ #spine{ display:none; } }
 
-/* ==========================================================================
-   CHOICE ROW (Scene 5 / 8)
-   ========================================================================== */
-.choice-row{ display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
-.fade-line{ opacity:0; animation:fadeUp .6s var(--ease-smooth) forwards; }
-@keyframes fadeUp{ from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:translateY(0); } }
+/* mobile: hairline progress at the very top */
+#thread{
+  position:fixed; top:env(safe-area-inset-top,0px); left:0; right:0; height:2px;
+  z-index:60; background:transparent;
+}
+#thread i{ display:block; height:100%; width:0%; background:var(--accent); transition:width .6s var(--ease); }
+@media (min-width:1081px){ #thread{ display:none; } }
 
-/* ==========================================================================
-   OPTION GRIDS (Scene 6)
-   ========================================================================== */
-.option-grid{
-  display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr));
-  gap:10px; width:100%;
-}
-.option-card{
-  background:var(--glass-bg); border:1px solid var(--glass-border);
-  color:var(--warm-white); padding:14px 12px; border-radius:var(--radius-sm);
-  cursor:pointer; font-size:.92rem; font-weight:600;
-  transition:transform .25s var(--ease-spring), background .2s, border-color .2s;
-}
-.option-card:hover{ transform:translateY(-3px); border-color:var(--glass-border-hi); }
-.option-card.selected{
-  background:linear-gradient(135deg, var(--pink-hot), var(--purple-deep));
-  border-color:transparent;
-}
-.custom-field{ display:flex; flex-direction:column; gap:6px; max-width:260px; }
-.custom-field label{ font-size:.8rem; color:var(--warm-white-dim); }
-.custom-field input{
-  background:var(--glass-bg); border:1px solid var(--glass-border);
-  color:var(--warm-white); padding:10px 12px; border-radius:var(--radius-sm);
-  font-family:var(--font-body); font-size:.9rem; color-scheme:dark;
-}
-.micro-confirm{ color:var(--pink); font-size:.9rem; font-weight:600; }
-.time-suggestion{ color:var(--warm-white-dim); font-size:.92rem; min-height:1.4em; }
-.divider{ height:1px; background:linear-gradient(90deg, transparent, var(--glass-border-hi), transparent); margin:6px 0; }
+/* =========================================================================
+   PANELS
+   ========================================================================= */
+#log{ position:relative; z-index:2; }
 
-/* ==========================================================================
-   DESTINATIONS (Scene 7)
-   ========================================================================== */
-.destination-grid{
-  display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr));
-  gap:16px; perspective:1200px;
+.panel{
+  display:none;
+  min-height:100%;
+  padding:clamp(72px,11vh,120px) 24px clamp(170px,22vh,220px);
+  padding-left:max(24px, env(safe-area-inset-left,0px));
 }
-.dest-card{
-  background:var(--glass-bg); border:1px solid var(--glass-border);
-  border-radius:var(--radius-md); padding:20px; cursor:pointer;
-  transition:transform .18s var(--ease-smooth), border-color .25s, background .25s;
-  transform-style:preserve-3d;
-}
-.dest-card:hover{ border-color:var(--glass-border-hi); background:var(--glass-bg-hi); }
-.dest-card.selected{ border-color:var(--pink); box-shadow:0 0 0 1px var(--pink), 0 20px 40px -18px rgba(255,79,126,.5); }
-.dest-name{ font-family:var(--font-display); font-size:1.15rem; color:var(--warm-white); margin-bottom:4px; }
-.dest-timing{ font-size:.82rem; color:var(--pink); margin-bottom:8px; }
-.dest-plan{ font-size:.86rem; color:var(--warm-white-dim); line-height:1.5; margin-bottom:8px; }
-.dest-vibe{ font-size:.78rem; color:var(--warm-white-dim); font-style:italic; opacity:.8; }
-.dest-pick{
-  margin-top:12px; width:100%; padding:9px; border-radius:99px;
-  background:var(--glass-bg); border:1px solid var(--glass-border-hi);
-  color:var(--warm-white); font-weight:700; cursor:pointer; font-size:.85rem;
-}
-.dest-card.selected .dest-pick{ background:linear-gradient(135deg, var(--pink-hot), var(--purple-deep)); border-color:transparent; }
+@media (min-width:1081px){ .panel{ padding-left:210px; padding-right:60px; } }
+.panel.on{ display:block; }
+.panel.on > .wrap{ animation:enter .75s var(--ease) both; }
+@keyframes enter{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
 
-.activity-grid{
-  display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr));
-  gap:8px;
-}
-.activity-chip{
-  background:var(--glass-bg); border:1px solid var(--glass-border);
-  padding:10px; border-radius:var(--radius-sm); text-align:center;
-  cursor:pointer; font-size:.86rem; transition:all .2s var(--ease-spring);
-}
-.activity-chip.selected{ background:linear-gradient(135deg, var(--purple-deep), var(--pink-hot)); border-color:transparent; }
+.wrap{ max-width:720px; }
+.wrap > * + *{ margin-top:22px; }
 
-.summary-card{
-  background:var(--glass-bg-hi); border:1px solid var(--glass-border-hi);
-  border-radius:var(--radius-lg); padding:24px; backdrop-filter:blur(14px);
-  animation:popIn .4s var(--ease-spring);
+/* the dated header of each inning */
+.stamp{
+  display:inline-flex; align-items:baseline; gap:10px;
+  font-size:12px; font-weight:700; letter-spacing:.04em;
+  color:var(--accent);
+  border-bottom:1.5px solid var(--accent);
+  padding-bottom:3px;
 }
-.summary-card h3{ font-size:1.2rem; margin-bottom:10px; color:var(--pink); }
-.summary-card p{ font-size:.94rem; color:var(--warm-white-dim); margin-bottom:4px; }
-.summary-status{ margin-top:10px !important; color:var(--warm-white) !important; font-weight:700; }
+.stamp small{ font-weight:500; color:var(--ink-soft); letter-spacing:0; font-size:12px; }
 
-/* ==========================================================================
-   FINALE (Scene 8)
-   ========================================================================== */
-#finale-canvas{ position:absolute; inset:0; z-index:0; pointer-events:none; }
-#scene-8 .scene-inner{ position:relative; z-index:1; }
-.finale-reveal{ display:flex; flex-direction:column; align-items:center; gap:10px; }
-.finale-reveal p{ color:var(--warm-white-dim); }
-.finale-reveal .soft{ opacity:.8; }
-.final-summary{
-  margin-top:14px; background:var(--glass-bg); border:1px solid var(--glass-border-hi);
-  border-radius:var(--radius-md); padding:16px 22px; color:var(--warm-white-dim); font-size:.92rem;
+h1.big{ font-size:clamp(2.6rem,8.2vw,5.1rem); }
+h2.big{ font-size:clamp(2.1rem,6.4vw,3.9rem); }
+h2.mid{ font-size:clamp(1.7rem,4.6vw,2.7rem); }
+.say{ font-size:clamp(1.02rem,2.2vw,1.18rem); max-width:var(--measure); color:var(--ink); }
+.say + .say{ margin-top:14px; }
+.quiet{ color:var(--ink-soft); }
+.tiny{ font-size:13.5px; color:var(--ink-soft); }
+
+/* =========================================================================
+   BUTTONS
+   ========================================================================= */
+.go{
+  appearance:none; border:none; cursor:pointer;
+  background:var(--ink); color:var(--paper);
+  font-size:15px; font-weight:700; letter-spacing:.005em;
+  padding:13px 24px; border-radius:2px;
+  transition:transform .18s var(--ease), opacity .18s;
+}
+.go:hover{ transform:translateY(-2px); }
+.go:active{ transform:translateY(0); }
+.go[disabled]{ opacity:.32; cursor:not-allowed; transform:none; }
+
+.go.line{
+  background:transparent; color:var(--ink);
+  box-shadow:inset 0 0 0 1.5px var(--rule-hard);
+  font-weight:600;
+}
+.go.line:hover{ box-shadow:inset 0 0 0 1.5px var(--ink); }
+
+.go.hot{ background:var(--accent); color:#fff; }
+
+.row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+@media (max-width:520px){
+  .row .go{ width:100%; text-align:center; }
 }
 
-/* ==========================================================================
-   SECRET EASTER EGG BUTTON
-   ========================================================================== */
-#secret-btn{
-  position:fixed; bottom:14px; right:14px; z-index:40;
-  width:14px; height:14px; border-radius:50%;
-  background:transparent; border:none; cursor:pointer;
-  opacity:0.15;
+/* =========================================================================
+   INNING 0 — COVER / RALLY
+   ========================================================================= */
+#rally{
+  width:100%; height:clamp(160px,26vh,240px);
+  display:block; margin-top:26px;
 }
-#secret-btn:hover{ opacity:0.4; }
-#egg-toast{
-  position:fixed; bottom:30px; left:50%; transform:translate(-50%, 20px);
-  background:var(--glass-bg-hi); border:1px solid var(--glass-border-hi);
-  backdrop-filter:blur(14px); padding:12px 22px; border-radius:99px;
-  font-size:.9rem; z-index:60; opacity:0; pointer-events:none;
-  transition:all .35s var(--ease-spring);
+.cover-meta{
+  display:flex; gap:26px; flex-wrap:wrap; align-items:baseline;
+  border-top:1px solid var(--rule); padding-top:14px; margin-top:26px;
 }
-#egg-toast.show{ opacity:1; transform:translate(-50%, 0); }
+.cover-meta div{ font-size:13px; color:var(--ink-soft); }
+.cover-meta b{ display:block; font-family:var(--font-display); font-size:22px; color:var(--ink); font-weight:400; }
 
-/* ==========================================================================
-   RESPONSIVE
-   ========================================================================== */
-@media (max-width: 560px){
-  .scene{ padding:88px 18px 80px; }
-  .ludo-stage{ gap:20px; }
-  .ludo-board{ width:170px; height:170px; }
-  .choice-row{ flex-direction:column; width:100%; }
-  .choice-row .btn{ width:100%; }
-  .scene-actions{ flex-direction:column; }
-  .scene-actions .btn{ width:100%; }
+/* =========================================================================
+   SHARED SMALL PIECES
+   ========================================================================= */
+.slab{
+  border:1px solid var(--rule-hard);
+  background:var(--paper-2);
+  padding:20px 22px;
+  border-radius:3px;
+  max-width:var(--measure);
 }
+.slab h3{ font-size:1.35rem; margin-bottom:8px; }
 
-/* ==========================================================================
-   REDUCED MOTION
-   ========================================================================== */
-@media (prefers-reduced-motion: reduce){
-  *, *::before, *::after{
-    animation-duration:0.001ms !important;
-    animation-iteration-count:1 !important;
-    transition-duration:0.001ms !important;
-    scroll-behavior:auto !important;
-  }
-  .loading-shuttle{ animation:none; left:0; }
+.counter{
+  font-family:var(--font-display); font-size:clamp(3rem,12vw,5.4rem);
+  line-height:.9; color:var(--accent);
 }
+.counter small{ font-family:var(--font-body); font-size:13px; font-weight:600; color:var(--ink-soft); display:block; margin-top:8px; letter-spacing:.02em; }
 
-/* utility */
+/* =========================================================================
+   INNING 1 — THE ASSIST
+   ========================================================================= */
+.assist{
+  display:grid; grid-template-columns:auto 1fr; gap:14px 18px;
+  align-items:center; max-width:var(--measure);
+}
+.assist .who{
+  font-family:var(--font-display); font-size:1.6rem;
+  border-bottom:2px solid var(--rule-hard); padding-bottom:2px;
+}
+.assist .what{ font-size:14.5px; color:var(--ink-soft); }
+#assist-stamp{
+  display:inline-block; margin-top:6px;
+  font-size:12px; font-weight:700; letter-spacing:.08em;
+  color:var(--court); border:2px solid var(--court);
+  padding:6px 12px; border-radius:2px;
+  transform:rotate(-4deg); opacity:0;
+  transition:opacity .35s var(--ease), transform .45s var(--ease);
+}
+#assist-stamp.shown{ opacity:1; transform:rotate(-4deg) scale(1); }
+
+/* =========================================================================
+   INNING 2 — SMASH
+   ========================================================================= */
+.smash-court{
+  position:relative; width:100%; max-width:var(--measure);
+  height:190px; border:1.5px solid var(--rule-hard);
+  border-radius:3px; overflow:hidden; cursor:crosshair;
+  background:
+    linear-gradient(to right, transparent 49.6%, var(--rule-hard) 49.6%, var(--rule-hard) 50.4%, transparent 50.4%);
+}
+.smash-court::after{
+  content:"tap your side"; position:absolute; bottom:8px; left:12px;
+  font-size:11.5px; color:var(--ink-soft); letter-spacing:.04em;
+}
+.birdie{
+  position:absolute; width:13px; height:13px; border-radius:50%;
+  background:var(--ink); pointer-events:none;
+}
+.mark{
+  position:absolute; width:18px; height:18px; margin:-9px 0 0 -9px;
+  border-radius:50%; border:1.5px solid var(--clay); pointer-events:none;
+  animation:ping .7s var(--ease) forwards;
+}
+@keyframes ping{ from{ transform:scale(.3); opacity:1; } to{ transform:scale(1.5); opacity:0; } }
+.reaction{
+  position:absolute; font-size:14px; font-weight:700; color:var(--clay);
+  pointer-events:none; animation:float 1.3s var(--ease) forwards;
+}
+@keyframes float{ from{ transform:translateY(0); opacity:1; } to{ transform:translateY(-34px); opacity:0; } }
+
+/* =========================================================================
+   INNING 3 — LUDO
+   ========================================================================= */
+.ludo-row{ display:flex; gap:28px; flex-wrap:wrap; align-items:flex-start; }
+.board{
+  width:210px; height:210px; display:grid;
+  grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr);
+  border:2px solid var(--ink); border-radius:3px; overflow:hidden;
+}
+.board div{ position:relative; }
+.q-tl{ background:var(--clay); } .q-tr{ background:var(--cobalt); }
+.q-bl{ background:var(--saffron); } .q-br{ background:var(--court); }
+.q-mid{ background:var(--paper-2); display:grid; place-items:center; font-size:20px; }
+.q-lane{ background:var(--paper); }
+.pawn{
+  position:absolute; width:17px; height:17px; margin:-8px 0 0 -8px;
+  border-radius:50% 50% 50% 2px; background:var(--paper);
+  border:1.5px solid rgba(0,0,0,.35); cursor:pointer;
+  transform:rotate(45deg);
+  transition:transform .3s var(--ease), opacity .3s;
+}
+.pawn:hover{ transform:rotate(45deg) scale(1.18); }
+.pawn.home{ animation:sent .55s var(--ease) forwards; pointer-events:none; }
+@keyframes sent{
+  0%{ transform:rotate(45deg) scale(1); }
+  35%{ transform:rotate(200deg) scale(1.4); }
+  100%{ transform:rotate(45deg) scale(0) translateY(26px); opacity:0; }
+}
+.rage{ width:210px; }
+.rage .bar{ height:8px; border:1.5px solid var(--rule-hard); border-radius:99px; overflow:hidden; background:var(--paper); }
+.rage .bar i{ display:block; height:100%; width:0%; background:var(--clay); transition:width .45s var(--ease); }
+.rage .label{ font-size:12.5px; color:var(--ink-soft); margin-top:8px; min-height:2.6em; }
+
+/* =========================================================================
+   INNING 4 — LATE CALLS (the dial)
+   ========================================================================= */
+.dial{ max-width:var(--measure); }
+.dial .time{
+  font-family:var(--font-display); font-size:clamp(3.4rem,14vw,6rem); line-height:.9;
+  color:var(--accent);
+}
+.dial input[type=range]{
+  -webkit-appearance:none; appearance:none;
+  width:100%; height:2px; background:var(--rule-hard); margin:26px 0 12px;
+  border-radius:99px; outline:none;
+}
+.dial input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:22px; height:22px; border-radius:50%;
+  background:var(--accent); cursor:grab; border:3px solid var(--paper);
+  box-shadow:0 0 0 1px var(--accent);
+}
+.dial input[type=range]::-moz-range-thumb{
+  width:22px; height:22px; border-radius:50%; background:var(--accent);
+  cursor:grab; border:3px solid var(--paper); box-shadow:0 0 0 1px var(--accent);
+}
+.dial .caption{ font-size:1.05rem; min-height:4.4em; }
+.dial .ticks{ display:flex; justify-content:space-between; font-size:11.5px; color:var(--ink-soft); }
+
+/* =========================================================================
+   INNING 5 — DOUBLE BILL (board games + movie)
+   ========================================================================= */
+.bill{ display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); max-width:760px; }
+.stub{
+  border:1.5px dashed var(--rule-hard); border-radius:3px;
+  padding:18px 20px; background:var(--paper-2);
+  cursor:pointer; position:relative; overflow:hidden;
+  transition:border-color .25s var(--ease);
+}
+.stub:hover{ border-color:var(--ink); }
+.stub .date{ font-size:12px; font-weight:700; letter-spacing:.06em; color:var(--accent); }
+.stub h3{ font-size:1.45rem; margin:6px 0 8px; }
+.stub p{ font-size:14.5px; color:var(--ink-soft); }
+.stub .hidden-line{
+  margin-top:12px; font-size:14.5px; color:var(--ink); font-weight:600;
+  max-height:0; opacity:0; overflow:hidden;
+  transition:max-height .4s var(--ease), opacity .3s var(--ease), margin .3s;
+}
+.stub.open .hidden-line{ max-height:120px; opacity:1; }
+.stub .flip-hint{ font-size:11.5px; color:var(--ink-soft); margin-top:12px; letter-spacing:.03em; }
+.stub.open .flip-hint{ display:none; }
+
+/* =========================================================================
+   INNING 6 — ASLEEP ON CALL
+   ========================================================================= */
+.breath{
+  width:14px; height:14px; border-radius:50%; background:var(--accent);
+  animation:breathe 4.6s ease-in-out infinite; margin:6px 0 2px;
+}
+@keyframes breathe{ 0%,100%{ transform:scale(1); opacity:.9; } 50%{ transform:scale(1.9); opacity:.35; } }
+.kept{ max-width:var(--measure); }
+.kept li{ font-size:15.5px; color:var(--ink-soft); padding:9px 0; border-bottom:1px solid var(--rule); list-style:none; }
+.kept{ padding:0; margin:0; }
+.kept li b{ color:var(--ink); font-weight:600; }
+
+/* =========================================================================
+   INNING 7 — THE LETTER
+   ========================================================================= */
+.letter{
+  max-width:56ch;
+  border-left:2px solid var(--accent);
+  padding-left:clamp(18px,4vw,30px);
+}
+.letter p{ margin-top:16px; font-size:1.04rem; line-height:1.72; }
+.letter p:first-child{ margin-top:0; }
+.letter .sign{ font-family:var(--font-display); font-size:1.5rem; margin-top:26px; }
+.letter .said{ font-style:italic; }
+
+/* =========================================================================
+   INNING 9/10 — PLANNER
+   ========================================================================= */
+.grid-opts{ display:grid; gap:9px; grid-template-columns:repeat(auto-fit,minmax(132px,1fr)); max-width:640px; }
+.opt{
+  appearance:none; cursor:pointer; text-align:left;
+  background:transparent; border:1.5px solid var(--rule-hard); border-radius:2px;
+  padding:12px 13px; font-size:14.5px; font-weight:600;
+  transition:border-color .2s, background .2s, color .2s;
+}
+.opt:hover{ border-color:var(--ink); }
+.opt.picked{ background:var(--ink); border-color:var(--ink); color:var(--paper); }
+
+.field{ display:flex; flex-direction:column; gap:6px; max-width:250px; }
+.field label{ font-size:12.5px; color:var(--ink-soft); }
+.field input{
+  background:var(--paper); color:var(--ink);
+  border:1.5px solid var(--rule-hard); border-radius:2px;
+  padding:10px 11px; font-family:var(--font-body); font-size:14.5px;
+  color-scheme:light;
+}
+body[data-light="night"] .field input{ color-scheme:dark; }
+.hr{ height:1px; background:var(--rule); max-width:640px; margin:30px 0; }
+.note{ font-size:14px; color:var(--accent); font-weight:600; min-height:1.4em; }
+
+.places{ display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); max-width:820px; }
+.place{
+  text-align:left; cursor:pointer; background:transparent;
+  border:1.5px solid var(--rule-hard); border-radius:3px; padding:17px 18px;
+  transition:border-color .2s, background .2s;
+}
+.place:hover{ border-color:var(--ink); }
+.place.picked{ border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent); background:var(--paper-2); }
+.place .nm{ font-family:var(--font-display); font-size:1.32rem; }
+.place .hr2{ font-size:12px; font-weight:700; color:var(--accent); letter-spacing:.03em; margin:3px 0 7px; }
+.place .pl{ font-size:14px; color:var(--ink-soft); line-height:1.5; }
+.place .vb{ font-size:12.5px; color:var(--ink-soft); font-style:italic; margin-top:7px; opacity:.85; }
+
+.card-out{
+  border:1.5px solid var(--ink); border-radius:3px; padding:20px 22px;
+  max-width:var(--measure); background:var(--paper-2);
+}
+.card-out h3{ font-size:1.3rem; margin-bottom:10px; }
+.card-out p{ font-size:15px; color:var(--ink-soft); margin-top:5px; }
+.card-out .ok{ color:var(--ink); font-weight:700; margin-top:12px; }
+
+/* =========================================================================
+   FINALE
+   ========================================================================= */
+.finale h2{ font-size:clamp(2.4rem,9vw,4.6rem); }
+#final-lines p{ opacity:0; }
+#final-lines p.in{ animation:enter .7s var(--ease) both; }
+
+/* easter egg toast */
+#toast{
+  position:fixed; left:50%; bottom:22px; transform:translate(-50%,18px);
+  background:var(--ink); color:var(--paper);
+  padding:11px 20px; border-radius:2px; font-size:14px; font-weight:600;
+  z-index:80; opacity:0; pointer-events:none; transition:all .35s var(--ease);
+  max-width:calc(100vw - 40px); text-align:center;
+}
+#toast.show{ opacity:1; transform:translate(-50%,0); }
+
 [hidden]{ display:none !important; }
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important; animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+  }
+}
 </style>
 </head>
-<body>
+<body data-light="day">
 
-<!-- ambient background canvas (persists across all scenes) -->
-<canvas id="bg-canvas" aria-hidden="true"></canvas>
-<div class="grain" aria-hidden="true"></div>
+<svg id="court-lines" aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 100 100">
+  <rect x="6" y="4" width="88" height="92"></rect>
+  <rect x="12" y="4" width="76" height="92"></rect>
+  <line x1="6" y1="50" x2="94" y2="50"></line>
+  <line x1="6" y1="22" x2="94" y2="22"></line>
+  <line x1="6" y1="78" x2="94" y2="78"></line>
+  <line x1="50" y1="22" x2="50" y2="78"></line>
+</svg>
 
-<!-- sound toggle, always visible -->
-<button id="sound-toggle" class="corner-btn" aria-label="Toggle sound" aria-pressed="false">
-  <span class="icon-muted">🔇</span>
-  <span class="icon-on">🔊</span>
-</button>
+<div id="thread"><i></i></div>
 
-<!-- progress thread: little dots showing story progress -->
-<nav id="progress-thread" aria-label="Story progress">
-  <span class="thread-line"></span>
-  <ol id="progress-dots"></ol>
+<nav id="spine" aria-label="Innings">
+  <ol id="spine-list"></ol>
 </nav>
 
-<main id="app">
+<main id="log">
 
-  <!-- ============ LOADING SCREEN ============ -->
-  <section id="scene-loading" class="scene scene-loading active" aria-live="polite">
-    <div class="loading-shuttle-track" aria-hidden="true">
-      <div class="loading-shuttle">🏸</div>
-    </div>
-    <p id="loading-text" class="loading-text"></p>
-    <div class="loading-bar"><div class="loading-bar-fill" id="loading-bar-fill"></div></div>
-  </section>
-
-  <!-- ============ SCENE 1 — HOW IT STARTED ============ -->
-  <section id="scene-1" class="scene" data-scene="1">
-    <div class="scene-inner">
-      <p class="eyebrow">chapter one</p>
-      <h1 class="display-xl">It started pretty randomly<span class="dots">&hellip;</span></h1>
-      <p class="lede">Two months ago. One badminton court. One completely unsuspecting person.</p>
-
-      <div class="hero-3d" id="court-canvas-wrap">
-        <canvas id="court-canvas"></canvas>
+  <!-- ===== 0 — COVER ===== -->
+  <section class="panel on" data-i="0">
+    <div class="wrap">
+      <p class="stamp">18 JUL <small>&mdash; still going</small></p>
+      <h1 class="big">The match log.</h1>
+      <p class="say">Everything that's happened since Sakshi dragged you onto a badminton court, written down in the order it happened, because some of it needs saying out loud.</p>
+      <canvas id="rally" aria-hidden="true"></canvas>
+      <div class="cover-meta">
+        <div><b>2</b>players</div>
+        <div><b>1</b>assist, uncredited until now</div>
+        <div><b>4:00</b>latest recorded stoppage</div>
       </div>
-
-      <ol class="timeline" aria-label="How we got here">
-        <li><span class="tl-icon">🏸</span><span>First meeting</span></li>
-        <li><span class="tl-icon">🏸</span><span>More badminton</span></li>
-        <li><span class="tl-icon">🎲</span><span>Ludo happened</span></li>
-        <li><span class="tl-icon">😈</span><span>Chaos followed</span></li>
-        <li><span class="tl-icon">❤️</span><span>Somehow&hellip; here we are</span></li>
-      </ol>
-
-      <div class="scene-actions">
-        <button class="btn btn-ghost" id="rewind-btn">Let&rsquo;s rewind&hellip;</button>
-        <button class="btn btn-primary next-btn" data-next="scene-2">Keep going</button>
+      <div class="row">
+        <button class="go" data-go="1">Open the log</button>
       </div>
     </div>
   </section>
 
-  <!-- ============ SCENE 2 — THE BADMINTON ERA ============ -->
-  <section id="scene-2" class="scene" data-scene="2">
-    <div class="scene-inner">
-      <p class="eyebrow">chapter two</p>
-      <h2 class="display-lg">Our Badminton Era <span class="em">🏸</span></h2>
-
-      <div class="hero-3d hero-3d-tap" id="rally-canvas-wrap">
-        <canvas id="rally-canvas"></canvas>
-        <p class="tap-hint">tap / click to rally</p>
+  <!-- ===== 1 — THE ASSIST ===== -->
+  <section class="panel" data-i="1">
+    <div class="wrap">
+      <p class="stamp">18 JUL <small>&mdash; inning one</small></p>
+      <h2 class="big">Sakshi gets the assist.</h2>
+      <p class="say">She brought you for badminton. That's the whole origin story. One casual invite, and somehow it's July to now.</p>
+      <div class="assist">
+        <div class="who">Sakshi</div>
+        <div class="what">Brought you. Has no idea what she started. Owed one, permanently.</div>
+        <div class="who">Me</div>
+        <div class="what">Showed up to play badminton. Did not, in hindsight, only play badminton.</div>
       </div>
-
-      <div class="dialogue-stack" id="dialogue-2">
-        <p class="dialogue-line" data-line="0">Started with badminton.</p>
-        <p class="dialogue-line" data-line="1">Didn&rsquo;t know it would eventually lead to&hellip;</p>
-        <p class="dialogue-line dialogue-emph" data-line="2">Ludo.</p>
+      <div class="row">
+        <button class="go line" id="assist-btn">Credit the assist</button>
       </div>
-
-      <div class="scene-actions">
-        <button class="btn btn-primary next-btn" data-next="scene-3">And then it got worse</button>
+      <span id="assist-stamp">ASSIST &mdash; S. &middot; 18/07</span>
+      <div class="row">
+        <button class="go" data-go="2">Then I started smashing</button>
       </div>
     </div>
   </section>
 
-  <!-- ============ SCENE 3 — THE LUDO WAR ============ -->
-  <section id="scene-3" class="scene" data-scene="3">
-    <div class="scene-inner">
-      <p class="eyebrow">chapter three</p>
-      <h2 class="display-lg">The Ludo War <span class="em">🎲</span></h2>
+  <!-- ===== 2 — THE SMASH ===== -->
+  <section class="panel" data-i="2">
+    <div class="wrap">
+      <p class="stamp">18 JUL <small>&mdash; inning two</small></p>
+      <h2 class="big">I smashed a few at you.</h2>
+      <p class="say">On purpose. Not hard enough to be rude, just hard enough to get a look out of you. You gave me the smallest reaction in history and it was completely worth it.</p>
+      <p class="say quiet">That's the exact moment we started talking, so: no regrets.</p>
+      <div class="smash-court" id="court">
+        <div class="birdie" id="birdie" style="left:20px; top:88px;"></div>
+      </div>
+      <div class="counter"><span id="smash-count">0</span><small>smashes landed on your side</small></div>
+      <div class="row">
+        <button class="go" data-go="3">Then came Ludo</button>
+      </div>
+    </div>
+  </section>
 
-      <div class="ludo-stage">
-        <div class="ludo-board" id="ludo-board" aria-hidden="true">
-          <!-- board built by JS -->
-        </div>
-        <div class="dice-wrap">
-          <div class="dice" id="dice">
-            <div class="dice-face">🎲</div>
-          </div>
-          <p class="dice-hint">tap the dice</p>
+  <!-- ===== 3 — LUDO ===== -->
+  <section class="panel" data-i="3">
+    <div class="wrap">
+      <p class="stamp">JUL&ndash;AUG <small>&mdash; inning three</small></p>
+      <h2 class="big">I sent your pieces home. Repeatedly.</h2>
+      <p class="say">You were one square from safety roughly every single time, and I took it roughly every single time. You called it rage-baiting. It was rage-baiting.</p>
+      <div class="ludo-row">
+        <div class="board" id="board" aria-hidden="true"></div>
+        <div class="rage">
+          <p class="tiny" style="margin-bottom:8px;">Gauri's composure</p>
+          <div class="bar"><i id="rage-bar"></i></div>
+          <p class="label" id="rage-label">Fully intact. Send a piece home and let's see.</p>
         </div>
       </div>
-
-      <div class="dialogue-stack" id="dialogue-3">
-        <p class="dialogue-line" data-line="0">Then we started playing Ludo&hellip;</p>
-        <p class="dialogue-line" data-line="1">And that&rsquo;s when things got unnecessarily competitive.</p>
-        <p class="dialogue-line" data-line="2">I may have smashed a few of your pieces&hellip;</p>
-        <p class="dialogue-line" data-line="3">Okay.</p>
-        <p class="dialogue-line dialogue-emph" data-line="4">Maybe more than a few.</p>
-        <p class="dialogue-line" data-line="5">And yes&hellip; sometimes I irritated you on purpose.</p>
-      </div>
-
-      <button class="btn btn-ghost" id="expose-btn">Expose me further</button>
-      <div class="reveal-box" id="expose-reveal" hidden>
-        <p>I enjoyed seeing you get annoyed. 😭</p>
-        <p class="soft">But honestly&hellip;</p>
-      </div>
-
-      <div class="scene-actions">
-        <button class="btn btn-primary next-btn" data-next="scene-4">Honestly, what?</button>
+      <p class="say quiet">For the record: I never once apologised during a game, and I'm not starting now.</p>
+      <div class="row">
+        <button class="go" data-go="4">Then the calls started</button>
       </div>
     </div>
   </section>
 
-  <!-- ============ SCENE 4 — WHAT I ACTUALLY LIKE ============ -->
-  <section id="scene-4" class="scene" data-scene="4">
-    <div class="scene-inner">
-      <p class="eyebrow">chapter four</p>
-      <h2 class="display-lg">But here&rsquo;s the problem&hellip;</h2>
-      <p class="lede">I actually started liking the chaos.</p>
-
-      <div class="like-cards" id="like-cards">
-        <article class="like-card" data-joke="false">
-          <h3>Your funny noises</h3>
-          <p>I don&rsquo;t know how you make some of those sounds, but somehow they&rsquo;re entertaining.</p>
-        </article>
-        <article class="like-card" data-joke="false">
-          <h3>You making fun of me</h3>
-          <p>Annoying? Sometimes.<br>Entertaining? Absolutely.</p>
-        </article>
-        <article class="like-card" id="joke-card" data-joke="true">
-          <h3>Your double-meaning jokes</h3>
-          <p>I pretend to be innocent.<br>We both know that&rsquo;s a lie.</p>
-          <p class="joke-secret" hidden>I am NOT explaining this one. 😂</p>
-        </article>
-        <article class="like-card" data-joke="false">
-          <h3>Your random energy</h3>
-          <p>You somehow make normal conversations unnecessarily fun.</p>
-        </article>
-        <article class="like-card" data-joke="false">
-          <h3>The way we tease each other</h3>
-          <p>Probably my favourite part.</p>
-        </article>
+  <!-- ===== 4 — LATE CALLS ===== -->
+  <section class="panel" data-i="4">
+    <div class="wrap">
+      <p class="stamp">AUG <small>&mdash; inning four</small></p>
+      <h2 class="big">Then we stopped hanging up.</h2>
+      <p class="say">It began as a group call. Somewhere along the way everyone else dropped off and neither of us mentioned it.</p>
+      <div class="dial">
+        <p class="time" id="clock">10:30 PM</p>
+        <input type="range" id="hour" min="0" max="11" step="1" value="0" aria-label="Move through the night" />
+        <div class="ticks"><span>10:30 PM</span><span>1 AM</span><span>4 AM</span></div>
+        <p class="caption" id="hour-caption">Group call. Six people. Normal.</p>
       </div>
-
-      <div class="scene-actions">
-        <button class="btn btn-primary next-btn" data-next="scene-5">So&hellip;</button>
+      <div class="row">
+        <button class="go" data-go="5">22&ndash;23 August</button>
       </div>
     </div>
   </section>
 
-  <!-- ============ SCENE 5 — OKAY... SERIOUS QUESTION ============ -->
-  <section id="scene-5" class="scene" data-scene="5">
-    <div class="scene-inner scene-inner-center">
-      <p class="eyebrow">chapter five</p>
-      <p class="lede fade-line" id="q5-lead">So I have a small question&hellip;</p>
-      <h2 class="display-xl fade-line" id="q5-main" hidden>Would you let me take you out?</h2>
-
-      <div class="choice-row fade-line" id="q5-choices" hidden>
-        <button class="btn btn-primary" id="q5-yes">YES ❤️</button>
-        <button class="btn btn-ghost" id="q5-maybe">MAYBE 👀</button>
+  <!-- ===== 5 — DOUBLE BILL ===== -->
+  <section class="panel" data-i="5">
+    <div class="wrap">
+      <p class="stamp">22&ndash;23 AUG <small>&mdash; inning five</small></p>
+      <h2 class="big">The weekend with receipts.</h2>
+      <p class="say">Two nights in a row. Both of them good enough that I remember the dates without checking.</p>
+      <div class="bill">
+        <div class="stub" data-stub>
+          <p class="date">22 AUGUST &middot; DHWANI'S PLACE</p>
+          <h3>Board game night</h3>
+          <p>Long. Loud. Contested. Officially a fair game.</p>
+          <p class="hidden-line">Unofficially: we both cheated, we both knew, neither of us said anything. Best possible outcome.</p>
+          <p class="flip-hint">tap for the unofficial version</p>
+        </div>
+        <div class="stub" data-stub>
+          <p class="date">23 AUGUST &middot; THE NEXT DAY</p>
+          <h3>Spider-Man</h3>
+          <p>We went for the film.</p>
+          <p class="hidden-line">I could not tell you one plot point. I can tell you exactly how much fun we had.</p>
+          <p class="flip-hint">tap for what I actually remember</p>
+        </div>
       </div>
-
-      <div class="reveal-box" id="q5-yes-reveal" hidden>
-        <p>Okay&hellip; now we&rsquo;re getting somewhere. ❤️</p>
-        <button class="btn btn-primary next-btn" data-next="scene-6">Let&rsquo;s plan it</button>
-      </div>
-
-      <div class="reveal-box" id="q5-maybe-reveal" hidden>
-        <p>Fair enough 👀<br>Then let&rsquo;s make this easier.</p>
-        <button class="btn btn-primary next-btn" data-next="scene-6">Help me plan it</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ SCENE 6 — CHOOSE OUR DATE (when + time) ============ -->
-  <section id="scene-6" class="scene" data-scene="6">
-    <div class="scene-inner">
-      <p class="eyebrow">chapter six</p>
-      <h2 class="display-lg">First question&hellip;</h2>
-      <p class="lede">When should we go?</p>
-
-      <div class="option-grid" id="when-grid" role="group" aria-label="When should we go">
-        <button class="option-card" data-when="This weekend">This weekend</button>
-        <button class="option-card" data-when="Next weekend">Next weekend</button>
-        <button class="option-card" data-when="A weekday evening">Weekday evening</button>
-        <button class="option-card" data-when="Whenever you decide">Let you decide</button>
-        <button class="option-card" data-when="Surprise me">Surprise me</button>
-      </div>
-
-      <div class="custom-field">
-        <label for="custom-date">Or pick an exact date</label>
-        <input type="date" id="custom-date" />
-      </div>
-
-      <p class="micro-confirm" id="when-confirm" hidden>Perfect. Noted. 👀</p>
-
-      <div class="divider"></div>
-
-      <p class="lede">And what time sounds good?</p>
-      <div class="option-grid" id="time-grid" role="group" aria-label="What time">
-        <button class="option-card" data-time="Morning">🌅 Morning</button>
-        <button class="option-card" data-time="Afternoon">☀️ Afternoon</button>
-        <button class="option-card" data-time="Sunset">🌇 Sunset</button>
-        <button class="option-card" data-time="Evening">🌙 Evening</button>
-        <button class="option-card" data-time="Late-night">✨ Late-night</button>
-      </div>
-      <div class="custom-field">
-        <label for="custom-time">Or set an exact time</label>
-        <input type="time" id="custom-time" />
-      </div>
-      <p class="time-suggestion" id="time-suggestion" aria-live="polite"></p>
-
-      <div class="scene-actions">
-        <button class="btn btn-primary next-btn" id="to-scene-7" data-next="scene-7">Now, where?</button>
+      <div class="row">
+        <button class="go" data-go="6">And then the 4am ones</button>
       </div>
     </div>
   </section>
 
-  <!-- ============ SCENE 7 — WHERE SHOULD WE GO? ============ -->
-  <section id="scene-7" class="scene" data-scene="7">
-    <div class="scene-inner">
-      <p class="eyebrow">chapter seven</p>
-      <h2 class="display-lg">Where should we go?</h2>
-      <p class="lede">A few options around Mumbai &mdash; pick whatever feels right.</p>
-
-      <div class="destination-grid" id="destination-grid"><!-- built by JS --></div>
-
-      <div class="divider"></div>
-
-      <p class="lede" id="builder-lead" hidden>Okay, what&rsquo;s our plan?</p>
-      <div class="activity-grid" id="activity-grid" hidden><!-- built by JS --></div>
-
-      <div class="summary-card" id="summary-card" hidden>
-        <h3>Our Date</h3>
-        <p id="summary-location">📍 &mdash;</p>
-        <p id="summary-when">🗓 &mdash;</p>
-        <p id="summary-time">⏰ &mdash;</p>
-        <p id="summary-activities">&mdash;</p>
-        <p class="summary-status">Sounds like a date. 👀</p>
-      </div>
-
-      <div class="scene-actions">
-        <button class="btn btn-primary next-btn" data-next="scene-8" id="to-scene-8" disabled>One last question</button>
+  <!-- ===== 6 — ASLEEP ON CALL ===== -->
+  <section class="panel" data-i="6">
+    <div class="wrap">
+      <p class="stamp">ONGOING <small>&mdash; inning six</small></p>
+      <h2 class="mid">Then one night you fell asleep on the call.</h2>
+      <div class="breath" aria-hidden="true"></div>
+      <p class="say">You didn't hang up. You just went quiet, and kept breathing, and left the line open.</p>
+      <p class="say">I know it wasn't a grand gesture. You were tired and we had office. But you were comfortable enough around me to stop performing, and that did more damage to me than any of the funny stuff.</p>
+      <p class="say quiet">That's the night this became a problem I couldn't argue my way out of.</p>
+      <ul class="kept">
+        <li><b>Nicknames</b> &mdash; ours, not explaining them here.</li>
+        <li><b>Secrets</b> &mdash; still where you left them.</li>
+        <li><b>Overthinking, out loud</b> &mdash; my favourite genre.</li>
+        <li><b>The 4am conversations</b> &mdash; before office. Every time.</li>
+      </ul>
+      <div class="row">
+        <button class="go" data-go="7">Before anything else, though</button>
       </div>
     </div>
   </section>
 
-  <!-- ============ SCENE 8 — FINAL DATE CONFIRMATION ============ -->
-  <section id="scene-8" class="scene" data-scene="8">
-    <canvas id="finale-canvas" aria-hidden="true"></canvas>
-    <div class="scene-inner scene-inner-center">
-      <p class="fade-line" id="f-line-1">Okay&hellip;</p>
-      <p class="fade-line" id="f-line-2" hidden>Enough planning.</p>
-      <h2 class="display-xl fade-line" id="f-line-3" hidden>One last question.</h2>
-      <p class="lede fade-line" id="f-line-4" hidden>Will you actually go on this date with me? ❤️</p>
+  <!-- ===== 7 — THE LETTER ===== -->
+  <section class="panel" data-i="7">
+    <div class="wrap">
+      <p class="stamp">TODAY <small>&mdash; stoppage in play</small></p>
+      <h2 class="mid">I'm not asking you anything until I've said this.</h2>
 
-      <div class="choice-row fade-line" id="f-choices" hidden>
-        <button class="btn btn-primary" id="f-yes">YES ❤️</button>
-        <button class="btn btn-ghost" id="f-thinking">I&rsquo;M THINKING 👀</button>
+      <div class="letter">
+        <p>Gauri,</p>
+
+        <p>You asked me something, and I got it wrong. If you and my best friend of thirteen years ever fell out, would I stop talking to you. I said yes. Fast. Like it was a quiz with a right answer and I was pleased to know it.</p>
+
+        <p>You weren't asking about him. You were asking whether you have a place here or whether you're a guest in it &mdash; welcome until the people who were here first need the room back. I answered the hypothetical and completely missed you standing in front of it.</p>
+
+        <p>And then <span class="said">"OK Miss Gauri."</span> I say it because it gets a reaction and I like getting reactions out of you. But I've used it while you were being serious with me, and it turns your volume down, which is the exact opposite of what I want to do to you.</p>
+
+        <p>So, plainly: you are not a plus-one in my life. A thirteen-year friendship and you were never in the same race &mdash; I should never have lined you up against each other, and I'm sorry my answer put you there. You are not an outsider here. You don't have to audition for a place you already have.</p>
+
+        <p>I'm not going to ask you to say it's fine. It wasn't fine. I'd honestly rather you stay annoyed with me a while longer and believe me later, than forgive me tonight and still feel like a guest.</p>
+
+        <p>What changes: when you ask me something that sounds small, I'll assume it isn't. I'll answer <em>you</em>, not the hypothetical. And when you're being serious, I'll drop the bit.</p>
+
+        <p>You've stayed on the line with me at 4am on nights before office. Let me be that for you too.</p>
+
+        <p class="sign">&mdash; Parth</p>
       </div>
 
-      <div class="finale-reveal" id="finale-yes" hidden>
-        <h2 class="display-xl">DATE LOCKED. ❤️</h2>
-        <p>Badminton started this.</p>
-        <p>Ludo made it chaotic.</p>
-        <p>Maybe the date can be the next chapter.</p>
-        <div class="final-summary" id="final-summary"></div>
+      <div class="row">
+        <button class="go" data-go="8">Okay. Keep going.</button>
+        <button class="go line" id="not-ready">I'm not ready for the rest</button>
       </div>
 
-      <div class="finale-reveal" id="finale-thinking" hidden>
-        <h2 class="display-lg">That&rsquo;s completely fair. ❤️</h2>
-        <p>No pressure. I just wanted to ask.</p>
-        <p class="soft">But I&rsquo;ll still consider this a very respectable attempt.</p>
-        <button class="btn btn-ghost" id="restart-btn">Back to the beginning</button>
+      <div class="slab" id="paused" hidden>
+        <h3>Completely fair.</h3>
+        <p class="say">Then this stops here and nothing else gets asked. The letter was the part that mattered and it doesn't come with conditions attached.</p>
+        <p class="say quiet" style="margin-top:12px;">The rest of the page isn't going anywhere. Neither am I.</p>
       </div>
     </div>
   </section>
 
-  <!-- hidden easter egg trigger -->
-  <button id="secret-btn" aria-label="secret">Press if you think I&rsquo;m annoying</button>
-  <div id="egg-toast" role="status" aria-live="polite"></div>
+  <!-- ===== 8 — THE ASK ===== -->
+  <section class="panel" data-i="8">
+    <div class="wrap">
+      <p class="stamp">NEXT INNING <small>&mdash; if you want one</small></p>
+      <h2 class="mid" id="ask-1">Here's the actual reason for all of this.</h2>
+      <p class="say" id="ask-2" hidden>You make me laugh in a way I don't have to work for. Talking to you is the one place I don't rehearse first. That's not a small thing and I'd rather say it than sit on it.</p>
+      <h2 class="big" id="ask-3" hidden>So &mdash; can I take you out?</h2>
+      <div class="row" id="ask-choices" hidden>
+        <button class="go hot" id="ask-yes">Yes</button>
+        <button class="go line" id="ask-maybe">Ask me properly and I'll think</button>
+      </div>
+      <div class="slab" id="ask-yes-box" hidden>
+        <h3>Good. Then help me plan it.</h3>
+        <p class="say">Two questions, then you can go back to beating me at Ludo.</p>
+        <div class="row" style="margin-top:14px;"><button class="go" data-go="9">Plan it</button></div>
+      </div>
+      <div class="slab" id="ask-maybe-box" hidden>
+        <h3>That's allowed.</h3>
+        <p class="say">Then let me make it easier to picture. Pick the bits you'd actually enjoy &mdash; you can decide about me afterwards.</p>
+        <div class="row" style="margin-top:14px;"><button class="go" data-go="9">Show me what you had in mind</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 9 — WHEN ===== -->
+  <section class="panel" data-i="9">
+    <div class="wrap">
+      <p class="stamp">PLANNING <small>&mdash; one of two</small></p>
+      <h2 class="mid">When?</h2>
+      <div class="grid-opts" id="when-opts">
+        <button class="opt" data-when="This weekend">This weekend</button>
+        <button class="opt" data-when="Next weekend">Next weekend</button>
+        <button class="opt" data-when="A weekday evening">A weekday evening</button>
+        <button class="opt" data-when="Whenever you decide">You decide</button>
+        <button class="opt" data-when="Surprise me">Surprise me</button>
+      </div>
+      <div class="field">
+        <label for="d-date">Or an exact date</label>
+        <input type="date" id="d-date" />
+      </div>
+      <p class="note" id="when-note"></p>
+
+      <div class="hr"></div>
+
+      <h2 class="mid">And what time?</h2>
+      <div class="grid-opts" id="time-opts">
+        <button class="opt" data-time="Morning">Morning</button>
+        <button class="opt" data-time="Afternoon">Afternoon</button>
+        <button class="opt" data-time="Sunset">Sunset</button>
+        <button class="opt" data-time="Evening">Evening</button>
+        <button class="opt" data-time="Late night">Late night</button>
+      </div>
+      <div class="field">
+        <label for="d-time">Or an exact time</label>
+        <input type="time" id="d-time" />
+      </div>
+      <p class="note" id="time-note"></p>
+
+      <div class="row">
+        <button class="go" data-go="10">Now the where</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 10 — WHERE ===== -->
+  <section class="panel" data-i="10">
+    <div class="wrap">
+      <p class="stamp">PLANNING <small>&mdash; two of two</small></p>
+      <h2 class="mid">Where?</h2>
+      <p class="say quiet">Seven options around Mumbai. Pick one, then pick what we'd actually do there.</p>
+      <div class="places" id="places"></div>
+
+      <div id="acts-wrap" hidden>
+        <div class="hr"></div>
+        <h2 class="mid">And what are we doing?</h2>
+        <p class="say quiet" style="margin-top:10px;">Choose as many as you want.</p>
+        <div class="grid-opts" id="acts" style="margin-top:18px;"></div>
+      </div>
+
+      <div class="card-out" id="plan-card" hidden>
+        <h3>The plan so far</h3>
+        <p id="p-where">&mdash;</p>
+        <p id="p-when">&mdash;</p>
+        <p id="p-time">&mdash;</p>
+        <p id="p-acts">&mdash;</p>
+        <p class="ok">That reads like a date.</p>
+      </div>
+
+      <div class="row">
+        <button class="go" data-go="11" id="to-final" disabled>One last question</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 11 — FINALE ===== -->
+  <section class="panel finale" data-i="11">
+    <div class="wrap">
+      <p class="stamp">FINAL <small>&mdash; over to you</small></p>
+      <div id="final-lines">
+        <h2 id="fl-1">Badminton started it.</h2>
+        <h2 id="fl-2" hidden>Ludo made it a rivalry.</h2>
+        <h2 id="fl-3" hidden>The 4am calls made it something else.</h2>
+      </div>
+      <p class="say" id="fl-4" hidden style="margin-top:26px;">Will you go on this date with me?</p>
+      <div class="row" id="final-choices" hidden>
+        <button class="go hot" id="f-yes">Yes</button>
+        <button class="go line" id="f-think">I'm still thinking</button>
+      </div>
+
+      <div id="f-yes-box" hidden>
+        <h2 class="big" style="margin-top:8px;">Then it's a date.</h2>
+        <p class="say">I'll stop talking now before I ruin it.</p>
+        <div class="card-out" id="final-card" style="margin-top:22px;"></div>
+        <p class="tiny" id="send-status" style="margin-top:14px;"></p>
+      </div>
+
+      <div id="f-think-box" hidden>
+        <h2 class="mid">Take your time.</h2>
+        <p class="say">Nothing about this expires, and nothing about us changes if the answer is no. I just didn't want to be the guy who never asked.</p>
+        <div class="row" style="margin-top:18px;">
+          <button class="go line" id="restart">Read it again from the start</button>
+        </div>
+      </div>
+    </div>
+  </section>
 
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- =========================================================================
+     THE CAST — two little people who act out whichever inning you're on
+     ========================================================================= -->
+<style>
+#cast{
+  position:fixed; z-index:1; pointer-events:none;
+  right:clamp(8px,3vw,54px);
+  bottom:calc(env(safe-area-inset-bottom,0px) + 10px);
+  width:min(360px,88vw);
+  filter:drop-shadow(0 6px 10px rgba(0,0,0,.10));
+  transition:opacity .5s var(--ease);
+}
+@media (min-width:1081px){ #cast{ right:60px; width:380px; } }
+#cast svg{ width:100%; height:auto; display:block; overflow:visible; }
+#cast .ink{ stroke:var(--ink); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; fill:none; }
+#cast .floor{ stroke:var(--ink); stroke-width:1.5; opacity:.22; }
+#cast .shadow{ fill:var(--ink); opacity:.10; }
+#cast .prop{ font-size:19px; }
+#cast .tiny-prop{ font-size:13px; }
+#cast .say{ font-family:var(--font-body); font-size:10px; font-weight:700; fill:var(--ink); }
+
+/* one scene visible at a time */
+#cast g[data-s]{ display:none; }
+#cast[data-scene="rally"]     g[data-s="rally"],
+#cast[data-scene="assist"]    g[data-s="assist"],
+#cast[data-scene="smash"]     g[data-s="smash"],
+#cast[data-scene="ludo"]      g[data-s="ludo"],
+#cast[data-scene="call"]      g[data-s="call"],
+#cast[data-scene="movie"]     g[data-s="movie"],
+#cast[data-scene="sleep"]     g[data-s="sleep"],
+#cast[data-scene="sorry"]     g[data-s="sorry"],
+#cast[data-scene="ask"]       g[data-s="ask"],
+#cast[data-scene="plan"]      g[data-s="plan"],
+#cast[data-scene="together"]  g[data-s="together"]{ display:block; animation:castIn .55s var(--ease) both; }
+@keyframes castIn{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+
+/* --- motion vocabulary --- */
+@keyframes bob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-2.5px); } }
+@keyframes bobSlow{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-1.6px); } }
+@keyframes hop{ 0%,70%,100%{ transform:translateY(0); } 80%{ transform:translateY(-7px); } 90%{ transform:translateY(-1px); } }
+@keyframes leanL{ 0%,100%{ transform:rotate(0deg); } 50%{ transform:rotate(-7deg); } }
+@keyframes leanR{ 0%,100%{ transform:rotate(0deg); } 50%{ transform:rotate(7deg); } }
+@keyframes swingHit{ 0%,100%{ transform:rotate(-18deg); } 45%{ transform:rotate(38deg); } }
+@keyframes swingBack{ 0%,100%{ transform:rotate(22deg); } 45%{ transform:rotate(-30deg); } }
+@keyframes birdieAcross{
+  0%   { transform:translate(0,0) rotate(0deg); }
+  50%  { transform:translate(112px,-46px) rotate(180deg); }
+  100% { transform:translate(224px,0) rotate(360deg); }
+}
+@keyframes birdieSmash{
+  0%   { transform:translate(0,-34px) rotate(0deg); opacity:0; }
+  12%  { opacity:1; }
+  60%  { transform:translate(150px,26px) rotate(420deg); opacity:1; }
+  70%,100%{ transform:translate(158px,30px) rotate(430deg); opacity:0; }
+}
+@keyframes duck{ 0%,55%,100%{ transform:translateY(0) rotate(0); } 62%,80%{ transform:translateY(7px) rotate(-8deg); } }
+@keyframes pawnOut{
+  0%,30%{ transform:translate(0,0) scale(1); opacity:1; }
+  60%{ transform:translate(-44px,-40px) scale(1.15) rotate(220deg); opacity:1; }
+  85%,100%{ transform:translate(-78px,8px) scale(.4) rotate(400deg); opacity:0; }
+}
+@keyframes fume{ 0%,40%{ transform:translateY(0) scale(.6); opacity:0; } 60%{ opacity:.9; } 100%{ transform:translateY(-22px) scale(1.1); opacity:0; } }
+@keyframes pulseHeart{ 0%,100%{ transform:scale(1); opacity:.9; } 50%{ transform:scale(1.22); opacity:1; } }
+@keyframes floatZ{ 0%{ transform:translate(0,0) scale(.5); opacity:0; } 25%{ opacity:1; } 100%{ transform:translate(14px,-30px) scale(1.15); opacity:0; } }
+@keyframes blink{ 0%,92%,100%{ transform:scaleY(1); } 96%{ transform:scaleY(.08); } }
+@keyframes flicker{ 0%,100%{ opacity:.20; } 50%{ opacity:.42; } }
+@keyframes nudgeIn{ 0%,100%{ transform:translateX(0); } 45%{ transform:translateX(9px); } }
+@keyframes pointAt{ 0%,100%{ transform:rotate(-8deg); } 50%{ transform:rotate(-26deg); } }
+@keyframes offerUp{ 0%,100%{ transform:translateY(0) rotate(-10deg); } 50%{ transform:translateY(-5px) rotate(-16deg); } }
+@keyframes shuffle{ 0%,100%{ transform:translateX(0) rotate(0); } 33%{ transform:translateX(-2px) rotate(-2deg); } 66%{ transform:translateX(2px) rotate(2deg); } }
+
+.a-bob{ animation:bob 2.6s ease-in-out infinite; }
+.a-bob-slow{ animation:bobSlow 4.2s ease-in-out infinite; }
+.a-lean-l{ animation:leanL 3.4s ease-in-out infinite; }
+.a-lean-r{ animation:leanR 3.4s ease-in-out infinite; }
+.eyes{ animation:blink 5.4s steps(1,end) infinite; }
+
+@media (prefers-reduced-motion: reduce){
+  #cast *{ animation:none !important; }
+}
+@media (max-height:620px){ #cast{ opacity:.35; } }
+</style>
+
+<div id="cast" data-scene="rally" aria-hidden="true">
+  <svg viewBox="0 0 380 150" xmlns="http://www.w3.org/2000/svg"></svg>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- Fallback delivery: a real HTML form posted into a hidden frame.
+     This works even from file:// or when fetch is blocked by CORS. -->
+<iframe name="w3f-sink" id="w3f-sink" title="submission" style="display:none;width:0;height:0;border:0"></iframe>
+<form id="w3f-form" action="https://api.web3forms.com/submit" method="POST" target="w3f-sink" style="display:none">
+  <input type="hidden" name="access_key" value="bbd67653-cc36-42ef-9bf4-75ce95191cf2" />
+  <input type="hidden" name="subject" value="Gauri said YES — date confirmed" />
+  <input type="hidden" name="from_name" value="The Match Log" />
+  <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off" />
+  <input type="hidden" name="Answer" value="" />
+  <input type="hidden" name="Where" value="" />
+  <input type="hidden" name="When" value="" />
+  <input type="hidden" name="Time" value="" />
+  <input type="hidden" name="Doing" value="" />
+  <input type="hidden" name="Smashes_replayed" value="" />
+  <input type="hidden" name="Pieces_sent_home" value="" />
+</form>
+
 <script>
-/* ==========================================================================
-   PERSONALIZATION — edit this and the rest of the site updates itself
-   ========================================================================== */
-const dateConfig = {
-  herName: "Gauri",          // e.g. "Ananya" — leave blank to keep it generic
-  myName: "Parth",           // e.g. "Rohan"  — leave blank to keep it generic
-  firstMeeting: "Badminton",
-  favoriteMemories: [
-    "Playing badminton",
-    "Ludo chaos",
-    "Teasing each other",
-    "Your funny noises",
-    "Our random conversations"
+/* =========================================================================
+   EDIT HERE
+   ========================================================================= */
+const CONFIG = {
+  herName: "Gauri",
+  myName: "Parth",
+  web3formsKey: "bbd67653-cc36-42ef-9bf4-75ce95191cf2",
+  places: [
+    { id:"marine",   name:"Marine Drive",        hours:"5:30 – 8:00 PM", plan:"Sunset walk, sit on the promenade, food nearby, far too many photos.", vibe:"the classic, and it earns it" },
+    { id:"bandstand",name:"Bandra Bandstand",    hours:"5:00 – 8:00 PM", plan:"Sunset by the sea, then wander into Bandra for coffee or dinner.",     vibe:"chill, scenic, talkative" },
+    { id:"kala",     name:"Kala Ghoda",          hours:"4:00 – 8:00 PM", plan:"Walk the lanes, art and old buildings, a café, then dinner.",           vibe:"creative, a little fancy" },
+    { id:"juhu",     name:"Juhu",                hours:"5:00 – 9:00 PM", plan:"Beach walk, street food, sunset, a conversation that overruns.",        vibe:"casual and loud, like us" },
+    { id:"powai",    name:"Powai",               hours:"5:00 – 9:00 PM", plan:"Lakeside walk, a café that lets us sit too long, dinner.",              vibe:"quiet and comfortable" },
+    { id:"sgnp",     name:"Sanjay Gandhi Park",  hours:"8:00 AM – 12 PM",plan:"Morning walk, trees, no phones, breakfast after.",                      vibe:"peaceful, an actual escape" },
+    { id:"sobo",     name:"South Mumbai, all of it", hours:"4:30 – 9:00 PM", plan:"Fort, Gateway, a café, Marine Drive, dinner. A mini expedition.",  vibe:"ambitious. worth it." }
   ],
-  // Mumbai date destinations shown in Scene 7. Add / remove / edit freely.
-  destinations: [
-    {
-      id: "marine-drive",
-      name: "Marine Drive",
-      emoji: "🌅",
-      timing: "5:30 PM – 8:00 PM",
-      plan: "Sunset walk, sit by the promenade, talk, grab food nearby, take photos.",
-      vibe: "Romantic + relaxed + classic Mumbai"
-    },
-    {
-      id: "sgnp",
-      name: "Sanjay Gandhi National Park",
-      emoji: "🌿",
-      timing: "8:00 AM – 12:00 PM",
-      plan: "Morning walk, explore nature, breakfast afterward.",
-      vibe: "Peaceful + outdoorsy"
-    },
-    {
-      id: "bandstand",
-      name: "Bandra Bandstand",
-      emoji: "🌊",
-      timing: "5:00 PM – 8:00 PM",
-      plan: "Sunset walk, sit near the sea, explore Bandra after, food or coffee.",
-      vibe: "Chill + scenic + conversational"
-    },
-    {
-      id: "kalaghoda",
-      name: "Kala Ghoda",
-      emoji: "🎨",
-      timing: "4:00 PM – 8:00 PM",
-      plan: "Walk around, a bit of art and culture, cafés, dinner.",
-      vibe: "Creative + classy + relaxed"
-    },
-    {
-      id: "juhu",
-      name: "Juhu",
-      emoji: "🌴",
-      timing: "5:00 PM – 9:00 PM",
-      plan: "Beach walk, food, sunset, long conversation.",
-      vibe: "Casual + fun"
-    },
-    {
-      id: "powai",
-      name: "Powai",
-      emoji: "☕",
-      timing: "5:00 PM – 9:00 PM",
-      plan: "Lakeside walk, café, dinner, long conversations.",
-      vibe: "Relaxed + cute + comfortable"
-    },
-    {
-      id: "south-mumbai",
-      name: "South Mumbai Evening",
-      emoji: "🌃",
-      timing: "4:30 PM – 9:00 PM",
-      plan: "Explore Fort, Gateway area, a café, Marine Drive, dinner.",
-      vibe: "Full-day mini adventure"
+  activities: ["Food","Coffee","A long walk","Sunset","Wander with no plan","Street food","A movie","Photos","Just sit and talk","Badminton (obviously)","You pick"]
+};
+
+const state = { when:null, time:null, place:null, acts:[], smashes:0, homes:0 };
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* =========================================================================
+   SPINE + NAVIGATION
+   ========================================================================= */
+const INNINGS = [
+  "Cover",
+  "18 Jul — the assist",
+  "18 Jul — the smash",
+  "Jul–Aug — Ludo",
+  "Aug — late calls",
+  "22–23 Aug — the weekend",
+  "Ongoing — 4am",
+  "Today — a letter",
+  "The question",
+  "Planning — when",
+  "Planning — where",
+  "Final"
+];
+const LIGHT = ["day","day","day","day","night","night","night","candle","candle","dawn","dawn","dawn"];
+
+const spineList = document.getElementById("spine-list");
+INNINGS.forEach((label, i) => {
+  const li = document.createElement("li");
+  li.textContent = label;
+  li.dataset.i = i;
+  spineList.appendChild(li);
+});
+
+let current = 0;
+function go(i){
+  i = Number(i);
+  const next = document.querySelector('.panel[data-i="'+i+'"]');
+  if (!next || i === current) return;
+  document.querySelectorAll(".panel").forEach(p => p.classList.remove("on"));
+  next.classList.add("on");
+  current = i;
+
+  document.body.dataset.light = LIGHT[i] || "day";
+  document.querySelectorAll("#spine li").forEach(li => {
+    const n = Number(li.dataset.i);
+    li.classList.toggle("seen", n < i);
+    li.classList.toggle("here", n === i);
+  });
+  document.querySelector("#thread i").style.width = ((i) / (INNINGS.length - 1) * 100) + "%";
+  window.scrollTo({ top:0, behavior: reduced ? "auto" : "smooth" });
+
+  if (typeof setCast === "function") setCast(i);
+  if (i === 4) resetDial();
+  if (i === 8) runAsk();
+  if (i === 11) runFinale();
+}
+document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => go(b.dataset.go)));
+go(0);
+
+/* toast */
+let toastT;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove("show"), 2800);
+}
+
+/* =========================================================================
+   COVER — the rally, drawn on a 2D canvas
+   ========================================================================= */
+(function rally(){
+  const cv = document.getElementById("rally");
+  const ctx = cv.getContext("2d");
+  let w = 0, h = 0, t = 0, dir = 1;
+
+  function size(){
+    const r = cv.getBoundingClientRect();
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    w = r.width; h = r.height;
+    cv.width = w * dpr; cv.height = h * dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  addEventListener("resize", size); size();
+
+  function ink(){ return getComputedStyle(document.body).getPropertyValue("--ink").trim(); }
+  function accent(){ return getComputedStyle(document.body).getPropertyValue("--accent").trim(); }
+
+  const trail = [];
+
+  function frame(){
+    requestAnimationFrame(frame);
+    if (!w) size();
+    ctx.clearRect(0,0,w,h);
+
+    const padX = 18;
+    const left = padX, right = w - padX, mid = w/2;
+    const baseY = h - 24;
+
+    // net
+    ctx.strokeStyle = ink(); ctx.globalAlpha = .28; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(mid, baseY); ctx.lineTo(mid, baseY - h*0.42); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(left, baseY); ctx.lineTo(right, baseY); ctx.stroke();
+
+    t += reduced ? 0.004 : 0.009;
+    if (t >= 1){ t = 0; dir *= -1; }
+
+    const p = t;
+    const x = dir > 0 ? left + (right-left)*p : right - (right-left)*p;
+    const y = baseY - Math.sin(p * Math.PI) * (h*0.62) - 8;
+
+    trail.push({x,y});
+    if (trail.length > 26) trail.shift();
+
+    ctx.globalAlpha = 1;
+    trail.forEach((pt,i) => {
+      ctx.globalAlpha = (i / trail.length) * 0.35;
+      ctx.fillStyle = accent();
+      ctx.beginPath(); ctx.arc(pt.x, pt.y, 2.2, 0, Math.PI*2); ctx.fill();
+    });
+
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = ink();
+    ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = ink(); ctx.globalAlpha = .55; ctx.lineWidth = 1;
+    for (let a = -0.6; a <= 0.6; a += 0.3){
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x - dir*Math.cos(a)*13, y - Math.sin(a)*13 - 2);
+      ctx.stroke();
     }
-  ]
-};
-
-/* ==========================================================================
-   GLOBAL STATE
-   ========================================================================== */
-const state = {
-  soundOn: false,
-  when: null,
-  time: null,
-  destination: null,
-  activities: [],
-  eggCounts: { tokenClicks: 0, shuttleClicks: 0, diceClicks: 0 }
-};
-
-const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-/* ==========================================================================
-   AUDIO — tiny procedural sound effects, muted by default
-   ========================================================================== */
-let audioCtx = null;
-function ensureAudio(){
-  if (!audioCtx) {
-    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-    catch(e){ audioCtx = null; }
+    ctx.globalAlpha = 1;
   }
-}
-function blip(freq = 440, dur = 0.08, type = "sine", gain = 0.05){
-  if (!state.soundOn || !audioCtx) return;
-  const osc = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
-  osc.type = type;
-  osc.frequency.value = freq;
-  g.gain.value = gain;
-  osc.connect(g); g.connect(audioCtx.destination);
-  osc.start();
-  g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
-  osc.stop(audioCtx.currentTime + dur + 0.02);
-}
-const sfx = {
-  click: () => blip(520, 0.06, "sine", 0.04),
-  hit: () => blip(720, 0.1, "triangle", 0.06),
-  dice: () => blip(300, 0.12, "square", 0.03),
-  smash: () => blip(180, 0.18, "sawtooth", 0.05),
-  celebrate: () => { blip(660,0.15,"sine",0.05); setTimeout(()=>blip(880,0.18,"sine",0.05),120); setTimeout(()=>blip(990,0.22,"sine",0.05),260); }
-};
+  frame();
+})();
 
-const soundToggle = document.getElementById("sound-toggle");
-soundToggle.addEventListener("click", () => {
-  state.soundOn = !state.soundOn;
-  soundToggle.setAttribute("aria-pressed", String(state.soundOn));
-  ensureAudio();
-  if (state.soundOn) blip(600,0.08,"sine",0.05);
+/* =========================================================================
+   1 — ASSIST STAMP
+   ========================================================================= */
+document.getElementById("assist-btn").addEventListener("click", function(){
+  document.getElementById("assist-stamp").classList.add("shown");
+  this.disabled = true;
+  this.textContent = "Credited";
+  toast("Sakshi has been officially thanked.");
 });
 
-/* ==========================================================================
-   SCENE NAVIGATION
-   ========================================================================== */
-const SCENE_ORDER = ["scene-1","scene-2","scene-3","scene-4","scene-5","scene-6","scene-7","scene-8"];
+/* =========================================================================
+   2 — SMASH COURT
+   ========================================================================= */
+(function smash(){
+  const court = document.getElementById("court");
+  const birdie = document.getElementById("birdie");
+  const count = document.getElementById("smash-count");
+  const REACTIONS = ["...", "really?", "hey", "😐", "stop", "ok wow", "PARTH", "😭"];
 
-function buildProgressDots(){
-  const ol = document.getElementById("progress-dots");
-  ol.innerHTML = "";
-  SCENE_ORDER.forEach((id) => {
-    const li = document.createElement("li");
-    li.dataset.scene = id;
-    ol.appendChild(li);
-  });
-}
-buildProgressDots();
+  court.addEventListener("click", (e) => {
+    const r = court.getBoundingClientRect();
+    const tx = r.width * (0.62 + Math.random()*0.30);
+    const ty = r.height * (0.22 + Math.random()*0.58);
 
-function updateProgress(activeId){
-  const idx = SCENE_ORDER.indexOf(activeId);
-  document.querySelectorAll("#progress-dots li").forEach((li, i) => {
-    li.classList.toggle("done", i < idx);
-    li.classList.toggle("current", i === idx);
-  });
-}
+    birdie.style.transition = "none";
+    birdie.style.left = (e.clientX - r.left - 6) + "px";
+    birdie.style.top  = (e.clientY - r.top - 6) + "px";
+    void birdie.offsetWidth;
+    birdie.style.transition = "left .38s cubic-bezier(.3,1.5,.5,1), top .38s cubic-bezier(.3,.2,.6,1)";
+    birdie.style.left = (tx - 6) + "px";
+    birdie.style.top  = (ty - 6) + "px";
 
-function goToScene(id){
-  const current = document.querySelector(".scene.active");
-  const next = document.getElementById(id);
-  if (!next || current === next) return;
-
-  sfx.click();
-
-  if (current) {
-    current.classList.add("leaving");
-    current.classList.remove("active");
-    setTimeout(() => current.classList.remove("leaving"), 500);
-  }
-  next.classList.add("active");
-  updateProgress(id);
-  window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
-
-  // scene-specific entry hooks
-  if (id === "scene-2") startDialogueReveal("dialogue-2");
-  if (id === "scene-3") { startDialogueReveal("dialogue-3"); buildLudoBoard(); }
-  if (id === "scene-4") revealLikeCards();
-  if (id === "scene-5") runScene5Intro();
-  if (id === "scene-8") runScene8Intro();
-}
-
-document.querySelectorAll(".next-btn").forEach(btn => {
-  btn.addEventListener("click", () => goToScene(btn.dataset.next));
-});
-
-/* ==========================================================================
-   EASTER EGG TOAST
-   ========================================================================== */
-let toastTimer = null;
-function showEggToast(msg){
-  const toast = document.getElementById("egg-toast");
-  toast.textContent = msg;
-  toast.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
-}
-
-document.getElementById("secret-btn").addEventListener("click", () => {
-  showEggToast("I knew it. 😭");
-  sfx.click();
-});
-
-/* ==========================================================================
-   LOADING SCREEN SEQUENCE
-   ========================================================================== */
-(function runLoadingSequence(){
-  const textEl = document.getElementById("loading-text");
-  const barFill = document.getElementById("loading-bar-fill");
-  const finalLine = dateConfig.herName ? `For ${dateConfig.herName} ❤️` : "For you ❤️";
-  const lines = [
-    "Loading something slightly suspicious…",
-    "Preparing badminton memories…",
-    "Calculating Ludo revenge…",
-    "Okay… almost ready.",
-    finalLine
-  ];
-  let i = 0;
-  const stepTime = reducedMotion ? 550 : 900;
-
-  function showNext(){
-    textEl.style.opacity = 0;
     setTimeout(() => {
-      textEl.textContent = lines[i];
-      textEl.style.transition = "opacity .35s ease";
-      textEl.style.opacity = 1;
-      barFill.style.width = `${((i + 1) / lines.length) * 100}%`;
-      i++;
-      if (i < lines.length) {
-        setTimeout(showNext, stepTime);
-      } else {
-        setTimeout(() => goToScene("scene-1"), stepTime + 300);
-      }
-    }, 200);
-  }
-  showNext();
-})();
+      const m = document.createElement("div");
+      m.className = "mark"; m.style.left = tx+"px"; m.style.top = ty+"px";
+      court.appendChild(m); setTimeout(()=>m.remove(), 750);
 
-/* ==========================================================================
-   THREE.JS — shared helpers
-   ========================================================================== */
-const hasThree = typeof THREE !== "undefined";
+      const rx = document.createElement("div");
+      rx.className = "reaction";
+      rx.textContent = REACTIONS[Math.min(state.smashes, REACTIONS.length-1)];
+      rx.style.left = (tx - 12) + "px"; rx.style.top = (ty - 22) + "px";
+      court.appendChild(rx); setTimeout(()=>rx.remove(), 1350);
 
-function makeRenderer(canvas){
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  return renderer;
-}
-function sizeToParent(renderer, camera, canvas){
-  const parent = canvas.parentElement;
-  const w = parent.clientWidth, h = parent.clientHeight;
-  renderer.setSize(w, h, false);
-  camera.aspect = w / h;
-  camera.updateProjectionMatrix();
-}
-
-/* ---- Ambient background particle field (persists across whole site) ---- */
-(function initBackground(){
-  if (!hasThree) return;
-  const canvas = document.getElementById("bg-canvas");
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-  renderer.setSize(window.innerWidth, window.innerHeight);
-
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 100);
-  camera.position.z = 12;
-
-  const count = reducedMotion ? 60 : 160;
-  const geo = new THREE.BufferGeometry();
-  const positions = new Float32Array(count * 3);
-  const colors = new Float32Array(count * 3);
-  const palette = [[0.55,0.48,0.94],[1,0.53,0.7],[0.37,0.31,0.84]];
-  for (let i=0;i<count;i++){
-    positions[i*3] = (Math.random()-0.5) * 22;
-    positions[i*3+1] = (Math.random()-0.5) * 14;
-    positions[i*3+2] = (Math.random()-0.5) * 10;
-    const c = palette[Math.floor(Math.random()*palette.length)];
-    colors[i*3]=c[0]; colors[i*3+1]=c[1]; colors[i*3+2]=c[2];
-  }
-  geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-  geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-  const mat = new THREE.PointsMaterial({ size: 0.09, vertexColors: true, transparent: true, opacity: 0.65, blending: THREE.AdditiveBlending, depthWrite:false });
-  const points = new THREE.Points(geo, mat);
-  scene.add(points);
-
-  let mx = 0, my = 0;
-  window.addEventListener("mousemove", (e) => {
-    mx = (e.clientX / window.innerWidth - 0.5);
-    my = (e.clientY / window.innerHeight - 0.5);
-  });
-
-  function animate(){
-    requestAnimationFrame(animate);
-    points.rotation.y += reducedMotion ? 0.0003 : 0.0012;
-    points.rotation.x += 0.0002;
-    camera.position.x += (mx * 1.2 - camera.position.x) * 0.02;
-    camera.position.y += (-my * 1.2 - camera.position.y) * 0.02;
-    camera.lookAt(0,0,0);
-    renderer.render(scene, camera);
-  }
-  animate();
-
-  window.addEventListener("resize", () => {
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+      state.smashes++;
+      count.textContent = state.smashes;
+      if (state.smashes === 8) toast("This is roughly the ratio from real life.");
+    }, 380);
   });
 })();
 
-/* ---- Scene 1: stylized badminton court + shuttle crossing net ---- */
-let replayCourt = () => {};
-(function initCourtScene(){
-  if (!hasThree) return;
-  const canvas = document.getElementById("court-canvas");
-  const renderer = makeRenderer(canvas);
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 50);
-  camera.position.set(0, 3.4, 6.2);
-  camera.lookAt(0,0,0);
-
-  // court
-  const courtGeo = new THREE.PlaneGeometry(8, 4.4);
-  const courtMat = new THREE.MeshBasicMaterial({ color: 0x171a38, transparent:true, opacity:0.9 });
-  const court = new THREE.Mesh(courtGeo, courtMat);
-  court.rotation.x = -Math.PI/2.4;
-  court.position.y = -0.6;
-  scene.add(court);
-
-  // court lines
-  const lineMat = new THREE.LineBasicMaterial({ color: 0xf7f1e6, transparent:true, opacity:0.5 });
-  const outline = new THREE.EdgesGeometry(new THREE.PlaneGeometry(7.6, 4.0));
-  const lines = new THREE.LineSegments(outline, lineMat);
-  lines.rotation.x = -Math.PI/2.4;
-  lines.position.y = -0.59;
-  scene.add(lines);
-
-  // net
-  const netGeo = new THREE.PlaneGeometry(6.4, 1.1);
-  const netMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity:0.12, side: THREE.DoubleSide });
-  const net = new THREE.Mesh(netGeo, netMat);
-  net.position.set(0, 0.05, 0);
-  scene.add(net);
-  const netEdge = new THREE.LineSegments(new THREE.EdgesGeometry(netGeo), new THREE.LineBasicMaterial({color:0xff86b3, transparent:true, opacity:0.6}));
-  netEdge.position.copy(net.position);
-  scene.add(netEdge);
-
-  // floating lights (points)
-  const lightGeo = new THREE.BufferGeometry();
-  const lp = new Float32Array(24*3);
-  for (let i=0;i<24;i++){ lp[i*3]=(Math.random()-0.5)*8; lp[i*3+1]=Math.random()*3; lp[i*3+2]=(Math.random()-0.5)*4; }
-  lightGeo.setAttribute("position", new THREE.BufferAttribute(lp,3));
-  const lightMat = new THREE.PointsMaterial({ color:0xff86b3, size:0.06, transparent:true, opacity:0.7, blending:THREE.AdditiveBlending });
-  scene.add(new THREE.Points(lightGeo, lightMat));
-
-  // shuttlecock (cone + sphere)
-  const shuttle = new THREE.Group();
-  const cork = new THREE.Mesh(new THREE.SphereGeometry(0.09,10,10), new THREE.MeshBasicMaterial({color:0xffffff}));
-  const skirt = new THREE.Mesh(new THREE.ConeGeometry(0.16,0.32,8,1,true), new THREE.MeshBasicMaterial({color:0xf7f1e6, transparent:true, opacity:0.85, side:THREE.DoubleSide}));
-  skirt.position.y = 0.22; skirt.rotation.x = Math.PI;
-  shuttle.add(cork, skirt);
-  scene.add(shuttle);
-
-  let t = 0; let playing = true;
-  function shuttlePath(progress){
-    const x = THREE.MathUtils.lerp(-3.4, 3.4, progress);
-    const y = 0.4 + Math.sin(progress * Math.PI) * 1.6;
-    const z = Math.sin(progress * Math.PI * 2) * 0.3;
-    return {x,y,z};
-  }
-  shuttle.userData.clicks = 0;
-  canvas.addEventListener("click", () => {
-    state.eggCounts.shuttleClicks++;
-    sfx.click();
-    if (state.eggCounts.shuttleClicks === 6) showEggToast("This is basically how our conversations go.");
+/* =========================================================================
+   3 — LUDO BOARD
+   ========================================================================= */
+(function ludo(){
+  const board = document.getElementById("board");
+  const cells = ["q-tl","q-lane","q-tr","q-lane","q-mid","q-lane","q-bl","q-lane","q-br"];
+  cells.forEach(c => {
+    const d = document.createElement("div");
+    d.className = c;
+    if (c === "q-mid") d.textContent = "🎲";
+    board.appendChild(d);
   });
 
-  function animate(){
-    requestAnimationFrame(animate);
-    sizeToParent(renderer, camera, canvas);
-    if (playing && !reducedMotion) {
-      t += 0.006;
-      if (t > 1) t = 0;
-    } else if (playing && reducedMotion) {
-      t += 0.002; if (t>1) t=0;
-    }
-    const p = shuttlePath(t);
-    shuttle.position.set(p.x, p.y, p.z);
-    shuttle.rotation.z = Math.sin(t*Math.PI)*0.6;
-    shuttle.rotation.x = t * Math.PI * 2;
-    renderer.render(scene, camera);
-  }
-  animate();
-
-  replayCourt = () => { t = 0; sfx.hit(); };
-})();
-
-document.getElementById("rewind-btn").addEventListener("click", replayCourt);
-
-/* ---- Scene 2: tap-to-rally shuttlecock ---- */
-(function initRallyScene(){
-  if (!hasThree) return;
-  const canvas = document.getElementById("rally-canvas");
-  const renderer = makeRenderer(canvas);
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 50);
-  camera.position.set(0, 0.6, 5.2);
-  camera.lookAt(0,0,0);
-
-  const bgGlow = new THREE.Mesh(
-    new THREE.PlaneGeometry(10,6),
-    new THREE.MeshBasicMaterial({ color:0x11132a, transparent:true, opacity:0.5 })
-  );
-  bgGlow.position.z = -2;
-  scene.add(bgGlow);
-
-  // two rackets, left and right
-  function makeRacket(color){
-    const g = new THREE.Group();
-    const head = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.06, 8, 20), new THREE.MeshBasicMaterial({color}));
-    const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.6,8), new THREE.MeshBasicMaterial({color:0x5f4fd6}));
-    handle.position.y = -0.55;
-    g.add(head, handle);
-    return g;
-  }
-  const racketL = makeRacket(0xff86b3); racketL.position.set(-2.4, -0.2, 0);
-  const racketR = makeRacket(0x8b7bf0); racketR.position.set(2.4, -0.2, 0);
-  scene.add(racketL, racketR);
-
-  const shuttle = new THREE.Group();
-  shuttle.add(new THREE.Mesh(new THREE.SphereGeometry(0.1,10,10), new THREE.MeshBasicMaterial({color:0xffffff})));
-  const skirt = new THREE.Mesh(new THREE.ConeGeometry(0.18,0.34,8,1,true), new THREE.MeshBasicMaterial({color:0xf7f1e6, transparent:true, opacity:0.85, side:THREE.DoubleSide}));
-  skirt.position.y = 0.24; skirt.rotation.x = Math.PI;
-  shuttle.add(skirt);
-  shuttle.position.set(0,0,0);
-  scene.add(shuttle);
-
-  let target = new THREE.Vector3(0,0,0);
-  let from = new THREE.Vector3(0,0,0);
-  let anim = 0;
-  let side = 1;
-
-  function hit(){
-    from.copy(shuttle.position);
-    side *= -1;
-    target.set(side * 2.1, (Math.random()*0.8), 0);
-    anim = 0;
-    sfx.hit();
-    (side > 0 ? racketR : racketL).rotation.z = 0.6;
-  }
-
-  canvas.addEventListener("click", hit);
-  canvas.addEventListener("touchstart", (e) => { e.preventDefault(); hit(); }, {passive:false});
-
-  function animate(){
-    requestAnimationFrame(animate);
-    sizeToParent(renderer, camera, canvas);
-    if (anim < 1){
-      anim = Math.min(1, anim + (reducedMotion ? 0.05 : 0.045));
-      const arc = Math.sin(anim * Math.PI) * 1.1;
-      shuttle.position.lerpVectors(from, target, anim);
-      shuttle.position.y += arc;
-      shuttle.rotation.z += 0.2;
-    }
-    racketL.rotation.z += (0 - racketL.rotation.z) * 0.1;
-    racketR.rotation.z += (0 - racketR.rotation.z) * 0.1;
-    renderer.render(scene, camera);
-  }
-  animate();
-})();
-
-/* ==========================================================================
-   DIALOGUE REVEAL (scene 2 & 3)
-   ========================================================================== */
-function startDialogueReveal(containerId){
-  const container = document.getElementById(containerId);
-  const lines = container.querySelectorAll(".dialogue-line");
-  lines.forEach(l => l.classList.remove("shown"));
-  lines.forEach((line, i) => {
-    setTimeout(() => line.classList.add("shown"), 350 + i * (reducedMotion ? 150 : 550));
-  });
-}
-
-/* ==========================================================================
-   SCENE 3 — LUDO BOARD, DICE, EXPOSE BUTTON
-   ========================================================================== */
-function buildLudoBoard(){
-  const board = document.getElementById("ludo-board");
-  if (board.dataset.built) return;
-  board.dataset.built = "true";
-
-  const layout = [
-    "tl","pathrow","tr",
-    "path","mid","path",
-    "bl","pathrow","br"
+  const RAGE = [
+    "Fully intact. Send a piece home and let's see.",
+    "Slight pause. You said nothing. That's worse.",
+    "\"seriously?\"",
+    "You've stopped talking to me mid-game.",
+    "The \"I'm fine\" phase. You are not fine.",
+    "Rage-bait confirmed. Rolling with intent now.",
+    "Okay I think I should stop. I won't, but I should."
   ];
-  layout.forEach((cls) => {
-    const cell = document.createElement("div");
-    cell.className = `ludo-cell ${cls}`;
-    if (cls === "mid") cell.textContent = "🎲";
-    board.appendChild(cell);
-  });
 
-  // scatter a few tokens across colored corners for the "smash" interaction
-  const corners = board.querySelectorAll(".tl, .tr, .bl, .br");
-  corners.forEach((corner) => {
+  board.querySelectorAll(".q-tl,.q-tr,.q-bl,.q-br").forEach(q => {
     for (let i=0;i<2;i++){
-      const token = document.createElement("div");
-      token.className = "token";
-      token.style.left = `${20 + Math.random()*40}%`;
-      token.style.top = `${20 + Math.random()*40}%`;
-      token.addEventListener("click", () => smashToken(token));
-      corner.appendChild(token);
+      const p = document.createElement("div");
+      p.className = "pawn";
+      p.style.left = (26 + Math.random()*46) + "%";
+      p.style.top  = (26 + Math.random()*46) + "%";
+      p.addEventListener("click", () => {
+        if (p.classList.contains("home")) return;
+        p.classList.add("home");
+        state.homes++;
+        const pct = Math.min(state.homes / 7, 1) * 100;
+        document.getElementById("rage-bar").style.width = pct + "%";
+        document.getElementById("rage-label").textContent = RAGE[Math.min(state.homes, RAGE.length-1)];
+        if (state.homes === 8) toast("All eight. You'd have left the call by now.");
+      });
+      q.appendChild(p);
     }
   });
-}
+})();
 
-function smashToken(token){
-  if (token.classList.contains("smashed")) return;
-  token.classList.add("smashed");
-  sfx.smash();
-  state.eggCounts.tokenClicks++;
-  if (state.eggCounts.tokenClicks === 5){
-    showEggToast("Okay okay, you've had enough revenge. 😭");
-  }
+/* =========================================================================
+   4 — THE NIGHT DIAL
+   ========================================================================= */
+const HOURS = [
+  ["10:30 PM", "Group call. Six people. Normal."],
+  ["11:00 PM", "Four people. Still normal."],
+  ["11:30 PM", "Two people. Nobody comments on this."],
+  ["12:00 AM", "Gossip. Full coverage. No topic survives."],
+  ["12:30 AM", "\"one more thing and then I'll sleep\""],
+  ["1:00 AM",  "Overthinking begins. Both of us. Enthusiastically."],
+  ["1:30 AM",  "The conversation gets quieter and more honest."],
+  ["2:00 AM",  "Secrets. Real ones. Neither of us flinches."],
+  ["2:30 AM",  "\"we have office tomorrow\" — said, ignored."],
+  ["3:00 AM",  "Still going. Nothing urgent. Nothing we'd trade."],
+  ["3:30 AM",  "You've gone quiet."],
+  ["4:00 AM",  "You're asleep. Line still open. I didn't hang up either."]
+];
+const hourEl = document.getElementById("hour");
+function paintHour(){
+  const [t, line] = HOURS[Number(hourEl.value)];
+  document.getElementById("clock").textContent = t;
+  document.getElementById("hour-caption").textContent = line;
 }
+hourEl.addEventListener("input", paintHour);
+function resetDial(){ paintHour(); }
+paintHour();
 
-const dice = document.getElementById("dice");
-const diceFace = dice.querySelector(".dice-face");
-const DICE_FACES = ["⚀","⚁","⚂","⚃","⚄","⚅"];
-dice.addEventListener("click", () => {
-  dice.classList.remove("rolling"); void dice.offsetWidth; dice.classList.add("rolling");
-  sfx.dice();
-  const roll = Math.floor(Math.random()*6);
-  diceFace.textContent = DICE_FACES[roll];
-  state.eggCounts.diceClicks++;
-  if (state.eggCounts.diceClicks === 6){
-    showEggToast("Obviously you rolled a six when it mattered.");
-  }
+/* =========================================================================
+   5 — TICKET STUBS
+   ========================================================================= */
+document.querySelectorAll("[data-stub]").forEach(s => {
+  s.addEventListener("click", () => s.classList.toggle("open"));
 });
 
-document.getElementById("expose-btn").addEventListener("click", (e) => {
-  document.getElementById("expose-reveal").hidden = false;
-  e.target.hidden = true;
+/* =========================================================================
+   7 — THE LETTER
+   ========================================================================= */
+document.getElementById("not-ready").addEventListener("click", function(){
+  document.getElementById("paused").hidden = false;
+  this.hidden = true;
+  this.parentElement.querySelector('[data-go="8"]').textContent = "Actually, keep going";
 });
 
-/* ==========================================================================
-   SCENE 4 — LIKE CARDS
-   ========================================================================== */
-let cardsRevealed = false;
-function revealLikeCards(){
-  if (cardsRevealed) return;
-  cardsRevealed = true;
-  const cards = document.querySelectorAll(".like-card");
-  cards.forEach((card, i) => {
-    setTimeout(() => card.classList.add("revealed"), 200 + i * (reducedMotion ? 100 : 220));
+/* =========================================================================
+   8 — THE ASK
+   ========================================================================= */
+let askRan = false;
+function runAsk(){
+  if (askRan) return; askRan = true;
+  const beats = ["ask-2","ask-3","ask-choices"];
+  beats.forEach((id, i) => {
+    setTimeout(() => { document.getElementById(id).hidden = false; }, (reduced ? 200 : 750) * (i+1));
   });
 }
-document.getElementById("joke-card").addEventListener("click", function(){
-  const secret = this.querySelector(".joke-secret");
-  secret.hidden = !secret.hidden;
-  sfx.click();
+document.getElementById("ask-yes").addEventListener("click", () => {
+  document.getElementById("ask-choices").hidden = true;
+  document.getElementById("ask-yes-box").hidden = false;
+});
+document.getElementById("ask-maybe").addEventListener("click", () => {
+  document.getElementById("ask-choices").hidden = true;
+  document.getElementById("ask-maybe-box").hidden = false;
 });
 
-/* ==========================================================================
-   SCENE 5 — SERIOUS QUESTION
-   ========================================================================== */
-let scene5Started = false;
-function runScene5Intro(){
-  if (scene5Started) return;
-  scene5Started = true;
-  const main = document.getElementById("q5-main");
-  const choices = document.getElementById("q5-choices");
-  setTimeout(() => { main.hidden = false; }, reducedMotion ? 300 : 1100);
-  setTimeout(() => { choices.hidden = false; }, reducedMotion ? 500 : 1800);
-}
-document.getElementById("q5-yes").addEventListener("click", () => {
-  document.getElementById("q5-choices").hidden = true;
-  document.getElementById("q5-yes-reveal").hidden = false;
-  sfx.celebrate();
-});
-document.getElementById("q5-maybe").addEventListener("click", () => {
-  document.getElementById("q5-choices").hidden = true;
-  document.getElementById("q5-maybe-reveal").hidden = false;
-  sfx.click();
-});
-
-/* ==========================================================================
-   SCENE 6 — WHEN / TIME PICKER
-   ========================================================================== */
-const TIME_SUGGESTIONS = {
-  "Morning": "Perfect for a relaxed breakfast or walk.",
-  "Afternoon": "Food, exploring, and absolutely unnecessary amounts of gossip.",
-  "Sunset": "Probably the prettiest option.",
-  "Evening": "Dinner, lights, and a little city chaos.",
-  "Late-night": "Only if we're both prepared to lose track of time."
+/* =========================================================================
+   9 — WHEN + TIME
+   ========================================================================= */
+const TIME_NOTE = {
+  "Morning":   "Early enough that it counts as effort from both of us.",
+  "Afternoon": "Food, wandering, and an unreasonable amount of gossip.",
+  "Sunset":    "The correct answer, but I'm not biased at all.",
+  "Evening":   "Lights, dinner, city noise.",
+  "Late night":"Only if we're both fine losing track of time again."
 };
 
-document.getElementById("when-grid").addEventListener("click", (e) => {
-  const btn = e.target.closest(".option-card");
-  if (!btn) return;
-  document.querySelectorAll("#when-grid .option-card").forEach(b => b.classList.remove("selected"));
-  btn.classList.add("selected");
-  state.when = btn.dataset.when;
-  document.getElementById("custom-date").value = "";
-  document.getElementById("when-confirm").hidden = false;
-  sfx.click();
+document.getElementById("when-opts").addEventListener("click", e => {
+  const b = e.target.closest(".opt"); if (!b) return;
+  document.querySelectorAll("#when-opts .opt").forEach(x => x.classList.remove("picked"));
+  b.classList.add("picked");
+  state.when = b.dataset.when;
+  document.getElementById("d-date").value = "";
+  document.getElementById("when-note").textContent = "Noted.";
+  refreshPlan();
 });
-document.getElementById("custom-date").addEventListener("change", (e) => {
+document.getElementById("d-date").addEventListener("change", e => {
   if (!e.target.value) return;
-  document.querySelectorAll("#when-grid .option-card").forEach(b => b.classList.remove("selected"));
+  document.querySelectorAll("#when-opts .opt").forEach(x => x.classList.remove("picked"));
   const d = new Date(e.target.value + "T00:00:00");
-  state.when = d.toLocaleDateString(undefined, { weekday:"long", month:"long", day:"numeric" });
-  document.getElementById("when-confirm").hidden = false;
+  state.when = d.toLocaleDateString(undefined, { weekday:"long", day:"numeric", month:"long" });
+  document.getElementById("when-note").textContent = "Locked in: " + state.when;
+  refreshPlan();
 });
 
-document.getElementById("time-grid").addEventListener("click", (e) => {
-  const btn = e.target.closest(".option-card");
-  if (!btn) return;
-  document.querySelectorAll("#time-grid .option-card").forEach(b => b.classList.remove("selected"));
-  btn.classList.add("selected");
-  state.time = btn.dataset.time;
-  document.getElementById("custom-time").value = "";
-  document.getElementById("time-suggestion").textContent = TIME_SUGGESTIONS[state.time] || "";
-  sfx.click();
+document.getElementById("time-opts").addEventListener("click", e => {
+  const b = e.target.closest(".opt"); if (!b) return;
+  document.querySelectorAll("#time-opts .opt").forEach(x => x.classList.remove("picked"));
+  b.classList.add("picked");
+  state.time = b.dataset.time;
+  document.getElementById("d-time").value = "";
+  document.getElementById("time-note").textContent = TIME_NOTE[state.time] || "";
+  refreshPlan();
 });
-document.getElementById("custom-time").addEventListener("change", (e) => {
+document.getElementById("d-time").addEventListener("change", e => {
   if (!e.target.value) return;
-  document.querySelectorAll("#time-grid .option-card").forEach(b => b.classList.remove("selected"));
+  document.querySelectorAll("#time-opts .opt").forEach(x => x.classList.remove("picked"));
   state.time = e.target.value;
-  document.getElementById("time-suggestion").textContent = "";
+  document.getElementById("time-note").textContent = "Works for me.";
+  refreshPlan();
 });
 
-/* ==========================================================================
-   SCENE 7 — DESTINATIONS + ACTIVITY BUILDER
-   ========================================================================== */
-const ACTIVITIES = ["Food","Coffee","Long walk","Sunset","Explore","Shopping","Movies","Street food","Photography","Just sit and talk","You decide"];
-
-function buildDestinations(){
-  const grid = document.getElementById("destination-grid");
-  dateConfig.destinations.forEach((d) => {
-    const card = document.createElement("div");
-    card.className = "dest-card";
-    card.tabIndex = 0;
-    card.setAttribute("role","button");
-    card.dataset.id = d.id;
-    card.innerHTML = `
-      <div class="dest-name">${d.emoji} ${d.name}</div>
-      <div class="dest-timing">${d.timing}</div>
-      <div class="dest-plan">${d.plan}</div>
-      <div class="dest-vibe">${d.vibe}</div>
-      <button type="button" class="dest-pick">Pick this</button>
-    `;
-    function pick(){
-      document.querySelectorAll(".dest-card").forEach(c => c.classList.remove("selected"));
-      card.classList.add("selected");
-      state.destination = d;
-      document.getElementById("builder-lead").hidden = false;
-      document.getElementById("activity-grid").hidden = false;
-      document.getElementById("to-scene-8").disabled = false;
-      updateSummary();
-      sfx.click();
-    }
-    card.addEventListener("click", pick);
-    card.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
-    grid.appendChild(card);
+/* =========================================================================
+   10 — PLACES + ACTIVITIES
+   ========================================================================= */
+(function buildPlaces(){
+  const grid = document.getElementById("places");
+  CONFIG.places.forEach(p => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "place";
+    b.innerHTML =
+      '<div class="nm"></div><div class="hr2"></div><div class="pl"></div><div class="vb"></div>';
+    b.querySelector(".nm").textContent = p.name;
+    b.querySelector(".hr2").textContent = p.hours;
+    b.querySelector(".pl").textContent = p.plan;
+    b.querySelector(".vb").textContent = p.vibe;
+    b.addEventListener("click", () => {
+      document.querySelectorAll(".place").forEach(x => x.classList.remove("picked"));
+      b.classList.add("picked");
+      state.place = p;
+      document.getElementById("acts-wrap").hidden = false;
+      document.getElementById("to-final").disabled = false;
+      refreshPlan();
+    });
+    grid.appendChild(b);
   });
-}
-buildDestinations();
+})();
 
-function buildActivities(){
-  const grid = document.getElementById("activity-grid");
-  ACTIVITIES.forEach((a) => {
-    const chip = document.createElement("div");
-    chip.className = "activity-chip";
-    chip.textContent = a;
-    chip.tabIndex = 0;
-    chip.setAttribute("role","button");
-    function toggle(){
-      chip.classList.toggle("selected");
-      if (chip.classList.contains("selected")) state.activities.push(a);
-      else state.activities = state.activities.filter(x => x !== a);
-      updateSummary();
-      sfx.click();
-    }
-    chip.addEventListener("click", toggle);
-    chip.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
-    grid.appendChild(chip);
+(function buildActs(){
+  const grid = document.getElementById("acts");
+  CONFIG.activities.forEach(a => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = a;
+    b.addEventListener("click", () => {
+      b.classList.toggle("picked");
+      if (b.classList.contains("picked")) state.acts.push(a);
+      else state.acts = state.acts.filter(x => x !== a);
+      refreshPlan();
+    });
+    grid.appendChild(b);
   });
-}
-buildActivities();
+})();
 
-function updateSummary(){
-  const card = document.getElementById("summary-card");
-  if (!state.destination) return;
-  card.hidden = false;
-  document.getElementById("summary-location").textContent = `📍 ${state.destination.emoji} ${state.destination.name}`;
-  document.getElementById("summary-when").textContent = `🗓 ${state.when || "Whenever works"}`;
-  document.getElementById("summary-time").textContent = `⏰ ${state.time || "TBD"}`;
-  document.getElementById("summary-activities").textContent = state.activities.length
-    ? state.activities.join(" · ")
-    : "Details TBD — we'll figure it out";
+function refreshPlan(){
+  if (!state.place) return;
+  document.getElementById("plan-card").hidden = false;
+  document.getElementById("p-where").textContent = "Where — " + state.place.name;
+  document.getElementById("p-when").textContent  = "When — " + (state.when || "you tell me");
+  document.getElementById("p-time").textContent  = "Time — " + (state.time || "you tell me");
+  document.getElementById("p-acts").textContent  = "Doing — " + (state.acts.length ? state.acts.join(", ") : "we'll figure it out");
 }
 
-/* ==========================================================================
-   SCENE 8 — FINALE
-   ========================================================================== */
-let scene8Started = false;
-function runScene8Intro(){
-  if (scene8Started) return;
-  scene8Started = true;
-  const seq = ["f-line-2","f-line-3","f-line-4","f-choices"];
+/* =========================================================================
+   11 — FINALE
+   ========================================================================= */
+let finaleRan = false;
+function runFinale(){
+  if (finaleRan) return; finaleRan = true;
+  const seq = ["fl-1","fl-2","fl-3","fl-4","final-choices"];
   seq.forEach((id, i) => {
-    setTimeout(() => { document.getElementById(id).hidden = false; }, (reducedMotion ? 250 : 700) * (i+1));
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      el.hidden = false; el.classList.add("in");
+    }, (reduced ? 180 : 850) * i);
   });
-  initFinaleCanvas();
 }
 
 document.getElementById("f-yes").addEventListener("click", async () => {
-  document.getElementById("f-choices").hidden = true;
-  document.getElementById("finale-yes").hidden = false;
-  const summary = document.getElementById("final-summary");
-  const d = state.destination;
-  summary.innerHTML = `
-    <p>📍 ${d ? `${d.emoji} ${d.name}` : "Location: to be decided"}</p>
-    <p>🗓 ${state.when || "Whenever works"} &nbsp; ⏰ ${state.time || "TBD"}</p>
-    <p>${state.activities.length ? state.activities.join(" · ") : "The rest, we'll figure out together"}</p>
-  `;
-  celebrate();
-  sfx.celebrate();
+  document.getElementById("final-choices").hidden = true;
+  document.getElementById("f-yes-box").hidden = false;
 
+  const p = state.place;
+  document.getElementById("final-card").innerHTML =
+    '<h3>Confirmed</h3>' +
+    '<p>Where — ' + (p ? p.name : "to be decided") + '</p>' +
+    '<p>When — ' + (state.when || "you tell me") + '</p>' +
+    '<p>Time — ' + (state.time || "you tell me") + '</p>' +
+    '<p>Doing — ' + (state.acts.length ? state.acts.join(", ") : "we'll figure it out") + '</p>';
+
+  confetti();
+  sendAnswer("YES");
+});
+
+/* -------------------------------------------------------------------------
+   DELIVERY
+   Tries fetch first (FormData — no JSON preflight, most reliable with
+   Web3Forms). If that fails for any reason, falls back to submitting a real
+   HTML form into a hidden iframe, which cannot be blocked by CORS and works
+   even when the page is opened straight off the disk.
+   ------------------------------------------------------------------------- */
+function answerPayload(answer){
+  const p = state.place;
+  return {
+    access_key: CONFIG.web3formsKey,
+    subject: CONFIG.herName + " said " + answer + " — date confirmed",
+    from_name: "The Match Log",
+    Answer: answer,
+    Where: p ? p.name : "To be decided",
+    When: state.when || "Not specified",
+    Time: state.time || "Not specified",
+    Doing: state.acts.length ? state.acts.join(", ") : "Not specified",
+    Smashes_replayed: String(state.smashes),
+    Pieces_sent_home: String(state.homes)
+  };
+}
+
+function sendViaForm(data){
+  const form = document.getElementById("w3f-form");
+  Object.keys(data).forEach(k => {
+    let field = form.querySelector('[name="' + k + '"]');
+    if (!field){
+      field = document.createElement("input");
+      field.type = "hidden"; field.name = k;
+      form.appendChild(field);
+    }
+    if (field.type !== "checkbox") field.value = data[k];
+  });
+  form.submit();
+}
+
+async function sendAnswer(answer){
+  const status = document.getElementById("send-status");
+  const data = answerPayload(answer);
+  if (status) status.textContent = "Letting " + CONFIG.myName + " know…";
+
+  let ok = false;
   try {
-    await fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        access_key: 'bbd67653-cc36-42ef-9bf4-75ce95191cf2',
-        subject: '🎮 PLAYER 2 ALERT: Gauri Accepted the Quest!',
-        Destination: d ? `${d.emoji} ${d.name}` : "To be decided",
-        Date: state.when || "Whenever works",
-        Time: state.time || "TBD",
-        Activities: state.activities.length ? state.activities.join(", ") : "TBD",
-      })
-    });
+    const fd = new FormData();
+    Object.keys(data).forEach(k => fd.append(k, data[k]));
+    const res = await fetch("https://api.web3forms.com/submit", { method:"POST", body: fd });
+    const json = await res.json().catch(() => ({}));
+    ok = res.ok && json.success !== false;
   } catch (err) {
-    console.error("Web3Forms submission failed:", err);
+    ok = false;
   }
-});
 
-document.getElementById("f-thinking").addEventListener("click", () => {
-  document.getElementById("f-choices").hidden = true;
-  document.getElementById("finale-thinking").hidden = false;
-  sfx.click();
-});
-
-document.getElementById("restart-btn").addEventListener("click", () => {
-  location.reload();
-});
-
-/* ---- confetti / floating emoji celebration (DOM based, reliable + light) ---- */
-function celebrate(){
-  if (reducedMotion) return;
-  const items = ["❤️","✨","🏸","🎲","💗","⭐"];
-  const total = 34;
-  for (let i=0;i<total;i++){
-    const span = document.createElement("span");
-    span.textContent = items[Math.floor(Math.random()*items.length)];
-    span.style.position = "fixed";
-    span.style.left = Math.random()*100 + "vw";
-    span.style.top = "-40px";
-    span.style.fontSize = (14 + Math.random()*18) + "px";
-    span.style.zIndex = 200;
-    span.style.pointerEvents = "none";
-    span.style.opacity = "0.95";
-    span.style.willChange = "transform, opacity";
-    document.body.appendChild(span);
-
-    const duration = 2600 + Math.random()*1800;
-    const drift = (Math.random()-0.5) * 160;
-    const rotation = (Math.random()-0.5) * 720;
-    const delay = Math.random()*400;
-
-    span.animate([
-      { transform: `translate(0,0) rotate(0deg)`, opacity: 0.95 },
-      { transform: `translate(${drift}px, ${window.innerHeight + 80}px) rotate(${rotation}deg)`, opacity: 0.2 }
-    ], { duration, delay, easing: "cubic-bezier(.2,.6,.4,1)", fill: "forwards" });
-
-    setTimeout(() => span.remove(), duration + delay + 100);
+  if (ok){
+    if (status) status.textContent = "He knows. It's official.";
+  } else {
+    // silent, CORS-proof fallback
+    sendViaForm(data);
+    if (!status) return;
+    status.innerHTML = 'Sent. <button type="button" id="resend" ' +
+      'style="background:none;border:none;padding:0;font:inherit;color:var(--accent);' +
+      'font-weight:700;text-decoration:underline;cursor:pointer">Send it again</button>';
+    const rb = document.getElementById("resend");
+    if (rb) rb.addEventListener("click", () => sendAnswer(answer));
   }
 }
 
-/* ---- subtle Three.js glow burst behind the finale text ---- */
-function initFinaleCanvas(){
-  if (!hasThree) return;
-  const canvas = document.getElementById("finale-canvas");
-  if (canvas.dataset.built) return;
-  canvas.dataset.built = "true";
+document.getElementById("f-think").addEventListener("click", () => {
+  document.getElementById("final-choices").hidden = true;
+  document.getElementById("f-think-box").hidden = false;
+  sendAnswer("STILL THINKING");
+});
 
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha:true, antialias:true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 30);
-  camera.position.z = 6;
+document.getElementById("restart").addEventListener("click", () => location.reload());
 
-  const geo = new THREE.SphereGeometry(1, 24, 24);
-  const mat = new THREE.MeshBasicMaterial({ color: 0xff4f7e, transparent:true, opacity:0.06, wireframe:true });
-  const heart = new THREE.Mesh(geo, mat);
-  scene.add(heart);
-
-  function size(){
-    const w = canvas.parentElement.clientWidth, h = canvas.parentElement.clientHeight;
-    renderer.setSize(w,h,false);
-    camera.aspect = w/h; camera.updateProjectionMatrix();
+function confetti(){
+  if (reduced) return;
+  const bits = ["🏸","🎲","❤️","✦","🎬"];
+  for (let i=0;i<30;i++){
+    const s = document.createElement("span");
+    s.textContent = bits[Math.floor(Math.random()*bits.length)];
+    s.style.cssText = "position:fixed;top:-40px;z-index:200;pointer-events:none;left:" +
+      (Math.random()*100) + "vw;font-size:" + (13 + Math.random()*16) + "px;";
+    document.body.appendChild(s);
+    const dur = 2600 + Math.random()*1800, delay = Math.random()*500;
+    s.animate(
+      [{ transform:"translate(0,0) rotate(0deg)", opacity:.95 },
+       { transform:"translate(" + ((Math.random()-.5)*160) + "px," + (innerHeight+80) + "px) rotate(" + ((Math.random()-.5)*720) + "deg)", opacity:.15 }],
+      { duration:dur, delay, easing:"cubic-bezier(.2,.6,.4,1)", fill:"forwards" }
+    );
+    setTimeout(() => s.remove(), dur + delay + 120);
   }
-  window.addEventListener("resize", size); size();
-
-  function animate(){
-    requestAnimationFrame(animate);
-    heart.rotation.y += reducedMotion ? 0.001 : 0.004;
-    heart.rotation.x += 0.0015;
-    heart.scale.setScalar(1.6 + Math.sin(Date.now()*0.001)*0.15);
-    renderer.render(scene, camera);
-  }
-  animate();
 }
+
+/* keyboard: left/right to move through the log */
+addEventListener("keydown", e => {
+  if (e.target.matches("input")) return;
+  if (e.key === "ArrowRight" && current < INNINGS.length - 1) go(current + 1);
+  if (e.key === "ArrowLeft" && current > 0) go(current - 1);
+});
+</script>
+<script>
+/* =========================================================================
+   THE CAST — a tiny two-person company that acts out each inning
+   Drawn from scratch so they inherit the page's ink colour and work in
+   every light state (day / night / candle / dawn).
+   ========================================================================= */
+(function(){
+  const SVG = document.querySelector("#cast svg");
+
+  const SKIN = { g:"#F0C39A", p:"#E3B184" };
+  const SUIT = { g:"#D4574A", p:"#3A62A8", s:"#E0A32B" };
+  const HAIR = { g:"#2A2028", p:"#221C24", s:"#3A2A2E" };
+
+  /* ---- one little person ------------------------------------------------ */
+  function person(o){
+    const who  = o.who || "p";
+    const skin = SKIN[who] || SKIN.p;
+    const suit = o.suit || SUIT[who] || SUIT.p;
+    const hair = HAIR[who] || HAIR.p;
+    const sit  = o.pose === "sit";
+    const s    = o.s || 1;
+    const flip = o.flip ? " scale(-1,1)" : "";
+
+    const legs = sit
+      ? '<rect x="-4" y="-13" width="20" height="6" rx="3" fill="'+suit+'"/>' +
+        '<rect x="10" y="-9" width="6" height="9" rx="3" fill="'+hair+'"/>'
+      : '<rect x="-6.5" y="-14" width="5.5" height="14" rx="2.7" fill="'+hair+'"/>' +
+        '<rect x="1" y="-14" width="5.5" height="14" rx="2.7" fill="'+hair+'"/>';
+
+    const bun = who === "g"
+      ? '<circle cx="1" cy="-55" r="5.4" fill="'+hair+'"/>' +
+        '<path d="M-11,-45 q0,-13 11,-13 q11,0 11,13 q-4,-7 -11,-7 q-7,0 -11,7 Z" fill="'+hair+'"/>'
+      : who === "s"
+      ? '<path d="M-11,-45 q0,-13 11,-13 q11,0 11,13 q-3,-6 -11,-6 q-8,0 -11,6 Z" fill="'+hair+'"/>' +
+        '<path d="M-11,-47 q-4,7 -3,13" class="ink" stroke="'+hair+'"/>' +
+        '<path d="M11,-47 q4,7 3,13" class="ink" stroke="'+hair+'"/>'
+      : '<path d="M-11,-45 q0,-13 11,-13 q11,0 11,13 q-5,-6 -12,-4 q-5,1 -10,4 Z" fill="'+hair+'"/>' +
+        '<path d="M4,-56 q6,-3 7,4" class="ink" stroke="'+hair+'"/>';
+
+    const face =
+      o.face === "sleep"
+        ? '<path d="M-6,-43 q2.5,2.5 5,0" class="ink" stroke="#2A2028" stroke-width="1.7"/>' +
+          '<path d="M2,-43 q2.5,2.5 5,0" class="ink" stroke="#2A2028" stroke-width="1.7"/>' +
+          '<path d="M-2,-36 q2.5,2 5,0" class="ink" stroke="#2A2028" stroke-width="1.6"/>'
+      : o.face === "cross"
+        ? '<g class="eyes"><circle cx="-4" cy="-43" r="1.8" fill="#2A2028"/><circle cx="5" cy="-43" r="1.8" fill="#2A2028"/></g>' +
+          '<path d="M-8,-48 l6,2" class="ink" stroke="#2A2028" stroke-width="1.6"/>' +
+          '<path d="M9,-48 l-6,2" class="ink" stroke="#2A2028" stroke-width="1.6"/>' +
+          '<path d="M-3,-36 q3,-2.4 6,0" class="ink" stroke="#2A2028" stroke-width="1.6"/>'
+      : o.face === "sorry"
+        ? '<g class="eyes"><circle cx="-4" cy="-42" r="1.8" fill="#2A2028"/><circle cx="5" cy="-42" r="1.8" fill="#2A2028"/></g>' +
+          '<path d="M-8,-47 q3,-2 6,1" class="ink" stroke="#2A2028" stroke-width="1.5"/>' +
+          '<path d="M9,-47 q-3,-2 -6,1" class="ink" stroke="#2A2028" stroke-width="1.5"/>' +
+          '<path d="M-3,-35 q3,-1.6 6,0" class="ink" stroke="#2A2028" stroke-width="1.6"/>'
+      : o.face === "oh"
+        ? '<g class="eyes"><circle cx="-4" cy="-44" r="2.1" fill="#2A2028"/><circle cx="5" cy="-44" r="2.1" fill="#2A2028"/></g>' +
+          '<ellipse cx="1" cy="-36" rx="2.6" ry="3.2" fill="#2A2028" opacity=".8"/>'
+        : '<g class="eyes"><circle cx="-4" cy="-43" r="1.9" fill="#2A2028"/><circle cx="5" cy="-43" r="1.9" fill="#2A2028"/></g>' +
+          '<path d="M-3.5,-37 q4.5,4 9,0" class="ink" stroke="#2A2028" stroke-width="1.7"/>';
+
+    const blush =
+      '<ellipse cx="-8" cy="-38.5" rx="3" ry="1.9" fill="#E08A7A" opacity=".55"/>' +
+      '<ellipse cx="9.5" cy="-38.5" rx="3" ry="1.9" fill="#E08A7A" opacity=".55"/>';
+
+    const armL = '<g transform="translate(-9,-29)"><g class="'+(o.armL||"")+'">' +
+      '<path d="M0,0 q-7,7 -8,15" class="ink" stroke="'+suit+'" stroke-width="5"/>' +
+      '<circle cx="-8" cy="15" r="3.2" fill="'+skin+'"/>' + (o.handL||"") + '</g></g>';
+    const armR = '<g transform="translate(9,-29)"><g class="'+(o.armR||"")+'">' +
+      '<path d="M0,0 q7,7 8,15" class="ink" stroke="'+suit+'" stroke-width="5"/>' +
+      '<circle cx="8" cy="15" r="3.2" fill="'+skin+'"/>' + (o.handR||"") + '</g></g>';
+
+    return '<g transform="translate('+o.x+','+o.y+') scale('+s+')'+flip+'">' +
+      '<ellipse class="shadow" cx="1" cy="3" rx="15" ry="3.4"/>' +
+      '<g class="'+(o.cls||"a-bob")+'">' +
+        '<g transform="translate(0,'+(sit?9:0)+')">' +
+          legs +
+          armL +
+          '<path d="M-9.5,-14 L-11,-28.5 Q0,-35 11,-28.5 L9.5,-14 Q0,-11 -9.5,-14 Z" fill="'+suit+'"/>' +
+          '<circle cx="0.5" cy="-42" r="11.5" fill="'+skin+'"/>' +
+          bun + face + blush +
+          armR +
+        '</g>' +
+      '</g>' +
+    '</g>';
+  }
+
+  const racket = (c) =>
+    '<g transform="translate(6,16) rotate(20)">' +
+      '<ellipse cx="0" cy="-9" rx="5.6" ry="7.6" fill="none" stroke="'+c+'" stroke-width="2.2"/>' +
+      '<path d="M0,-1 L0,6" stroke="'+c+'" stroke-width="2.6" stroke-linecap="round"/>' +
+    '</g>';
+
+  const floor = '<path class="floor" d="M14,124 L366,124"/>';
+  const label = (x,y,t) => '<text class="say" x="'+x+'" y="'+y+'" text-anchor="middle">'+t+'</text>';
+  const prop  = (x,y,t,style) => '<text class="prop" x="'+x+'" y="'+y+'" text-anchor="middle"'+(style?' style="'+style+'"':'')+'>'+t+'</text>';
+
+  /* ---- the scenes ------------------------------------------------------- */
+  const SCENES = {
+
+    rally: floor +
+      '<path class="floor" d="M190,124 L190,92"/>' +
+      person({ x:78, y:124, who:"p", armR:"", handR:racket("#3A62A8"), cls:"a-bob" }) +
+      person({ x:300, y:124, who:"g", flip:true, handR:racket("#D4574A"), cls:"a-bob" }) +
+      '<g transform="translate(88,84)"><g style="animation:birdieAcross 2.6s ease-in-out infinite alternate">' +
+        prop(0,0,"🏸") + '</g></g>',
+
+    assist: floor +
+      person({ x:52, y:124, who:"s", s:.88, armR:"", handR:"", cls:"a-bob" }) +
+      '<g style="animation:nudgeIn 2.8s ease-in-out infinite">' +
+        person({ x:132, y:124, who:"g", face:"oh", cls:"a-bob" }) +
+      '</g>' +
+      person({ x:300, y:124, who:"p", flip:true, handR:racket("#3A62A8"), cls:"a-bob" }) +
+      label(52,140,"Sakshi") +
+      prop(92,74,"👉",'animation:pointAt 2.8s ease-in-out infinite; transform-origin:center'),
+
+    smash: floor +
+      person({ x:74, y:124, who:"p", armR:"a-swing", handR:racket("#3A62A8"), cls:"a-bob" }) +
+      '<g style="animation:duck 2.4s ease-in-out infinite">' +
+        person({ x:302, y:124, who:"g", flip:true, face:"oh", cls:"" }) +
+      '</g>' +
+      '<g transform="translate(110,92)"><g style="animation:birdieSmash 2.4s ease-in-out infinite">' +
+        prop(0,0,"🏸") + '</g></g>' +
+      prop(324,70,"💢",'animation:fume 2.4s ease-in-out infinite'),
+
+    ludo: floor +
+      person({ x:78, y:118, who:"p", pose:"sit", cls:"a-bob-slow" }) +
+      person({ x:302, y:118, who:"g", pose:"sit", flip:true, face:"cross", cls:"a-bob-slow" }) +
+      '<g transform="translate(168,96)">' +
+        '<rect x="0" y="0" width="44" height="30" rx="4" fill="#F2EDE3" stroke="#2A2028" stroke-width="1.6"/>' +
+        '<rect x="3" y="3" width="15" height="10" fill="#C8452F"/>' +
+        '<rect x="26" y="3" width="15" height="10" fill="#2F5AA8"/>' +
+        '<rect x="3" y="17" width="15" height="10" fill="#E0A32B"/>' +
+        '<rect x="26" y="17" width="15" height="10" fill="#1F6F5C"/>' +
+      '</g>' +
+      '<g transform="translate(240,100)"><g style="animation:pawnOut 3s ease-in-out infinite">' +
+        '<path d="M0,0 a4,4 0 1,1 .1,0 Z" fill="#D4574A" stroke="#2A2028" stroke-width="1.4"/>' +
+      '</g></g>' +
+      prop(320,72,"💢",'animation:fume 3s ease-in-out infinite'),
+
+    call: floor +
+      prop(190,44,"🌙") +
+      person({ x:74, y:124, who:"p", armR:"a-lean-r", handR:'<text class="tiny-prop" x="4" y="20">📱</text>', cls:"a-bob-slow" }) +
+      person({ x:304, y:124, who:"g", flip:true, armR:"a-lean-r", handR:'<text class="tiny-prop" x="4" y="20" transform="scale(-1,1) translate(-8,0)">📱</text>', cls:"a-bob-slow" }) +
+      '<g opacity=".85">' +
+        prop(120,74,"💬",'animation:floatZ 3.4s ease-in-out infinite') +
+        prop(250,78,"💬",'animation:floatZ 3.4s ease-in-out infinite 1.7s') +
+      '</g>',
+
+    movie: floor +
+      '<rect x="120" y="30" width="142" height="54" rx="4" fill="var(--ink)" opacity=".18" style="animation:flicker 2.6s ease-in-out infinite"/>' +
+      person({ x:150, y:120, who:"p", pose:"sit", cls:"a-bob-slow" }) +
+      person({ x:236, y:120, who:"g", pose:"sit", flip:true, cls:"a-bob-slow" }) +
+      prop(193,120,"🍿",'animation:shuffle 3.2s ease-in-out infinite; transform-origin:center') +
+      prop(300,64,"🎬"),
+
+    sleep: floor +
+      '<rect x="228" y="108" width="120" height="14" rx="7" fill="var(--ink)" opacity=".13"/>' +
+      '<g transform="translate(312,108) rotate(-86)">' +
+        person({ x:0, y:0, who:"g", face:"sleep", cls:"a-bob-slow" }) +
+      '</g>' +
+      person({ x:96, y:124, who:"p", armR:"a-lean-r", handR:'<text class="tiny-prop" x="4" y="20">📱</text>', cls:"a-bob-slow" }) +
+      prop(268,74,"💤",'animation:floatZ 4.2s ease-in-out infinite') +
+      prop(288,82,"💤",'animation:floatZ 4.2s ease-in-out infinite 2.1s'),
+
+    sorry: floor +
+      person({ x:132, y:124, who:"p", face:"sorry", armR:"a-offer", handR:'<text class="tiny-prop" x="3" y="20">✉️</text>', cls:"a-bob-slow" }) +
+      person({ x:274, y:124, who:"g", flip:true, face:"cross", cls:"a-lean-l" }) +
+      '<path class="floor" d="M196,96 q10,-10 20,0" opacity=".3"/>',
+
+    ask: floor +
+      person({ x:140, y:124, who:"p", armR:"a-offer", handR:'<text class="tiny-prop" x="3" y="20">🌼</text>', cls:"a-bob" }) +
+      person({ x:266, y:124, who:"g", flip:true, cls:"a-bob" }) +
+      prop(203,64,"❤️",'animation:pulseHeart 2.2s ease-in-out infinite; transform-origin:center'),
+
+    plan: floor +
+      person({ x:152, y:124, who:"p", cls:"a-bob-slow" }) +
+      person({ x:242, y:124, who:"g", flip:true, cls:"a-bob-slow" }) +
+      '<g transform="translate(197,88)">' +
+        '<rect x="-21" y="-13" width="42" height="27" rx="3" fill="#F2EDE3" stroke="#2A2028" stroke-width="1.6"/>' +
+        '<path d="M-14,6 q9,-16 12,-4 q4,10 15,-6" stroke="#2F5AA8" stroke-width="1.6" fill="none"/>' +
+        '<circle cx="13" cy="-4" r="2.6" fill="#C8452F"/>' +
+      '</g>',
+
+    together: floor +
+      person({ x:164, y:124, who:"p", cls:"a-hop" }) +
+      person({ x:230, y:124, who:"g", flip:true, cls:"a-hop" }) +
+      prop(197,58,"❤️",'animation:pulseHeart 1.9s ease-in-out infinite; transform-origin:center') +
+      prop(140,72,"✨",'animation:floatZ 3s ease-in-out infinite') +
+      prop(256,76,"🏸",'animation:floatZ 3.4s ease-in-out infinite 1.2s')
+  };
+
+  /* extra animation classes used above */
+  const extra = document.createElement("style");
+  extra.textContent =
+    ".a-swing{ animation:swingHit 2.4s ease-in-out infinite; }" +
+    ".a-offer{ animation:offerUp 2.8s ease-in-out infinite; }" +
+    ".a-hop{ animation:hop 2.2s ease-in-out infinite; }";
+  document.head.appendChild(extra);
+
+  SVG.innerHTML = Object.keys(SCENES)
+    .map(k => '<g data-s="'+k+'">' + SCENES[k] + '</g>').join("");
+
+  /* inning -> scene */
+  const MAP = ["rally","assist","smash","ludo","call","movie","sleep","sorry","ask","plan","plan","together"];
+  window.setCast = function(i){
+    document.getElementById("cast").dataset.scene = MAP[i] || "rally";
+  };
+  setCast(typeof current === "number" ? current : 0);
+})();
+
 </script>
 </body>
 </html>
