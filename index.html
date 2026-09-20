@@ -2,1157 +2,1427 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>The Match Log — for Gauri</title>
-<meta name="description" content="18 July to now, in innings." />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0b1030" />
+<meta name="robots" content="noindex,nofollow" />
+<title>A small sky, for Gauri</title>
+<meta name="description" content="Thirteen stars since 18 July." />
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Karla:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Nunito:wght@400;600;700;800&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
 /* =========================================================================
-   THE MATCH LOG
-   A scorebook that changes its light as the story moves through the day:
-   daylight court  ->  4am indigo  ->  candle-warm letter  ->  dawn
+   A SMALL SKY
+   Every memory since 18 July is a star. The sky changes with the story:
+   dusk (badminton, ludo)  ->  night (calls)  ->  moonlit (the letter)
+   ->  dawn (the question)  ->  and the stars draw a heart.
    ========================================================================= */
 
 :root{
-  /* base ink + paper */
-  --paper:        #F2EDE3;
-  --paper-2:      #E7E0D2;
-  --ink:          #16231F;
-  --ink-soft:     #4E5A55;
-  --rule:         rgba(22,35,31,.14);
-  --rule-hard:    rgba(22,35,31,.30);
+  --ink:#fff6ee;
+  --soft:rgba(255,246,238,.76);
+  --faint:rgba(255,246,238,.5);
+  --gold:#ffd98a;
+  --rose:#ff9fbd;
+  --peach:#ffb389;
+  --lav:#c0b0ff;
+  --mint:#9ae6cd;
+  --accent:#ffd98a;
+  --glass:rgba(20,13,46,.6);
+  --line:rgba(255,255,255,.17);
 
-  /* court + game colours */
-  --court:        #1F6F5C;
-  --court-deep:   #14503F;
-  --clay:         #C8452F;   /* ludo red */
-  --saffron:      #E0A32B;   /* ludo yellow */
-  --cobalt:       #2F5AA8;   /* ludo blue */
-  --accent:       var(--clay);
+  --display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --body:'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --hand:'Caveat', 'Segoe Print', 'Comic Sans MS', cursive;
 
-  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
-  --font-body:    'Karla', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ease:cubic-bezier(.22,.8,.26,1);
+  --spring:cubic-bezier(.34,1.56,.64,1);
 
-  --measure: 60ch;
-  --ease: cubic-bezier(.22,.7,.28,1);
-
-  box-sizing: border-box;
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-sizing:border-box;
 }
 
-/* --- light states ------------------------------------------------------ */
-body[data-light="night"]{
-  --paper:      #141A31;
-  --paper-2:    #1B2242;
-  --ink:        #E8EAF6;
-  --ink-soft:   #A3A9CC;
-  --rule:       rgba(232,234,246,.16);
-  --rule-hard:  rgba(232,234,246,.34);
-  --accent:     #F0A6C0;
-}
-body[data-light="candle"]{
-  --paper:      #F6EBD9;
-  --paper-2:    #EEDFC6;
-  --ink:        #33251A;
-  --ink-soft:   #6B5949;
-  --rule:       rgba(51,37,26,.16);
-  --rule-hard:  rgba(51,37,26,.32);
-  --accent:     #A8552C;
-}
-body[data-light="dawn"]{
-  --paper:      #F7E3DE;
-  --paper-2:    #F0D2CB;
-  --ink:        #2A1B20;
-  --ink-soft:   #6A4F55;
-  --rule:       rgba(42,27,32,.16);
-  --rule-hard:  rgba(42,27,32,.32);
-  --accent:     #C8452F;
-}
+/* sky states also steer the sun/moon and the accent colour */
+body[data-sky="dusk"]{ --ox:72vw; --oy:64vh; --orb:#ffb36b; --orb-glow:rgba(255,170,100,.55); --crater:0; --accent:#ffd98a; }
+body[data-sky="night"]{ --ox:66vw; --oy:9vh;  --orb:#f3efe0; --orb-glow:rgba(190,200,255,.38); --crater:.5; --accent:#ffd98a; }
+body[data-sky="moon"]{ --ox:42vw; --oy:4vh;  --orb:#fff3d6; --orb-glow:rgba(255,220,160,.45); --crater:.5; --accent:#ffc0d4; }
+body[data-sky="dawn"]{ --ox:8vw;  --oy:58vh; --orb:#ffe08a; --orb-glow:rgba(255,200,110,.62); --crater:0; --accent:#ffe08a; }
 
 *,*::before,*::after{ box-sizing:inherit; }
-
-html{ scroll-padding-top: env(safe-area-inset-top, 0px); }
-
+html{ scroll-padding-top:calc(env(safe-area-inset-top,0px) + 70px); }
 html,body{ margin:0; padding:0; }
-
 body{
-  background:var(--paper);
+  background:#0b1030;
   color:var(--ink);
-  font-family:var(--font-body);
+  font-family:var(--body);
   font-size:17px;
   line-height:1.6;
   -webkit-font-smoothing:antialiased;
   -webkit-tap-highlight-color:transparent;
-  transition:background-color 1.1s var(--ease), color 1.1s var(--ease);
   overflow-x:hidden;
 }
-
-h1,h2,h3{ font-family:var(--font-display); font-weight:400; margin:0; line-height:1.02; letter-spacing:-.01em; }
+h1,h2,h3{ font-family:var(--display); font-weight:400; margin:0; line-height:1.08; letter-spacing:-.012em; font-variation-settings:"SOFT" 100; }
 p{ margin:0; }
-em{ font-style:italic; }
-::selection{ background:var(--accent); color:var(--paper); }
-
-button{ font-family:var(--font-body); color:inherit; }
-:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:2px; }
-
-/* =========================================================================
-   COURT LINES — the page background is a badminton court, faintly
-   ========================================================================= */
-#court-lines{
-  position:fixed; inset:0; z-index:0; pointer-events:none;
-  opacity:.22;
-  transition:opacity 1.1s var(--ease);
-}
-body[data-light="night"] #court-lines{ opacity:.16; }
-body[data-light="candle"] #court-lines,
-body[data-light="dawn"] #court-lines{ opacity:.10; }
-#court-lines line, #court-lines rect{ stroke:var(--ink); fill:none; stroke-width:1; vector-effect:non-scaling-stroke; }
+button{ font-family:var(--body); color:inherit; }
+::selection{ background:var(--accent); color:#2a1740; }
+:focus-visible{ outline:2.5px solid var(--accent); outline-offset:3px; border-radius:6px; }
+[hidden]{ display:none !important; }
 
 /* =========================================================================
-   SPINE — the scorebook index down the left
+   SKY LAYERS (crossfade), PHOTO LAYER, SUN/MOON, STAR CANVAS
    ========================================================================= */
-#spine{
-  position:fixed; left:26px; top:50%; transform:translateY(-50%);
-  z-index:40; width:132px;
-}
-#spine ol{ list-style:none; margin:0; padding:0; }
-#spine li{
-  font-size:11.5px; line-height:1.35; letter-spacing:.01em;
-  color:var(--ink-soft); opacity:.38;
-  padding:5px 0 5px 16px; position:relative;
-  transition:opacity .4s var(--ease), color .4s var(--ease);
-  cursor:default;
-}
-#spine li::before{
-  content:""; position:absolute; left:0; top:11px;
-  width:7px; height:1px; background:var(--ink-soft);
-  transition:width .4s var(--ease), background .4s var(--ease);
-}
-#spine li.seen{ opacity:.62; }
-#spine li.here{ opacity:1; color:var(--ink); font-weight:700; }
-#spine li.here::before{ width:12px; height:2px; background:var(--accent); }
-@media (max-width:1080px){ #spine{ display:none; } }
+.sky{ position:fixed; inset:0; z-index:0; opacity:0; transition:opacity 1.8s var(--ease); }
+.sky.on{ opacity:1; }
+#sky-dusk{  background:linear-gradient(180deg,#241a4a 0%,#5a2f72 40%,#c8567a 76%,#ff9f7a 100%); }
+#sky-night{ background:linear-gradient(180deg,#060a24 0%,#111850 55%,#2b2a72 100%); }
+#sky-moon{  background:linear-gradient(180deg,#0d1533 0%,#233069 55%,#4b4692 100%); }
+#sky-dawn{  background:linear-gradient(180deg,#2b1a4f 0%,#8c3f7d 38%,#f27f8f 74%,#ffc27a 100%); }
 
-/* mobile: hairline progress at the very top */
-#thread{
-  position:fixed; top:env(safe-area-inset-top,0px); left:0; right:0; height:2px;
-  z-index:60; background:transparent;
+#photobg{ position:fixed; inset:0; z-index:1; pointer-events:none; }
+#photobg .pb{
+  position:absolute; inset:-3%; background-size:cover; background-position:center;
+  opacity:0; transition:opacity 1.6s var(--ease); filter:saturate(1.1) blur(1.5px);
+  -webkit-mask-image:radial-gradient(ellipse at 50% 40%, #000 25%, transparent 85%);
+          mask-image:radial-gradient(ellipse at 50% 40%, #000 25%, transparent 85%);
 }
-#thread i{ display:block; height:100%; width:0%; background:var(--accent); transition:width .6s var(--ease); }
-@media (min-width:1081px){ #thread{ display:none; } }
+#photobg .pb.on{ opacity:var(--bgop,.34); }
 
-/* =========================================================================
-   PANELS
-   ========================================================================= */
-#log{ position:relative; z-index:2; }
-
-.panel{
-  display:none;
-  min-height:100%;
-  padding:clamp(72px,11vh,120px) 24px clamp(170px,22vh,220px);
-  padding-left:max(24px, env(safe-area-inset-left,0px));
+#orb{
+  position:fixed; left:0; top:0; z-index:2; pointer-events:none;
+  width:clamp(74px,14vw,118px); aspect-ratio:1; border-radius:50%;
+  background:var(--orb);
+  box-shadow:0 0 70px 26px var(--orb-glow);
+  transform:translate(var(--ox),var(--oy));
+  transition:transform 2.6s var(--ease), background-color 1.8s, box-shadow 1.8s;
 }
-@media (min-width:1081px){ .panel{ padding-left:210px; padding-right:60px; } }
-.panel.on{ display:block; }
-.panel.on > .wrap{ animation:enter .75s var(--ease) both; }
-@keyframes enter{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
-
-.wrap{ max-width:720px; }
-.wrap > * + *{ margin-top:22px; }
-
-/* the dated header of each inning */
-.stamp{
-  display:inline-flex; align-items:baseline; gap:10px;
-  font-size:12px; font-weight:700; letter-spacing:.04em;
-  color:var(--accent);
-  border-bottom:1.5px solid var(--accent);
-  padding-bottom:3px;
-}
-.stamp small{ font-weight:500; color:var(--ink-soft); letter-spacing:0; font-size:12px; }
-
-h1.big{ font-size:clamp(2.6rem,8.2vw,5.1rem); }
-h2.big{ font-size:clamp(2.1rem,6.4vw,3.9rem); }
-h2.mid{ font-size:clamp(1.7rem,4.6vw,2.7rem); }
-.say{ font-size:clamp(1.02rem,2.2vw,1.18rem); max-width:var(--measure); color:var(--ink); }
-.say + .say{ margin-top:14px; }
-.quiet{ color:var(--ink-soft); }
-.tiny{ font-size:13.5px; color:var(--ink-soft); }
-
-/* =========================================================================
-   BUTTONS
-   ========================================================================= */
-.go{
-  appearance:none; border:none; cursor:pointer;
-  background:var(--ink); color:var(--paper);
-  font-size:15px; font-weight:700; letter-spacing:.005em;
-  padding:13px 24px; border-radius:2px;
-  transition:transform .18s var(--ease), opacity .18s;
-}
-.go:hover{ transform:translateY(-2px); }
-.go:active{ transform:translateY(0); }
-.go[disabled]{ opacity:.32; cursor:not-allowed; transform:none; }
-
-.go.line{
-  background:transparent; color:var(--ink);
-  box-shadow:inset 0 0 0 1.5px var(--rule-hard);
-  font-weight:600;
-}
-.go.line:hover{ box-shadow:inset 0 0 0 1.5px var(--ink); }
-
-.go.hot{ background:var(--accent); color:#fff; }
-
-.row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
-@media (max-width:520px){
-  .row .go{ width:100%; text-align:center; }
-}
-
-/* =========================================================================
-   INNING 0 — COVER / RALLY
-   ========================================================================= */
-#rally{
-  width:100%; height:clamp(160px,26vh,240px);
-  display:block; margin-top:26px;
-}
-.cover-meta{
-  display:flex; gap:26px; flex-wrap:wrap; align-items:baseline;
-  border-top:1px solid var(--rule); padding-top:14px; margin-top:26px;
-}
-.cover-meta div{ font-size:13px; color:var(--ink-soft); }
-.cover-meta b{ display:block; font-family:var(--font-display); font-size:22px; color:var(--ink); font-weight:400; }
-
-/* =========================================================================
-   SHARED SMALL PIECES
-   ========================================================================= */
-.slab{
-  border:1px solid var(--rule-hard);
-  background:var(--paper-2);
-  padding:20px 22px;
-  border-radius:3px;
-  max-width:var(--measure);
-}
-.slab h3{ font-size:1.35rem; margin-bottom:8px; }
-
-.counter{
-  font-family:var(--font-display); font-size:clamp(3rem,12vw,5.4rem);
-  line-height:.9; color:var(--accent);
-}
-.counter small{ font-family:var(--font-body); font-size:13px; font-weight:600; color:var(--ink-soft); display:block; margin-top:8px; letter-spacing:.02em; }
-
-/* =========================================================================
-   INNING 1 — THE ASSIST
-   ========================================================================= */
-.assist{
-  display:grid; grid-template-columns:auto 1fr; gap:14px 18px;
-  align-items:center; max-width:var(--measure);
-}
-.assist .who{
-  font-family:var(--font-display); font-size:1.6rem;
-  border-bottom:2px solid var(--rule-hard); padding-bottom:2px;
-}
-.assist .what{ font-size:14.5px; color:var(--ink-soft); }
-#assist-stamp{
-  display:inline-block; margin-top:6px;
-  font-size:12px; font-weight:700; letter-spacing:.08em;
-  color:var(--court); border:2px solid var(--court);
-  padding:6px 12px; border-radius:2px;
-  transform:rotate(-4deg); opacity:0;
-  transition:opacity .35s var(--ease), transform .45s var(--ease);
-}
-#assist-stamp.shown{ opacity:1; transform:rotate(-4deg) scale(1); }
-
-/* =========================================================================
-   INNING 2 — SMASH
-   ========================================================================= */
-.smash-court{
-  position:relative; width:100%; max-width:var(--measure);
-  height:190px; border:1.5px solid var(--rule-hard);
-  border-radius:3px; overflow:hidden; cursor:crosshair;
+#orb::before{
+  content:""; position:absolute; inset:0; border-radius:50%; opacity:var(--crater);
   background:
-    linear-gradient(to right, transparent 49.6%, var(--rule-hard) 49.6%, var(--rule-hard) 50.4%, transparent 50.4%);
+    radial-gradient(circle at 30% 34%, rgba(90,95,150,.22) 0 9%, transparent 10%),
+    radial-gradient(circle at 64% 58%, rgba(90,95,150,.2) 0 12%, transparent 13%),
+    radial-gradient(circle at 44% 76%, rgba(90,95,150,.16) 0 7%, transparent 8%);
+  transition:opacity 1.6s;
 }
-.smash-court::after{
-  content:"tap your side"; position:absolute; bottom:8px; left:12px;
-  font-size:11.5px; color:var(--ink-soft); letter-spacing:.04em;
-}
-.birdie{
-  position:absolute; width:13px; height:13px; border-radius:50%;
-  background:var(--ink); pointer-events:none;
-}
-.mark{
-  position:absolute; width:18px; height:18px; margin:-9px 0 0 -9px;
-  border-radius:50%; border:1.5px solid var(--clay); pointer-events:none;
-  animation:ping .7s var(--ease) forwards;
-}
-@keyframes ping{ from{ transform:scale(.3); opacity:1; } to{ transform:scale(1.5); opacity:0; } }
-.reaction{
-  position:absolute; font-size:14px; font-weight:700; color:var(--clay);
-  pointer-events:none; animation:float 1.3s var(--ease) forwards;
-}
-@keyframes float{ from{ transform:translateY(0); opacity:1; } to{ transform:translateY(-34px); opacity:0; } }
+
+#stars{ position:fixed; inset:0; width:100%; height:100%; z-index:3; pointer-events:none; }
 
 /* =========================================================================
-   INNING 3 — LUDO
+   TOP BAR — the constellation of chapters
    ========================================================================= */
-.ludo-row{ display:flex; gap:28px; flex-wrap:wrap; align-items:flex-start; }
-.board{
-  width:210px; height:210px; display:grid;
-  grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr);
-  border:2px solid var(--ink); border-radius:3px; overflow:hidden;
+#top{
+  position:fixed; top:0; left:0; right:0; z-index:40;
+  padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 6px;
+  display:grid; grid-template-columns:44px 1fr 44px; align-items:center;
+  pointer-events:none;
 }
+#top > *{ pointer-events:auto; }
+#back{
+  width:40px; height:40px; border-radius:50%; border:1px solid var(--line);
+  background:rgba(20,13,46,.5); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  cursor:pointer; font-size:20px; line-height:1; display:grid; place-items:center;
+  transition:opacity .4s, transform .25s var(--spring);
+}
+#back:hover{ transform:scale(1.08); }
+#back[hidden]{ display:none !important; }
+#conwrap{ justify-self:center; width:100%; max-width:520px; }
+#const{ width:100%; height:auto; display:block; overflow:visible; }
+#const line{ stroke:rgba(255,255,255,.16); stroke-width:1.2; transition:stroke .8s; }
+#const line.lit{ stroke:var(--accent); opacity:.75; }
+#const .cs{ cursor:default; }
+#const .cs.seen{ cursor:pointer; }
+#const .cs path{ fill:rgba(255,255,255,.34); transition:fill .6s; }
+#const .cs.seen path{ fill:var(--accent); }
+#const .cs.here path{ fill:#fff; filter:drop-shadow(0 0 5px var(--accent)); }
+#const .cs.here .tw2{ animation:twinkle 2.2s ease-in-out infinite; transform-box:fill-box; transform-origin:center; }
+@keyframes twinkle{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.55); } }
+#chapter{
+  font-family:var(--hand); font-size:19px; text-align:center; color:var(--accent);
+  margin-top:2px; min-height:1.3em; text-shadow:0 1px 10px rgba(0,0,0,.35);
+}
+
+/* =========================================================================
+   PANELS + CARD
+   ========================================================================= */
+#app{ position:relative; z-index:10; }
+.panel{
+  display:none; min-height:100vh; min-height:100dvh;
+  padding:calc(env(safe-area-inset-top,0px) + 92px) 16px calc(env(safe-area-inset-bottom,0px) + 56px);
+}
+.panel.on{ display:flex; }
+.card{
+  margin:auto; width:100%; max-width:640px;
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(18px) saturate(1.25); backdrop-filter:blur(18px) saturate(1.25);
+  border:1px solid var(--line); border-radius:32px;
+  padding:clamp(20px,4.6vw,36px);
+  box-shadow:0 34px 80px -34px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.12);
+}
+.panel.on .card{ animation:rise .9s var(--ease) both; }
+@keyframes rise{ from{ opacity:0; transform:translateY(22px) scale(.985); } to{ opacity:1; transform:none; } }
+.card > * + *{ margin-top:18px; }
+.card.center{ text-align:center; }
+.card.center .row{ justify-content:center; }
+
+.hand{ font-family:var(--hand); font-weight:700; font-size:clamp(21px,4.6vw,26px); color:var(--accent); line-height:1.1; }
+h1{ font-size:clamp(2.3rem,9.4vw,3.9rem); font-weight:500; }
+h2{ font-size:clamp(1.7rem,6.2vw,2.55rem); font-weight:500; }
+h2.sm{ font-size:clamp(1.35rem,4.8vw,1.85rem); }
+.say{ font-size:clamp(1.02rem,2.6vw,1.13rem); max-width:56ch; }
+.center .say{ margin-left:auto; margin-right:auto; }
+.soft{ color:var(--soft); }
+.tiny{ font-size:13.5px; color:var(--soft); }
+
+/* =========================================================================
+   BUTTONS + CHIPS
+   ========================================================================= */
+.btn{
+  appearance:none; border:0; cursor:pointer;
+  font:800 15.5px/1 var(--body);
+  padding:15px 26px; border-radius:999px;
+  background:linear-gradient(135deg,#ffe3a3,#ffb389 60%,#ff9fbd);
+  color:#2a1740;
+  box-shadow:0 12px 28px -12px rgba(255,159,189,.8);
+  transition:transform .28s var(--spring), box-shadow .28s;
+}
+.btn:hover{ transform:translateY(-2px) scale(1.025); }
+.btn:active{ transform:scale(.96); }
+.btn.ghost{ background:rgba(255,255,255,.08); color:var(--ink); box-shadow:inset 0 0 0 1.5px var(--line); }
+.btn.ghost:hover{ box-shadow:inset 0 0 0 1.5px var(--accent); }
+.btn[disabled]{ opacity:.38; cursor:not-allowed; transform:none; }
+.row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+@media (max-width:520px){ .row .btn{ width:100%; text-align:center; } }
+
+.chips{ display:flex; flex-wrap:wrap; gap:9px; }
+.chip{
+  appearance:none; cursor:pointer; border:1.5px solid var(--line); background:rgba(255,255,255,.05);
+  border-radius:999px; padding:10px 16px; font:700 14.5px/1.1 var(--body);
+  transition:background .2s, border-color .2s, color .2s, transform .25s var(--spring);
+}
+.chip:hover{ border-color:var(--accent); transform:translateY(-1px); }
+.chip.picked{ background:var(--accent); border-color:var(--accent); color:#2a1740; }
+
+/* =========================================================================
+   STAGE — the little illustrated scene at the top of every chapter
+   ========================================================================= */
+.stage{ width:100%; height:auto; display:block; overflow:visible; margin-bottom:-2px; }
+.stage .fb{ transform-box:fill-box; transform-origin:center; }
+.arm{ transform-origin:0 0; }
+.bob{ animation:bob 2.6s ease-in-out infinite; }
+.bob2{ animation:bob 4.2s ease-in-out infinite; }
+.hop{ animation:hop 1.9s ease-in-out infinite; }
+.swingR{ animation:swingR 1.3s ease-in-out infinite; }
+.swingL{ animation:swingL 1.3s ease-in-out infinite; }
+.wave{ animation:wave 1.1s ease-in-out infinite; }
+.offer{ animation:offer 2.8s ease-in-out infinite; }
+.duck{ animation:duck 2.4s ease-in-out infinite; }
+.tw{ animation:tw 3s ease-in-out infinite; }
+.fz{ animation:fz 4.4s ease-in-out infinite; }
+.pulse{ animation:pulse 1.9s ease-in-out infinite; }
+.flick{ animation:flick 2.6s ease-in-out infinite; }
+.roll{ animation:roll 2.2s ease-in-out infinite; }
+.pawnOut{ animation:pawnOut 3.2s ease-in-out infinite; }
+.bub{ animation:bub 3s ease-in-out infinite; }
+.dangle{ animation:dangle 3s ease-in-out infinite; transform-origin:50% 0; }
+.ff{ animation:ff 4s ease-in-out infinite; }
+.sway{ animation:sway 3.6s ease-in-out infinite; }
+@keyframes bob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-2.6px); } }
+@keyframes hop{ 0%,60%,100%{ transform:translateY(0); } 74%{ transform:translateY(-9px); } 88%{ transform:translateY(-1px); } }
+@keyframes swingR{ 0%,100%{ transform:rotate(-24deg); } 45%{ transform:rotate(32deg); } }
+@keyframes swingL{ 0%,100%{ transform:rotate(24deg); } 45%{ transform:rotate(-32deg); } }
+@keyframes wave{ 0%,100%{ transform:rotate(-12deg); } 50%{ transform:rotate(16deg); } }
+@keyframes offer{ 0%,100%{ transform:translateX(0); } 50%{ transform:translateX(5px) rotate(-6deg); } }
+@keyframes duck{ 0%,55%,100%{ transform:translateY(0); } 66%,82%{ transform:translateY(10px); } }
+@keyframes tw{ 0%,100%{ opacity:.25; } 50%{ opacity:1; } }
+@keyframes fz{ 0%{ transform:translate(0,0) scale(.6); opacity:0; } 25%{ opacity:1; } 100%{ transform:translate(12px,-30px) scale(1.15); opacity:0; } }
+@keyframes pulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.22); } }
+@keyframes flick{ 0%,100%{ opacity:.16; } 50%{ opacity:.34; } }
+@keyframes roll{ 0%{ transform:translateY(0) rotate(0); } 38%{ transform:translateY(-18px) rotate(200deg); } 70%,100%{ transform:translateY(0) rotate(360deg); } }
+@keyframes pawnOut{ 0%,28%{ transform:translate(0,0) scale(1) rotate(0); opacity:1; } 58%{ transform:translate(-52px,-46px) scale(1.15) rotate(200deg); opacity:1; } 88%,100%{ transform:translate(-92px,10px) scale(.4) rotate(400deg); opacity:0; } }
+@keyframes bub{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-3px); } }
+@keyframes dangle{ 0%,100%{ transform:rotate(-5deg); } 50%{ transform:rotate(5deg); } }
+@keyframes ff{ 0%,100%{ opacity:.35; transform:translate(0,0); } 30%{ opacity:1; transform:translate(4px,-5px); } 65%{ opacity:.6; transform:translate(-4px,-2px); } }
+@keyframes sway{ 0%,100%{ transform:rotate(-4deg); } 50%{ transform:rotate(4deg); } }
+
+/* =========================================================================
+   COVER
+   ========================================================================= */
+.cover-tags{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+.cover-tags span{
+  font:700 13px/1 var(--body); padding:9px 14px; border-radius:999px;
+  background:rgba(255,255,255,.07); border:1px solid var(--line); color:var(--soft);
+}
+
+/* =========================================================================
+   POLAROIDS — only appear when you add a photo link in CONFIG.photos.slots
+   ========================================================================= */
+.polaroids{ display:flex; gap:18px; justify-content:center; flex-wrap:wrap; padding:6px 0 4px; }
+.polaroid{
+  margin:0; width:min(210px,44vw); background:#fff8ec; color:#3a2a2e;
+  padding:10px 10px 8px; border-radius:6px; position:relative;
+  box-shadow:0 18px 30px -14px rgba(0,0,0,.6);
+  transform:rotate(var(--tilt,-3deg)); transition:transform .4s var(--spring);
+}
+.polaroid:hover{ transform:rotate(0deg) scale(1.05); }
+.polaroid img{ width:100%; aspect-ratio:1; object-fit:cover; display:block; border-radius:3px; }
+.polaroid figcaption{ font-family:var(--hand); font-size:20px; text-align:center; padding-top:6px; line-height:1.1; }
+.polaroid::before{
+  content:""; position:absolute; top:-10px; left:50%; width:64px; height:20px; transform:translateX(-50%) rotate(-3deg);
+  background:rgba(255,217,138,.75); border-radius:2px;
+}
+
+/* =========================================================================
+   INTERACTIVE PIECES
+   ========================================================================= */
+.assist-stamp{
+  display:inline-block; font:800 13px/1 var(--body); letter-spacing:.06em; color:var(--mint);
+  border:2.5px solid var(--mint); padding:9px 14px; border-radius:6px;
+  transform:rotate(-5deg) scale(1.6); opacity:0; transition:opacity .3s, transform .5s var(--spring);
+}
+.assist-stamp.shown{ opacity:1; transform:rotate(-5deg) scale(1); }
+
+/* smash court */
+.court{
+  position:relative; height:190px; border-radius:22px; overflow:hidden; cursor:crosshair; touch-action:manipulation;
+  border:1.5px solid var(--line); user-select:none; -webkit-user-select:none;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.07) 0 49.5%, rgba(255,255,255,.4) 49.5% 50.5%, rgba(255,255,255,.02) 50.5%),
+    repeating-linear-gradient(0deg, transparent 0 22px, rgba(255,255,255,.04) 22px 23px);
+}
+.court::after{ content:"tap this side"; position:absolute; left:14px; bottom:9px; font:700 12px var(--body); color:var(--faint); }
+.court .yours{ position:absolute; right:14px; bottom:9px; font:700 12px var(--body); color:var(--faint); }
+.bird{
+  position:absolute; width:14px; height:14px; border-radius:50% 50% 50% 8%; background:#fff6ee;
+  box-shadow:0 0 14px rgba(255,246,238,.8); pointer-events:none; transform:rotate(-45deg);
+}
+.ping{ position:absolute; width:26px; height:26px; margin:-13px 0 0 -13px; border-radius:50%; border:2px solid var(--rose); pointer-events:none; animation:ping .7s var(--ease) forwards; }
+@keyframes ping{ from{ transform:scale(.3); opacity:1; } to{ transform:scale(1.7); opacity:0; } }
+.rx{ position:absolute; font:800 13px var(--body); background:#fff6ee; color:#2a1740; padding:4px 10px; border-radius:99px; pointer-events:none; animation:rxf 1.4s var(--ease) forwards; white-space:nowrap; }
+@keyframes rxf{ from{ transform:translateY(0) scale(.8); opacity:1; } to{ transform:translateY(-36px) scale(1); opacity:0; } }
+.count{ font-family:var(--display); font-size:clamp(2.8rem,11vw,4.4rem); line-height:.9; color:var(--accent); }
+.count small{ display:block; font:700 13.5px var(--body); color:var(--soft); margin-top:6px; }
+
+/* ludo */
+.ludo-row{ display:flex; gap:26px; flex-wrap:wrap; align-items:center; }
+.board{ width:200px; height:200px; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); border-radius:16px; overflow:hidden; border:3px solid #fff6ee; box-shadow:0 14px 30px -14px rgba(0,0,0,.6); }
 .board div{ position:relative; }
-.q-tl{ background:var(--clay); } .q-tr{ background:var(--cobalt); }
-.q-bl{ background:var(--saffron); } .q-br{ background:var(--court); }
-.q-mid{ background:var(--paper-2); display:grid; place-items:center; font-size:20px; }
-.q-lane{ background:var(--paper); }
+.q-tl{ background:#e0533d; } .q-tr{ background:#3b6bd0; } .q-bl{ background:#f0b73a; } .q-br{ background:#2b9c7a; }
+.q-lane{ background:#fff6ee; }
+.q-mid{ background:#f7ead6; display:grid; place-items:center; font-size:26px; }
 .pawn{
-  position:absolute; width:17px; height:17px; margin:-8px 0 0 -8px;
-  border-radius:50% 50% 50% 2px; background:var(--paper);
-  border:1.5px solid rgba(0,0,0,.35); cursor:pointer;
-  transform:rotate(45deg);
-  transition:transform .3s var(--ease), opacity .3s;
+  position:absolute; width:19px; height:19px; margin:-9px 0 0 -9px; cursor:pointer;
+  border-radius:50% 50% 50% 3px; background:#fff6ee; border:2px solid rgba(0,0,0,.28);
+  transform:rotate(45deg); transition:transform .3s var(--spring);
 }
-.pawn:hover{ transform:rotate(45deg) scale(1.18); }
-.pawn.home{ animation:sent .55s var(--ease) forwards; pointer-events:none; }
-@keyframes sent{
-  0%{ transform:rotate(45deg) scale(1); }
-  35%{ transform:rotate(200deg) scale(1.4); }
-  100%{ transform:rotate(45deg) scale(0) translateY(26px); opacity:0; }
-}
-.rage{ width:210px; }
-.rage .bar{ height:8px; border:1.5px solid var(--rule-hard); border-radius:99px; overflow:hidden; background:var(--paper); }
-.rage .bar i{ display:block; height:100%; width:0%; background:var(--clay); transition:width .45s var(--ease); }
-.rage .label{ font-size:12.5px; color:var(--ink-soft); margin-top:8px; min-height:2.6em; }
+.pawn:hover{ transform:rotate(45deg) scale(1.2); }
+.pawn.home{ animation:sent .6s var(--ease) forwards; pointer-events:none; }
+@keyframes sent{ 0%{ transform:rotate(45deg) scale(1); } 35%{ transform:rotate(200deg) scale(1.5); } 100%{ transform:rotate(45deg) scale(0) translateY(28px); opacity:0; } }
+.meter{ width:200px; }
+.meter .bar{ height:10px; border-radius:99px; background:rgba(255,255,255,.12); overflow:hidden; }
+.meter .bar i{ display:block; height:100%; width:0; background:linear-gradient(90deg,var(--mint),var(--gold),var(--rose)); transition:width .5s var(--ease); border-radius:99px; }
+.meter .label{ font-size:13.5px; color:var(--soft); margin-top:9px; min-height:2.9em; }
 
-/* =========================================================================
-   INNING 4 — LATE CALLS (the dial)
-   ========================================================================= */
-.dial{ max-width:var(--measure); }
-.dial .time{
-  font-family:var(--font-display); font-size:clamp(3.4rem,14vw,6rem); line-height:.9;
-  color:var(--accent);
-}
+/* late calls dial */
+.clock{ font-family:var(--display); font-size:clamp(3.2rem,14vw,5.4rem); line-height:.95; color:var(--accent); font-weight:500; }
 .dial input[type=range]{
-  -webkit-appearance:none; appearance:none;
-  width:100%; height:2px; background:var(--rule-hard); margin:26px 0 12px;
-  border-radius:99px; outline:none;
+  -webkit-appearance:none; appearance:none; width:100%; height:8px; border-radius:99px; outline:none; margin:22px 0 10px;
+  background:linear-gradient(90deg,#ffb389,#7a5fd0 45%,#1a1f5c);
 }
 .dial input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none; width:22px; height:22px; border-radius:50%;
-  background:var(--accent); cursor:grab; border:3px solid var(--paper);
-  box-shadow:0 0 0 1px var(--accent);
+  -webkit-appearance:none; width:32px; height:32px; border-radius:50%; border:0; cursor:grab;
+  background:#fff3d6; box-shadow:0 0 0 5px rgba(255,217,138,.3), 0 0 22px rgba(255,217,138,.9);
 }
 .dial input[type=range]::-moz-range-thumb{
-  width:22px; height:22px; border-radius:50%; background:var(--accent);
-  cursor:grab; border:3px solid var(--paper); box-shadow:0 0 0 1px var(--accent);
+  width:32px; height:32px; border-radius:50%; border:0; cursor:grab;
+  background:#fff3d6; box-shadow:0 0 0 5px rgba(255,217,138,.3), 0 0 22px rgba(255,217,138,.9);
 }
-.dial .caption{ font-size:1.05rem; min-height:4.4em; }
-.dial .ticks{ display:flex; justify-content:space-between; font-size:11.5px; color:var(--ink-soft); }
+.dial .ticks{ display:flex; justify-content:space-between; font:700 12.5px var(--body); color:var(--faint); }
+.dial .caption{ font-size:1.08rem; min-height:3.6em; margin-top:10px; }
 
-/* =========================================================================
-   INNING 5 — DOUBLE BILL (board games + movie)
-   ========================================================================= */
-.bill{ display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); max-width:760px; }
-.stub{
-  border:1.5px dashed var(--rule-hard); border-radius:3px;
-  padding:18px 20px; background:var(--paper-2);
-  cursor:pointer; position:relative; overflow:hidden;
-  transition:border-color .25s var(--ease);
+/* flip cards */
+.flips{ display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); }
+.flip{ perspective:1000px; cursor:pointer; background:none; border:0; padding:0; text-align:left; color:inherit; }
+.flip-in{ display:grid; transition:transform .8s var(--ease); transform-style:preserve-3d; min-height:200px; }
+.flip.open .flip-in{ transform:rotateY(180deg); }
+.face{
+  grid-area:1/1; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  border-radius:22px; padding:20px; display:flex; flex-direction:column; gap:8px; justify-content:center;
+  border:1.5px dashed rgba(255,255,255,.3); background:rgba(255,255,255,.06);
 }
-.stub:hover{ border-color:var(--ink); }
-.stub .date{ font-size:12px; font-weight:700; letter-spacing:.06em; color:var(--accent); }
-.stub h3{ font-size:1.45rem; margin:6px 0 8px; }
-.stub p{ font-size:14.5px; color:var(--ink-soft); }
-.stub .hidden-line{
-  margin-top:12px; font-size:14.5px; color:var(--ink); font-weight:600;
-  max-height:0; opacity:0; overflow:hidden;
-  transition:max-height .4s var(--ease), opacity .3s var(--ease), margin .3s;
-}
-.stub.open .hidden-line{ max-height:120px; opacity:1; }
-.stub .flip-hint{ font-size:11.5px; color:var(--ink-soft); margin-top:12px; letter-spacing:.03em; }
-.stub.open .flip-hint{ display:none; }
+.face.back{ transform:rotateY(180deg); background:linear-gradient(140deg,rgba(255,217,138,.22),rgba(255,159,189,.2)); border-style:solid; border-color:rgba(255,217,138,.55); }
+.face h3{ font-size:1.5rem; }
+.face .emoji{ font-size:30px; }
+.face .when{ font-family:var(--hand); font-size:22px; color:var(--accent); font-weight:700; }
+.face .flip-hint{ font-size:12.5px; color:var(--faint); margin-top:auto; }
 
-/* =========================================================================
-   INNING 6 — ASLEEP ON CALL
-   ========================================================================= */
-.breath{
-  width:14px; height:14px; border-radius:50%; background:var(--accent);
-  animation:breathe 4.6s ease-in-out infinite; margin:6px 0 2px;
-}
-@keyframes breathe{ 0%,100%{ transform:scale(1); opacity:.9; } 50%{ transform:scale(1.9); opacity:.35; } }
-.kept{ max-width:var(--measure); }
-.kept li{ font-size:15.5px; color:var(--ink-soft); padding:9px 0; border-bottom:1px solid var(--rule); list-style:none; }
-.kept{ padding:0; margin:0; }
-.kept li b{ color:var(--ink); font-weight:600; }
+/* breathing */
+.breath{ position:relative; width:64px; height:64px; margin:6px auto 0; }
+.breath i{ position:absolute; inset:0; border-radius:50%; background:var(--accent); opacity:.85; animation:breathe 4.8s ease-in-out infinite; }
+.breath i:nth-child(2){ animation-delay:-1.6s; opacity:.4; }
+.breath i:nth-child(3){ animation-delay:-3.2s; opacity:.2; }
+@keyframes breathe{ 0%,100%{ transform:scale(.4); } 50%{ transform:scale(1.15); } }
+body.hush::after{ content:""; position:fixed; inset:0; z-index:5; background:rgba(3,5,20,.55); pointer-events:none; animation:fadein 1.4s both; }
+@keyframes fadein{ from{ opacity:0; } to{ opacity:1; } }
+.hushnote{ font-family:var(--hand); font-size:24px; color:var(--accent); text-align:center; }
 
-/* =========================================================================
-   INNING 7 — THE LETTER
-   ========================================================================= */
-.letter{
-  max-width:56ch;
-  border-left:2px solid var(--accent);
-  padding-left:clamp(18px,4vw,30px);
+/* jar lights */
+.lights{ display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); }
+.light{
+  appearance:none; cursor:pointer; text-align:left; display:flex; gap:12px; align-items:center;
+  border:1.5px solid var(--line); background:rgba(255,255,255,.05); border-radius:18px; padding:13px 15px;
+  font:700 15px var(--body); transition:border-color .2s, background .2s, transform .25s var(--spring);
 }
-.letter p{ margin-top:16px; font-size:1.04rem; line-height:1.72; }
-.letter p:first-child{ margin-top:0; }
-.letter .sign{ font-family:var(--font-display); font-size:1.5rem; margin-top:26px; }
-.letter .said{ font-style:italic; }
+.light:hover{ transform:translateY(-2px); border-color:var(--accent); }
+.light .orb{ width:14px; height:14px; border-radius:50%; background:#ffe28a; box-shadow:0 0 14px 4px rgba(255,226,138,.7); flex:none; animation:ffo 2.6s ease-in-out infinite; }
+.light.on{ background:rgba(255,217,138,.16); border-color:var(--accent); }
+@keyframes ffo{ 0%,100%{ opacity:.55; } 50%{ opacity:1; } }
+.lightnote{ min-height:3.4em; font-size:1.05rem; color:var(--ink); border-left:3px solid var(--accent); padding-left:14px; }
 
-/* =========================================================================
-   INNING 9/10 — PLANNER
-   ========================================================================= */
-.grid-opts{ display:grid; gap:9px; grid-template-columns:repeat(auto-fit,minmax(132px,1fr)); max-width:640px; }
-.opt{
-  appearance:none; cursor:pointer; text-align:left;
-  background:transparent; border:1.5px solid var(--rule-hard); border-radius:2px;
-  padding:12px 13px; font-size:14.5px; font-weight:600;
-  transition:border-color .2s, background .2s, color .2s;
+/* envelope + letter */
+.env-wrap{ display:grid; place-items:center; transition:opacity .7s var(--ease), max-height .9s var(--ease); max-height:260px; overflow:hidden; }
+.env-wrap.gone{ opacity:0; max-height:0; }
+.env{
+  position:relative; width:min(300px,80%); aspect-ratio:1.5; border:0; padding:0; cursor:pointer; background:none;
+  filter:drop-shadow(0 20px 26px rgba(0,0,0,.5)); animation:bob 3s ease-in-out infinite;
 }
-.opt:hover{ border-color:var(--ink); }
-.opt.picked{ background:var(--ink); border-color:var(--ink); color:var(--paper); }
+.env .back{ position:absolute; inset:0; background:#f3d8b0; border-radius:8px; }
+.env .flap{
+  position:absolute; left:0; right:0; top:0; height:56%; background:#e8c48f; transform-origin:50% 0;
+  clip-path:polygon(0 0,100% 0,50% 100%); transition:transform .7s var(--ease); z-index:3;
+}
+.env .front{
+  position:absolute; inset:0; z-index:2; background:linear-gradient(#f7e2bf,#efd0a2);
+  clip-path:polygon(0 0,50% 52%,100% 0,100% 100%,0 100%); border-radius:8px;
+}
+.env .seal{
+  position:absolute; left:50%; top:47%; transform:translate(-50%,-50%); z-index:4; width:44px; height:44px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#ff8fa8,#c93b62); display:grid; place-items:center; color:#fff; font-size:20px;
+  box-shadow:0 4px 10px rgba(0,0,0,.35); transition:opacity .3s;
+}
+.env.open{ animation:none; }
+.env.open .flap{ transform:rotateX(180deg); z-index:1; }
+.env.open .seal{ opacity:0; }
+.env-hint{ font-family:var(--hand); font-size:24px; color:var(--accent); text-align:center; }
 
-.field{ display:flex; flex-direction:column; gap:6px; max-width:250px; }
-.field label{ font-size:12.5px; color:var(--ink-soft); }
+.paper{
+  background:#fff4e2; color:#3a2630; border-radius:14px; padding:clamp(22px,5vw,38px) clamp(20px,5vw,40px);
+  box-shadow:0 26px 50px -24px rgba(0,0,0,.65);
+  background-image:repeating-linear-gradient(transparent 0 33px, rgba(120,80,90,.09) 33px 34px);
+  position:relative;
+}
+.paper p{ font-size:1.06rem; line-height:34px; margin-top:0; opacity:0; }
+.paper p + p{ margin-top:12px; }
+.paper.show p{ animation:rise .9s var(--ease) both; animation-delay:calc(var(--n) * .28s); }
+.paper .sign{ font-family:var(--hand); font-size:2rem; line-height:1.1; margin-top:20px; }
+.paper .said{ font-style:italic; }
+.paper .star{ position:absolute; top:14px; right:18px; font-size:18px; color:#e0a32b; }
+.reply textarea, .note-in textarea{
+  width:100%; min-height:96px; resize:vertical; border-radius:16px; border:1.5px solid var(--line);
+  background:rgba(255,255,255,.07); color:var(--ink); padding:13px 15px; font:600 15.5px/1.5 var(--body);
+}
+.reply textarea::placeholder, .note-in textarea::placeholder{ color:var(--faint); }
+.slab{ border:1.5px solid var(--line); background:rgba(255,255,255,.06); border-radius:22px; padding:20px 22px; }
+.slab h3{ font-size:1.4rem; margin-bottom:8px; }
+
+/* the ask */
+.reasons{ display:grid; gap:12px; }
+.lantern{
+  border-radius:20px; padding:15px 18px; font-size:1.05rem;
+  background:linear-gradient(120deg,rgba(255,217,138,.16),rgba(255,159,189,.12));
+  border:1px solid rgba(255,217,138,.35); box-shadow:0 0 32px -12px rgba(255,217,138,.6);
+  animation:rise .9s var(--ease) both;
+}
+
+/* planning */
+.field{ display:flex; flex-direction:column; gap:6px; max-width:260px; }
+.field label{ font:700 13px var(--body); color:var(--soft); }
 .field input{
-  background:var(--paper); color:var(--ink);
-  border:1.5px solid var(--rule-hard); border-radius:2px;
-  padding:10px 11px; font-family:var(--font-body); font-size:14.5px;
-  color-scheme:light;
+  background:rgba(255,255,255,.08); color:var(--ink); border:1.5px solid var(--line); border-radius:14px;
+  padding:11px 13px; font:600 15px var(--body); color-scheme:dark;
 }
-body[data-light="night"] .field input{ color-scheme:dark; }
-.hr{ height:1px; background:var(--rule); max-width:640px; margin:30px 0; }
-.note{ font-size:14px; color:var(--accent); font-weight:600; min-height:1.4em; }
-
-.places{ display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); max-width:820px; }
+.note{ font-family:var(--hand); font-size:22px; color:var(--accent); min-height:1.3em; }
+.rule{ height:1px; background:var(--line); margin:26px 0 !important; }
+.places{ display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); }
 .place{
-  text-align:left; cursor:pointer; background:transparent;
-  border:1.5px solid var(--rule-hard); border-radius:3px; padding:17px 18px;
-  transition:border-color .2s, background .2s;
+  appearance:none; padding:0; text-align:left; cursor:pointer; overflow:hidden; color:inherit;
+  border:1.5px solid var(--line); border-radius:22px; background:rgba(255,255,255,.05);
+  transition:border-color .2s, transform .3s var(--spring), background .2s;
 }
-.place:hover{ border-color:var(--ink); }
-.place.picked{ border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent); background:var(--paper-2); }
-.place .nm{ font-family:var(--font-display); font-size:1.32rem; }
-.place .hr2{ font-size:12px; font-weight:700; color:var(--accent); letter-spacing:.03em; margin:3px 0 7px; }
-.place .pl{ font-size:14px; color:var(--ink-soft); line-height:1.5; }
-.place .vb{ font-size:12.5px; color:var(--ink-soft); font-style:italic; margin-top:7px; opacity:.85; }
-
-.card-out{
-  border:1.5px solid var(--ink); border-radius:3px; padding:20px 22px;
-  max-width:var(--measure); background:var(--paper-2);
+.place:hover{ transform:translateY(-3px); border-color:rgba(255,255,255,.5); }
+.place.picked{ border-color:var(--accent); background:rgba(255,217,138,.12); box-shadow:0 0 0 1px var(--accent); }
+.place .ph{ position:relative; height:104px; display:grid; place-items:center; font-size:38px; }
+.place .ph img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.place .ph .pin{
+  position:absolute; right:10px; top:10px; font:800 12px var(--body); padding:5px 10px; border-radius:99px;
+  background:rgba(20,13,46,.7); color:var(--accent);
 }
-.card-out h3{ font-size:1.3rem; margin-bottom:10px; }
-.card-out p{ font-size:15px; color:var(--ink-soft); margin-top:5px; }
-.card-out .ok{ color:var(--ink); font-weight:700; margin-top:12px; }
+.place .pb2{ padding:14px 16px 16px; }
+.place .nm{ font-family:var(--display); font-size:1.3rem; font-weight:500; }
+.place .hr2{ font:700 12.5px var(--body); color:var(--accent); margin:2px 0 6px; }
+.place .pl{ font-size:14px; color:var(--soft); line-height:1.5; }
+.place .vb{ font:600 13px var(--body); font-style:italic; color:var(--faint); margin-top:6px; }
 
-/* =========================================================================
-   FINALE
-   ========================================================================= */
-.finale h2{ font-size:clamp(2.4rem,9vw,4.6rem); }
-#final-lines p{ opacity:0; }
-#final-lines p.in{ animation:enter .7s var(--ease) both; }
+.ticket{
+  border-radius:22px; padding:20px 22px;
+  background:linear-gradient(135deg,rgba(255,217,138,.18),rgba(255,159,189,.14));
+  border:1.5px solid rgba(255,217,138,.5);
+}
+.ticket h3{ font-size:1.4rem; padding-bottom:12px; border-bottom:2px dashed rgba(255,255,255,.3); margin-bottom:10px; }
+.ticket p{ font-size:15px; color:var(--ink); margin-top:5px; }
+.ticket b{ color:var(--accent); font-weight:800; }
 
-/* easter egg toast */
+/* the finale */
+#heart .hl{ fill:none; stroke:var(--accent); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1; stroke-dashoffset:1; opacity:.85; }
+.panel.on #heart .hl{ animation:draw 3.4s linear .4s forwards; }
+@keyframes draw{ to{ stroke-dashoffset:0; } }
+#heart .hs{ opacity:0; transform-box:fill-box; transform-origin:center; }
+.panel.on #heart .hs{ animation:starpop .6s var(--spring) forwards; }
+@keyframes starpop{ from{ opacity:0; transform:scale(0); } to{ opacity:1; transform:scale(1); } }
+.fin-line{ animation:rise .9s var(--ease) both; }
+
 #toast{
-  position:fixed; left:50%; bottom:22px; transform:translate(-50%,18px);
-  background:var(--ink); color:var(--paper);
-  padding:11px 20px; border-radius:2px; font-size:14px; font-weight:600;
-  z-index:80; opacity:0; pointer-events:none; transition:all .35s var(--ease);
-  max-width:calc(100vw - 40px); text-align:center;
+  position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom,0px) + 22px); transform:translate(-50%,18px);
+  background:#fff6ee; color:#2a1740; padding:11px 20px; border-radius:99px; font:800 14px var(--body);
+  z-index:90; opacity:0; pointer-events:none; transition:all .4s var(--ease); max-width:calc(100vw - 36px); text-align:center;
 }
 #toast.show{ opacity:1; transform:translate(-50%,0); }
 
-[hidden]{ display:none !important; }
-
 @media (prefers-reduced-motion: reduce){
-  *,*::before,*::after{
-    animation-duration:.001ms !important; animation-iteration-count:1 !important;
-    transition-duration:.001ms !important;
-  }
+  *,*::before,*::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+  #heart .hl{ stroke-dashoffset:0; }
+  #heart .hs{ opacity:1; }
 }
 </style>
 </head>
-<body data-light="day">
+<body data-sky="dusk">
 
-<svg id="court-lines" aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 100 100">
-  <rect x="6" y="4" width="88" height="92"></rect>
-  <rect x="12" y="4" width="76" height="92"></rect>
-  <line x1="6" y1="50" x2="94" y2="50"></line>
-  <line x1="6" y1="22" x2="94" y2="22"></line>
-  <line x1="6" y1="78" x2="94" y2="78"></line>
-  <line x1="50" y1="22" x2="50" y2="78"></line>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="2.4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
 </svg>
 
-<div id="thread"><i></i></div>
+<div class="sky on" id="sky-dusk"></div>
+<div class="sky" id="sky-night"></div>
+<div class="sky" id="sky-moon"></div>
+<div class="sky" id="sky-dawn"></div>
+<div id="photobg" aria-hidden="true"><div class="pb"></div><div class="pb"></div></div>
+<div id="orb" aria-hidden="true"></div>
+<canvas id="stars" aria-hidden="true"></canvas>
 
-<nav id="spine" aria-label="Innings">
-  <ol id="spine-list"></ol>
-</nav>
+<header id="top">
+  <button id="back" type="button" aria-label="Go back one star" hidden>&#8249;</button>
+  <div id="conwrap">
+    <svg id="const" aria-hidden="true"></svg>
+    <div id="chapter"></div>
+  </div>
+  <span></span>
+</header>
 
-<main id="log">
+<main id="app">
 
-  <!-- ===== 0 — COVER ===== -->
+  <!-- ===== 0 · COVER ===== -->
   <section class="panel on" data-i="0">
-    <div class="wrap">
-      <p class="stamp">18 JUL <small>&mdash; still going</small></p>
-      <h1 class="big">The match log.</h1>
-      <p class="say">Everything that's happened since Sakshi dragged you onto a badminton court, written down in the order it happened, because some of it needs saying out loud.</p>
-      <canvas id="rally" aria-hidden="true"></canvas>
-      <div class="cover-meta">
-        <div><b>2</b>players</div>
-        <div><b>1</b>assist, uncredited until now</div>
-        <div><b>4:00</b>latest recorded stoppage</div>
-      </div>
-      <div class="row">
-        <button class="go" data-go="1">Open the log</button>
-      </div>
+    <div class="card center">
+      <svg class="stage" viewBox="0 0 400 190" data-scene="rally" aria-hidden="true"></svg>
+      <p class="hand">a small sky, for Gauri</p>
+      <h1>Every good thing since 18 July turned out to be a star.</h1>
+      <p class="say soft">I kept count. There are thirteen. Tap the first one and I'll show you.</p>
+      <div class="cover-tags"><span>13 stars</span><span>1 honest letter</span><span>1 question</span></div>
+      <div class="row"><button class="btn" data-go="1">Light the first star &#10022;</button></div>
     </div>
   </section>
 
-  <!-- ===== 1 — THE ASSIST ===== -->
+  <!-- ===== 1 · THE INVITATION ===== -->
   <section class="panel" data-i="1">
-    <div class="wrap">
-      <p class="stamp">18 JUL <small>&mdash; inning one</small></p>
-      <h2 class="big">Sakshi gets the assist.</h2>
-      <p class="say">She brought you for badminton. That's the whole origin story. One casual invite, and somehow it's July to now.</p>
-      <div class="assist">
-        <div class="who">Sakshi</div>
-        <div class="what">Brought you. Has no idea what she started. Owed one, permanently.</div>
-        <div class="who">Me</div>
-        <div class="what">Showed up to play badminton. Did not, in hindsight, only play badminton.</div>
-      </div>
+    <div class="card">
+      <svg class="stage" viewBox="0 0 400 190" data-scene="assist" aria-hidden="true"></svg>
+      <p class="hand">18 July &middot; the invitation</p>
+      <h2>Sakshi brought you to badminton. Thank you, Sakshi.</h2>
+      <p class="say">That's the whole beginning: a casual invite, a court, and no idea what it would turn into. One yes from her and here we are.</p>
       <div class="row">
-        <button class="go line" id="assist-btn">Credit the assist</button>
+        <button class="btn ghost" id="assist-btn" type="button">Credit the assist</button>
+        <span class="assist-stamp" id="assist-stamp">ASSIST: SAKSHI, 18/07</span>
       </div>
-      <span id="assist-stamp">ASSIST &mdash; S. &middot; 18/07</span>
-      <div class="row">
-        <button class="go" data-go="2">Then I started smashing</button>
-      </div>
+      <div class="polaroids" data-slot="court"></div>
+      <div class="row"><button class="btn" data-go="2">Then I started smashing</button></div>
     </div>
   </section>
 
-  <!-- ===== 2 — THE SMASH ===== -->
+  <!-- ===== 2 · THE SMASH ===== -->
   <section class="panel" data-i="2">
-    <div class="wrap">
-      <p class="stamp">18 JUL <small>&mdash; inning two</small></p>
-      <h2 class="big">I smashed a few at you.</h2>
-      <p class="say">On purpose. Not hard enough to be rude, just hard enough to get a look out of you. You gave me the smallest reaction in history and it was completely worth it.</p>
-      <p class="say quiet">That's the exact moment we started talking, so: no regrets.</p>
-      <div class="smash-court" id="court">
-        <div class="birdie" id="birdie" style="left:20px; top:88px;"></div>
-      </div>
-      <div class="counter"><span id="smash-count">0</span><small>smashes landed on your side</small></div>
-      <div class="row">
-        <button class="go" data-go="3">Then came Ludo</button>
-      </div>
+    <div class="card">
+      <svg class="stage" viewBox="0 0 400 190" data-scene="smash" aria-hidden="true"></svg>
+      <p class="hand">18 July &middot; the smash</p>
+      <h2>I smashed a few at you. On purpose.</h2>
+      <p class="say">Not hard enough to be rude. Just hard enough to get a reaction. You gave me a small one, and it was completely worth it, because that's what got us talking.</p>
+      <div class="court" id="court"><div class="bird" id="bird" style="left:24px; top:88px;"></div><span class="yours">Gauri's side</span></div>
+      <div class="count"><span id="smash-count">0</span><small>smashes landed on your side</small></div>
+      <div class="row"><button class="btn" data-go="3">Then came Ludo</button></div>
     </div>
   </section>
 
-  <!-- ===== 3 — LUDO ===== -->
+  <!-- ===== 3 · LUDO ===== -->
   <section class="panel" data-i="3">
-    <div class="wrap">
-      <p class="stamp">JUL&ndash;AUG <small>&mdash; inning three</small></p>
-      <h2 class="big">I sent your pieces home. Repeatedly.</h2>
-      <p class="say">You were one square from safety roughly every single time, and I took it roughly every single time. You called it rage-baiting. It was rage-baiting.</p>
+    <div class="card">
+      <svg class="stage" viewBox="0 0 400 190" data-scene="ludo" aria-hidden="true"></svg>
+      <p class="hand">July to August &middot; ludo</p>
+      <h2>I sent your pieces home. Repeatedly.</h2>
+      <p class="say">You were one square from safety and I was one dice roll from ruining it. You called it rage-baiting. It was rage-baiting. Try it: tap a pawn and see how long your composure lasts.</p>
       <div class="ludo-row">
         <div class="board" id="board" aria-hidden="true"></div>
-        <div class="rage">
+        <div class="meter">
           <p class="tiny" style="margin-bottom:8px;">Gauri's composure</p>
           <div class="bar"><i id="rage-bar"></i></div>
           <p class="label" id="rage-label">Fully intact. Send a piece home and let's see.</p>
         </div>
       </div>
-      <p class="say quiet">For the record: I never once apologised during a game, and I'm not starting now.</p>
-      <div class="row">
-        <button class="go" data-go="4">Then the calls started</button>
-      </div>
+      <div class="polaroids" data-slot="ludo"></div>
+      <div class="row"><button class="btn" data-go="4">Then the calls started</button></div>
     </div>
   </section>
 
-  <!-- ===== 4 — LATE CALLS ===== -->
+  <!-- ===== 4 · LATE CALLS ===== -->
   <section class="panel" data-i="4">
-    <div class="wrap">
-      <p class="stamp">AUG <small>&mdash; inning four</small></p>
-      <h2 class="big">Then we stopped hanging up.</h2>
-      <p class="say">It began as a group call. Somewhere along the way everyone else dropped off and neither of us mentioned it.</p>
+    <div class="card">
+      <svg class="stage" viewBox="0 0 400 190" data-scene="call" aria-hidden="true"></svg>
+      <p class="hand">August &middot; the late calls</p>
+      <h2>Then we stopped hanging up.</h2>
+      <p class="say">It started as a group call. Somewhere along the way it turned into just the two of us, and neither of us said a word about it. Drag the moon and watch the night go by.</p>
       <div class="dial">
-        <p class="time" id="clock">10:30 PM</p>
+        <p class="clock" id="clock">10:30 PM</p>
         <input type="range" id="hour" min="0" max="11" step="1" value="0" aria-label="Move through the night" />
         <div class="ticks"><span>10:30 PM</span><span>1 AM</span><span>4 AM</span></div>
-        <p class="caption" id="hour-caption">Group call. Six people. Normal.</p>
+        <p class="caption" id="hour-caption">Group call. Loud. Completely normal.</p>
       </div>
-      <div class="row">
-        <button class="go" data-go="5">22&ndash;23 August</button>
-      </div>
+      <div class="row"><button class="btn" data-go="5">And then the weekend</button></div>
     </div>
   </section>
 
-  <!-- ===== 5 — DOUBLE BILL ===== -->
+  <!-- ===== 5 · THE WEEKEND ===== -->
   <section class="panel" data-i="5">
-    <div class="wrap">
-      <p class="stamp">22&ndash;23 AUG <small>&mdash; inning five</small></p>
-      <h2 class="big">The weekend with receipts.</h2>
-      <p class="say">Two nights in a row. Both of them good enough that I remember the dates without checking.</p>
-      <div class="bill">
-        <div class="stub" data-stub>
-          <p class="date">22 AUGUST &middot; DHWANI'S PLACE</p>
-          <h3>Board game night</h3>
-          <p>Long. Loud. Contested. Officially a fair game.</p>
-          <p class="hidden-line">Unofficially: we both cheated, we both knew, neither of us said anything. Best possible outcome.</p>
-          <p class="flip-hint">tap for the unofficial version</p>
-        </div>
-        <div class="stub" data-stub>
-          <p class="date">23 AUGUST &middot; THE NEXT DAY</p>
-          <h3>Spider-Man</h3>
-          <p>We went for the film.</p>
-          <p class="hidden-line">I could not tell you one plot point. I can tell you exactly how much fun we had.</p>
-          <p class="flip-hint">tap for what I actually remember</p>
-        </div>
+    <div class="card">
+      <svg class="stage" viewBox="0 0 400 190" data-scene="movie" aria-hidden="true"></svg>
+      <p class="hand">22 &amp; 23 August &middot; two nights in a row</p>
+      <h2>The weekend I remember the dates of.</h2>
+      <p class="say">Tap a ticket to turn it over.</p>
+      <div class="flips">
+        <button class="flip" type="button" data-flip>
+          <div class="flip-in">
+            <div class="face"><span class="emoji">&#127922;</span><p class="when">22 August, Dhwani's place</p><h3>Board game night</h3><p class="soft">Long. Loud. Competitive. Officially, a fair game.</p><p class="flip-hint">tap for the unofficial version</p></div>
+            <div class="face back"><span class="emoji">&#128520;</span><h3>Unofficially</h3><p>We both cheated. We both had fun. Somehow that was the best part.</p></div>
+          </div>
+        </button>
+        <button class="flip" type="button" data-flip>
+          <div class="flip-in">
+            <div class="face"><span class="emoji">&#127871;</span><p class="when">23 August, the next day</p><h3>Spider-Man</h3><p class="soft">Popcorn, dark theatre, a very good film.</p><p class="flip-hint">tap for what I actually took away</p></div>
+            <div class="face back"><span class="emoji">&#128375;&#65039;</span><h3>What I took away</h3><p>We enjoyed it a lot. Honestly, the best part of the movie was who I watched it with.</p></div>
+          </div>
+        </button>
       </div>
-      <div class="row">
-        <button class="go" data-go="6">And then the 4am ones</button>
-      </div>
+      <p class="say soft">After that it just kept happening: more badminton, more ludo, more nights that ran too long.</p>
+      <div class="polaroids" data-slot="boardgame,movie"></div>
+      <div class="row"><button class="btn" data-go="6">Then the 4 AM ones</button></div>
     </div>
   </section>
 
-  <!-- ===== 6 — ASLEEP ON CALL ===== -->
+  <!-- ===== 6 · ASLEEP ON THE CALL ===== -->
   <section class="panel" data-i="6">
-    <div class="wrap">
-      <p class="stamp">ONGOING <small>&mdash; inning six</small></p>
-      <h2 class="mid">Then one night you fell asleep on the call.</h2>
-      <div class="breath" aria-hidden="true"></div>
-      <p class="say">You didn't hang up. You just went quiet, and kept breathing, and left the line open.</p>
-      <p class="say">I know it wasn't a grand gesture. You were tired and we had office. But you were comfortable enough around me to stop performing, and that did more damage to me than any of the funny stuff.</p>
-      <p class="say quiet">That's the night this became a problem I couldn't argue my way out of.</p>
-      <ul class="kept">
-        <li><b>Nicknames</b> &mdash; ours, not explaining them here.</li>
-        <li><b>Secrets</b> &mdash; still where you left them.</li>
-        <li><b>Overthinking, out loud</b> &mdash; my favourite genre.</li>
-        <li><b>The 4am conversations</b> &mdash; before office. Every time.</li>
-      </ul>
-      <div class="row">
-        <button class="go" data-go="7">Before anything else, though</button>
-      </div>
+    <div class="card">
+      <svg class="stage" viewBox="0 0 400 190" data-scene="sleep" aria-hidden="true"></svg>
+      <p class="hand">One night &middot; asleep on the call</p>
+      <h2>You fell asleep on the call, and I stayed.</h2>
+      <p class="say">You didn't hang up. You just went quiet and left the line open. It doesn't sound like much, but you were so comfortable around me that you fell asleep, and that's when I knew I liked you even more.</p>
+      <div class="breath" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="row" style="justify-content:center;"><button class="btn ghost" id="hush" type="button">Hush the room</button></div>
+      <p class="hushnote" id="hushnote" hidden>Line's still open. I didn't hang up either.</p>
+      <div class="row"><button class="btn" data-go="7">What we've kept since</button></div>
     </div>
   </section>
 
-  <!-- ===== 7 — THE LETTER ===== -->
+  <!-- ===== 7 · THE JAR ===== -->
   <section class="panel" data-i="7">
-    <div class="wrap">
-      <p class="stamp">TODAY <small>&mdash; stoppage in play</small></p>
-      <h2 class="mid">I'm not asking you anything until I've said this.</h2>
+    <div class="card">
+      <svg class="stage" viewBox="0 0 400 190" data-scene="jar" aria-hidden="true"></svg>
+      <p class="hand">Ever since &middot; the jar</p>
+      <h2>Some things I'm keeping in a jar.</h2>
+      <p class="say">The small stuff that stacked up along the way. Tap a light.</p>
+      <div class="lights" id="lights">
+        <button class="light" type="button" data-t="The nicknames we gave each other. I'm not writing them here. Some things stay ours."><i class="orb"></i>Nicknames</button>
+        <button class="light" type="button" data-t="Told late at night, kept in daylight. Yours are safe with me."><i class="orb"></i>Secrets</button>
+        <button class="light" type="button" data-t="Out loud, together, at volumes that would embarrass us in daylight."><i class="orb"></i>Overthinking</button>
+        <button class="light" type="button" data-t="The kind where the jokes stop and neither of us notices."><i class="orb"></i>The deep talks</button>
+      </div>
+      <p class="lightnote" id="lightnote">Pick one.</p>
+      <div class="polaroids" data-slot="us"></div>
+      <div class="row"><button class="btn" data-go="8">Before anything else, though</button></div>
+    </div>
+  </section>
 
-      <div class="letter">
+  <!-- ===== 8 · THE LETTER ===== -->
+  <section class="panel" data-i="8">
+    <div class="card">
+      <svg class="stage" viewBox="0 0 400 190" data-scene="sorry" aria-hidden="true"></svg>
+      <p class="hand">Before I ask you anything</p>
+      <h2>You said you don't want an apology. So this isn't one.</h2>
+
+      <div class="env-wrap" id="env-wrap">
+        <button class="env" id="env" type="button" aria-label="Open the letter">
+          <span class="back"></span><span class="front"></span><span class="flap"></span><span class="seal">&#9825;</span>
+        </button>
+      </div>
+      <p class="env-hint" id="env-hint">tap to open</p>
+
+      <div class="paper" id="letter" hidden>
+        <span class="star">&#10022;</span>
         <p>Gauri,</p>
-
-        <p>You asked me something, and I got it wrong. If you and my best friend of thirteen years ever fell out, would I stop talking to you. I said yes. Fast. Like it was a quiz with a right answer and I was pleased to know it.</p>
-
-        <p>You weren't asking about him. You were asking whether you have a place here or whether you're a guest in it &mdash; welcome until the people who were here first need the room back. I answered the hypothetical and completely missed you standing in front of it.</p>
-
-        <p>And then <span class="said">"OK Miss Gauri."</span> I say it because it gets a reaction and I like getting reactions out of you. But I've used it while you were being serious with me, and it turns your volume down, which is the exact opposite of what I want to do to you.</p>
-
-        <p>So, plainly: you are not a plus-one in my life. A thirteen-year friendship and you were never in the same race &mdash; I should never have lined you up against each other, and I'm sorry my answer put you there. You are not an outsider here. You don't have to audition for a place you already have.</p>
-
-        <p>I'm not going to ask you to say it's fine. It wasn't fine. I'd honestly rather you stay annoyed with me a while longer and believe me later, than forgive me tonight and still feel like a guest.</p>
-
-        <p>What changes: when you ask me something that sounds small, I'll assume it isn't. I'll answer <em>you</em>, not the hypothetical. And when you're being serious, I'll drop the bit.</p>
-
-        <p>You've stayed on the line with me at 4am on nights before office. Let me be that for you too.</p>
-
-        <p class="sign">&mdash; Parth</p>
+        <p>You told me you're not looking for an apology. I heard that. So I'm not writing one to get you to say it's okay. Think of this as something different: me telling you what I understand now, so you never have to explain it to me twice.</p>
+        <p>You asked what I'd do if you and my best friend of thirteen years ever fell out, whether I'd stop talking to you. I said yes, quickly, like it was a quiz and I was proud to know the answer. But you weren't asking about her. You were asking whether you have a place in my life, or whether you're a guest in it. I answered the hypothetical and missed you completely.</p>
+        <p>So here's the real answer. You are not a guest. You don't have to audition for a place you already have. I shouldn't have set you and a thirteen-year friendship against each other like a contest. I can't predict every hypothetical, but I can tell you where you stand: you are not optional to me.</p>
+        <p>Then there's <span class="said">"OK Miss Gauri."</span> I say it because I love getting a reaction out of you. But I've said it while you were being serious, and all it does is turn your voice down, which is the opposite of what I want. I'm retiring it for the serious moments.</p>
+        <p>You don't owe me forgiveness, a reply, or even a reaction. If you're still annoyed, that's fair. I'd rather earn back the ease between us than have you pretend it's already there.</p>
+        <p>What changes is simple. When you ask me something that sounds small, I'll assume it isn't. I'll answer you, not the hypothetical. And when you're being serious, I'll drop the bit.</p>
+        <p>You've stayed on the line with me at 4 AM on nights before office. I'd like to be that for you too, for as long as you'll have me around.</p>
+        <p class="sign">Parth</p>
       </div>
 
-      <div class="row">
-        <button class="go" data-go="8">Okay. Keep going.</button>
-        <button class="go line" id="not-ready">I'm not ready for the rest</button>
+      <div class="row" id="letter-btns" hidden>
+        <button class="btn" data-go="9">Okay. Keep going.</button>
+        <button class="btn ghost" id="not-ready" type="button">Not ready for more</button>
       </div>
 
-      <div class="slab" id="paused" hidden>
+      <div class="slab reply" id="paused" hidden>
         <h3>Completely fair.</h3>
-        <p class="say">Then this stops here and nothing else gets asked. The letter was the part that mattered and it doesn't come with conditions attached.</p>
-        <p class="say quiet" style="margin-top:12px;">The rest of the page isn't going anywhere. Neither am I.</p>
+        <p class="say soft">Then nothing else gets asked. The letter doesn't come with conditions, and you don't owe me an answer. If you ever want to tell me anything, this goes straight to me:</p>
+        <textarea id="reply-text" placeholder="Whatever you want to say. No rush, no wrong answer."></textarea>
+        <div class="row" style="margin-top:12px;">
+          <button class="btn" id="reply-send" type="button">Send it to Parth</button>
+          <button class="btn ghost" data-go="9">Actually, keep going</button>
+        </div>
+        <p class="tiny" id="reply-status" style="margin-top:10px;"></p>
       </div>
     </div>
   </section>
 
-  <!-- ===== 8 — THE ASK ===== -->
-  <section class="panel" data-i="8">
-    <div class="wrap">
-      <p class="stamp">NEXT INNING <small>&mdash; if you want one</small></p>
-      <h2 class="mid" id="ask-1">Here's the actual reason for all of this.</h2>
-      <p class="say" id="ask-2" hidden>You make me laugh in a way I don't have to work for. Talking to you is the one place I don't rehearse first. That's not a small thing and I'd rather say it than sit on it.</p>
-      <h2 class="big" id="ask-3" hidden>So &mdash; can I take you out?</h2>
+  <!-- ===== 9 · THE QUESTION ===== -->
+  <section class="panel" data-i="9">
+    <div class="card">
+      <svg class="stage" viewBox="0 0 400 190" data-scene="ask" aria-hidden="true"></svg>
+      <p class="hand">The question</p>
+      <h2>Here's the real reason for all of this.</h2>
+      <div class="reasons" id="reasons">
+        <p class="lantern" hidden>You make me laugh, properly, without me having to try.</p>
+        <p class="lantern" hidden>Talking to you feels safe. Saying what I actually think feels worth it with you.</p>
+        <p class="lantern" hidden>You helped me through the overthinking and through the days that were bad.</p>
+      </div>
+      <h2 id="ask-q" hidden>So, Gauri: can I take you out?</h2>
       <div class="row" id="ask-choices" hidden>
-        <button class="go hot" id="ask-yes">Yes</button>
-        <button class="go line" id="ask-maybe">Ask me properly and I'll think</button>
+        <button class="btn" id="ask-yes" type="button">Yes</button>
+        <button class="btn ghost" id="ask-maybe" type="button">Let me think</button>
       </div>
       <div class="slab" id="ask-yes-box" hidden>
         <h3>Good. Then help me plan it.</h3>
-        <p class="say">Two questions, then you can go back to beating me at Ludo.</p>
-        <div class="row" style="margin-top:14px;"><button class="go" data-go="9">Plan it</button></div>
+        <p class="say soft">Two quick pages, and then you can go back to beating me at Ludo.</p>
+        <div class="row" style="margin-top:14px;"><button class="btn" data-go="10">Plan it</button></div>
       </div>
       <div class="slab" id="ask-maybe-box" hidden>
         <h3>That's allowed.</h3>
-        <p class="say">Then let me make it easier to picture. Pick the bits you'd actually enjoy &mdash; you can decide about me afterwards.</p>
-        <div class="row" style="margin-top:14px;"><button class="go" data-go="9">Show me what you had in mind</button></div>
+        <p class="say soft">Take all the time you need. If it helps, have a look at what I had in mind. Picking a place doesn't commit you to anything.</p>
+        <div class="row" style="margin-top:14px;"><button class="btn" data-go="10">Show me what you had in mind</button></div>
       </div>
     </div>
   </section>
 
-  <!-- ===== 9 — WHEN ===== -->
-  <section class="panel" data-i="9">
-    <div class="wrap">
-      <p class="stamp">PLANNING <small>&mdash; one of two</small></p>
-      <h2 class="mid">When?</h2>
-      <div class="grid-opts" id="when-opts">
-        <button class="opt" data-when="This weekend">This weekend</button>
-        <button class="opt" data-when="Next weekend">Next weekend</button>
-        <button class="opt" data-when="A weekday evening">A weekday evening</button>
-        <button class="opt" data-when="Whenever you decide">You decide</button>
-        <button class="opt" data-when="Surprise me">Surprise me</button>
+  <!-- ===== 10 · WHEN ===== -->
+  <section class="panel" data-i="10">
+    <div class="card">
+      <svg class="stage" viewBox="0 0 400 190" data-scene="plan" aria-hidden="true"></svg>
+      <p class="hand">Planning &middot; when</p>
+      <h2>When would suit you?</h2>
+      <div class="chips" id="when-opts">
+        <button class="chip" type="button" data-when="This weekend">This weekend</button>
+        <button class="chip" type="button" data-when="Next weekend">Next weekend</button>
+        <button class="chip" type="button" data-when="A weekday evening">A weekday evening</button>
+        <button class="chip" type="button" data-when="Whenever you decide">You decide</button>
+        <button class="chip" type="button" data-when="Surprise me">Surprise me</button>
       </div>
-      <div class="field">
-        <label for="d-date">Or an exact date</label>
-        <input type="date" id="d-date" />
-      </div>
+      <div class="field"><label for="d-date">Or an exact date</label><input type="date" id="d-date" /></div>
       <p class="note" id="when-note"></p>
 
-      <div class="hr"></div>
+      <div class="rule"></div>
 
-      <h2 class="mid">And what time?</h2>
-      <div class="grid-opts" id="time-opts">
-        <button class="opt" data-time="Morning">Morning</button>
-        <button class="opt" data-time="Afternoon">Afternoon</button>
-        <button class="opt" data-time="Sunset">Sunset</button>
-        <button class="opt" data-time="Evening">Evening</button>
-        <button class="opt" data-time="Late night">Late night</button>
+      <h2 class="sm">And what time of day?</h2>
+      <div class="chips" id="time-opts">
+        <button class="chip" type="button" data-time="Morning">Morning</button>
+        <button class="chip" type="button" data-time="Afternoon">Afternoon</button>
+        <button class="chip" type="button" data-time="Sunset">Sunset</button>
+        <button class="chip" type="button" data-time="Evening">Evening</button>
+        <button class="chip" type="button" data-time="Late night">Late night</button>
       </div>
-      <div class="field">
-        <label for="d-time">Or an exact time</label>
-        <input type="time" id="d-time" />
-      </div>
+      <div class="field"><label for="d-time">Or an exact time</label><input type="time" id="d-time" /></div>
       <p class="note" id="time-note"></p>
 
-      <div class="row">
-        <button class="go" data-go="10">Now the where</button>
-      </div>
+      <div class="row"><button class="btn" data-go="11">Now the where</button></div>
     </div>
   </section>
 
-  <!-- ===== 10 — WHERE ===== -->
-  <section class="panel" data-i="10">
-    <div class="wrap">
-      <p class="stamp">PLANNING <small>&mdash; two of two</small></p>
-      <h2 class="mid">Where?</h2>
-      <p class="say quiet">Seven options around Mumbai. Pick one, then pick what we'd actually do there.</p>
+  <!-- ===== 11 · WHERE ===== -->
+  <section class="panel" data-i="11">
+    <div class="card" style="max-width:820px;">
+      <p class="hand">Planning &middot; where</p>
+      <h2>Where should we go?</h2>
+      <p class="say soft">Seven places around Mumbai. Pick one, then tell me what we'd do there.</p>
       <div class="places" id="places"></div>
 
       <div id="acts-wrap" hidden>
-        <div class="hr"></div>
-        <h2 class="mid">And what are we doing?</h2>
-        <p class="say quiet" style="margin-top:10px;">Choose as many as you want.</p>
-        <div class="grid-opts" id="acts" style="margin-top:18px;"></div>
+        <div class="rule"></div>
+        <h2 class="sm">And what are we doing?</h2>
+        <p class="say soft" style="margin:8px 0 14px;">Choose as many as you like.</p>
+        <div class="chips" id="acts"></div>
+        <div class="note-in" style="margin-top:20px;">
+          <p class="tiny" style="margin-bottom:8px;">Anything I should know? Food you love, food you don't, what time you need to be home.</p>
+          <textarea id="d-note" placeholder="Optional"></textarea>
+        </div>
       </div>
 
-      <div class="card-out" id="plan-card" hidden>
+      <div class="ticket" id="plan-card" hidden>
         <h3>The plan so far</h3>
-        <p id="p-where">&mdash;</p>
-        <p id="p-when">&mdash;</p>
-        <p id="p-time">&mdash;</p>
-        <p id="p-acts">&mdash;</p>
-        <p class="ok">That reads like a date.</p>
+        <p id="p-where">-</p><p id="p-when">-</p><p id="p-time">-</p><p id="p-acts">-</p>
       </div>
 
-      <div class="row">
-        <button class="go" data-go="11" id="to-final" disabled>One last question</button>
-      </div>
+      <div class="row"><button class="btn" data-go="12" id="to-final" disabled>One last question</button></div>
     </div>
   </section>
 
-  <!-- ===== 11 — FINALE ===== -->
-  <section class="panel finale" data-i="11">
-    <div class="wrap">
-      <p class="stamp">FINAL <small>&mdash; over to you</small></p>
+  <!-- ===== 12 · THE LAST STAR ===== -->
+  <section class="panel" data-i="12">
+    <div class="card center">
+      <svg class="stage" id="heart" viewBox="0 0 400 245" aria-hidden="true"></svg>
+      <p class="hand">The last star</p>
       <div id="final-lines">
-        <h2 id="fl-1">Badminton started it.</h2>
-        <h2 id="fl-2" hidden>Ludo made it a rivalry.</h2>
-        <h2 id="fl-3" hidden>The 4am calls made it something else.</h2>
+        <h2 class="sm fin-line" id="fl-1" hidden>Badminton lit the first one.</h2>
+        <h2 class="sm fin-line" id="fl-2" hidden style="margin-top:8px;">Ludo made it a rivalry.</h2>
+        <h2 class="sm fin-line" id="fl-3" hidden style="margin-top:8px;">The 4 AM calls made it something else.</h2>
       </div>
-      <p class="say" id="fl-4" hidden style="margin-top:26px;">Will you go on this date with me?</p>
+      <p class="say fin-line" id="fl-4" hidden>Thirteen stars, and it turns out they were drawing something the whole time.</p>
+      <h2 class="fin-line" id="fl-5" hidden>Gauri, is it a date?</h2>
       <div class="row" id="final-choices" hidden>
-        <button class="go hot" id="f-yes">Yes</button>
-        <button class="go line" id="f-think">I'm still thinking</button>
+        <button class="btn" id="f-yes" type="button">It's a date &#10022;</button>
+        <button class="btn ghost" id="f-think" type="button">I need a little time</button>
       </div>
 
       <div id="f-yes-box" hidden>
-        <h2 class="big" style="margin-top:8px;">Then it's a date.</h2>
-        <p class="say">I'll stop talking now before I ruin it.</p>
-        <div class="card-out" id="final-card" style="margin-top:22px;"></div>
+        <h2>Then it's a date.</h2>
+        <p class="say soft" style="margin-top:10px;">I'll stop talking now before I ruin it.</p>
+        <div class="ticket" id="final-card" style="margin-top:20px; text-align:left;"></div>
         <p class="tiny" id="send-status" style="margin-top:14px;"></p>
       </div>
 
       <div id="f-think-box" hidden>
-        <h2 class="mid">Take your time.</h2>
-        <p class="say">Nothing about this expires, and nothing about us changes if the answer is no. I just didn't want to be the guy who never asked.</p>
-        <div class="row" style="margin-top:18px;">
-          <button class="go line" id="restart">Read it again from the start</button>
-        </div>
+        <h2>Take your time.</h2>
+        <p class="say soft" style="margin-top:10px;">Nothing here expires, and nothing between us changes whatever the answer is. I just didn't want to be the person who never asked.</p>
+        <div class="row" style="margin-top:18px;"><button class="btn ghost" id="restart" type="button">Read it again from the start</button></div>
+        <p class="tiny" id="think-status" style="margin-top:12px;"></p>
       </div>
     </div>
   </section>
 
 </main>
 
-
-<!-- =========================================================================
-     THE CAST — two little people who act out whichever inning you're on
-     ========================================================================= -->
-<style>
-#cast{
-  position:fixed; z-index:1; pointer-events:none;
-  right:clamp(8px,3vw,54px);
-  bottom:calc(env(safe-area-inset-bottom,0px) + 10px);
-  width:min(360px,88vw);
-  filter:drop-shadow(0 6px 10px rgba(0,0,0,.10));
-  transition:opacity .5s var(--ease);
-}
-@media (min-width:1081px){ #cast{ right:60px; width:380px; } }
-#cast svg{ width:100%; height:auto; display:block; overflow:visible; }
-#cast .ink{ stroke:var(--ink); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; fill:none; }
-#cast .floor{ stroke:var(--ink); stroke-width:1.5; opacity:.22; }
-#cast .shadow{ fill:var(--ink); opacity:.10; }
-#cast .prop{ font-size:19px; }
-#cast .tiny-prop{ font-size:13px; }
-#cast .say{ font-family:var(--font-body); font-size:10px; font-weight:700; fill:var(--ink); }
-
-/* one scene visible at a time */
-#cast g[data-s]{ display:none; }
-#cast[data-scene="rally"]     g[data-s="rally"],
-#cast[data-scene="assist"]    g[data-s="assist"],
-#cast[data-scene="smash"]     g[data-s="smash"],
-#cast[data-scene="ludo"]      g[data-s="ludo"],
-#cast[data-scene="call"]      g[data-s="call"],
-#cast[data-scene="movie"]     g[data-s="movie"],
-#cast[data-scene="sleep"]     g[data-s="sleep"],
-#cast[data-scene="sorry"]     g[data-s="sorry"],
-#cast[data-scene="ask"]       g[data-s="ask"],
-#cast[data-scene="plan"]      g[data-s="plan"],
-#cast[data-scene="together"]  g[data-s="together"]{ display:block; animation:castIn .55s var(--ease) both; }
-@keyframes castIn{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
-
-/* --- motion vocabulary --- */
-@keyframes bob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-2.5px); } }
-@keyframes bobSlow{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-1.6px); } }
-@keyframes hop{ 0%,70%,100%{ transform:translateY(0); } 80%{ transform:translateY(-7px); } 90%{ transform:translateY(-1px); } }
-@keyframes leanL{ 0%,100%{ transform:rotate(0deg); } 50%{ transform:rotate(-7deg); } }
-@keyframes leanR{ 0%,100%{ transform:rotate(0deg); } 50%{ transform:rotate(7deg); } }
-@keyframes swingHit{ 0%,100%{ transform:rotate(-18deg); } 45%{ transform:rotate(38deg); } }
-@keyframes swingBack{ 0%,100%{ transform:rotate(22deg); } 45%{ transform:rotate(-30deg); } }
-@keyframes birdieAcross{
-  0%   { transform:translate(0,0) rotate(0deg); }
-  50%  { transform:translate(112px,-46px) rotate(180deg); }
-  100% { transform:translate(224px,0) rotate(360deg); }
-}
-@keyframes birdieSmash{
-  0%   { transform:translate(0,-34px) rotate(0deg); opacity:0; }
-  12%  { opacity:1; }
-  60%  { transform:translate(150px,26px) rotate(420deg); opacity:1; }
-  70%,100%{ transform:translate(158px,30px) rotate(430deg); opacity:0; }
-}
-@keyframes duck{ 0%,55%,100%{ transform:translateY(0) rotate(0); } 62%,80%{ transform:translateY(7px) rotate(-8deg); } }
-@keyframes pawnOut{
-  0%,30%{ transform:translate(0,0) scale(1); opacity:1; }
-  60%{ transform:translate(-44px,-40px) scale(1.15) rotate(220deg); opacity:1; }
-  85%,100%{ transform:translate(-78px,8px) scale(.4) rotate(400deg); opacity:0; }
-}
-@keyframes fume{ 0%,40%{ transform:translateY(0) scale(.6); opacity:0; } 60%{ opacity:.9; } 100%{ transform:translateY(-22px) scale(1.1); opacity:0; } }
-@keyframes pulseHeart{ 0%,100%{ transform:scale(1); opacity:.9; } 50%{ transform:scale(1.22); opacity:1; } }
-@keyframes floatZ{ 0%{ transform:translate(0,0) scale(.5); opacity:0; } 25%{ opacity:1; } 100%{ transform:translate(14px,-30px) scale(1.15); opacity:0; } }
-@keyframes blink{ 0%,92%,100%{ transform:scaleY(1); } 96%{ transform:scaleY(.08); } }
-@keyframes flicker{ 0%,100%{ opacity:.20; } 50%{ opacity:.42; } }
-@keyframes nudgeIn{ 0%,100%{ transform:translateX(0); } 45%{ transform:translateX(9px); } }
-@keyframes pointAt{ 0%,100%{ transform:rotate(-8deg); } 50%{ transform:rotate(-26deg); } }
-@keyframes offerUp{ 0%,100%{ transform:translateY(0) rotate(-10deg); } 50%{ transform:translateY(-5px) rotate(-16deg); } }
-@keyframes shuffle{ 0%,100%{ transform:translateX(0) rotate(0); } 33%{ transform:translateX(-2px) rotate(-2deg); } 66%{ transform:translateX(2px) rotate(2deg); } }
-
-.a-bob{ animation:bob 2.6s ease-in-out infinite; }
-.a-bob-slow{ animation:bobSlow 4.2s ease-in-out infinite; }
-.a-lean-l{ animation:leanL 3.4s ease-in-out infinite; }
-.a-lean-r{ animation:leanR 3.4s ease-in-out infinite; }
-.eyes{ animation:blink 5.4s steps(1,end) infinite; }
-
-@media (prefers-reduced-motion: reduce){
-  #cast *{ animation:none !important; }
-}
-@media (max-height:620px){ #cast{ opacity:.35; } }
-</style>
-
-<div id="cast" data-scene="rally" aria-hidden="true">
-  <svg viewBox="0 0 380 150" xmlns="http://www.w3.org/2000/svg"></svg>
-</div>
-
 <div id="toast" role="status" aria-live="polite"></div>
 
-<!-- Fallback delivery: a real HTML form posted into a hidden frame.
-     This works even from file:// or when fetch is blocked by CORS. -->
+<!-- Backup delivery: a real HTML form posted into a hidden frame. Works even from file:// or when fetch is blocked. -->
 <iframe name="w3f-sink" id="w3f-sink" title="submission" style="display:none;width:0;height:0;border:0"></iframe>
 <form id="w3f-form" action="https://api.web3forms.com/submit" method="POST" target="w3f-sink" style="display:none">
-  <input type="hidden" name="access_key" value="bbd67653-cc36-42ef-9bf4-75ce95191cf2" />
-  <input type="hidden" name="subject" value="Gauri said YES — date confirmed" />
-  <input type="hidden" name="from_name" value="The Match Log" />
+  <input type="hidden" name="access_key" value="" />
   <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off" />
-  <input type="hidden" name="Answer" value="" />
-  <input type="hidden" name="Where" value="" />
-  <input type="hidden" name="When" value="" />
-  <input type="hidden" name="Time" value="" />
-  <input type="hidden" name="Doing" value="" />
-  <input type="hidden" name="Smashes_replayed" value="" />
-  <input type="hidden" name="Pieces_sent_home" value="" />
 </form>
 
 <script>
 /* =========================================================================
    EDIT HERE
+   -------------------------------------------------------------------------
+   PHOTOS: paste direct image links (they load straight from the web, nothing
+   to download or upload). Leave a slot empty ("") and it simply stays hidden.
+     - Any direct image link works: it should end in .jpg / .png / .webp, or be
+       an image host link (Unsplash, Pexels, Imgur, postimages, etc.).
+     - Google Drive: set the file to "Anyone with the link", then paste the
+       normal share link, it's converted automatically.
+     - Google Photos "share" links are web pages, not images, so they will not
+       load. Use "Copy image address" on the photo, or upload it to Drive.
    ========================================================================= */
 const CONFIG = {
   herName: "Gauri",
   myName: "Parth",
   web3formsKey: "bbd67653-cc36-42ef-9bf4-75ce95191cf2",
+
+  photos: {
+    // soft full-screen backgrounds behind the story (they cycle chapter to chapter)
+    background: [
+      // "https://images.example.com/night-sky.jpg",
+      // "https://drive.google.com/file/d/FILE_ID/view",
+    ],
+    bgOpacity: 0.34,
+    // small taped polaroids inside the story
+    slots: {
+      court:     "",   // chapter 1-ish: badminton court / first day
+      ludo:      "",   // the ludo game
+      boardgame: "",   // 22 Aug, Dhwani's place
+      movie:     "",   // 23 Aug, Spider-Man
+      us:        ""    // the jar chapter
+    },
+    captions: {
+      court: "where it started", ludo: "ludo, again", boardgame: "22 August",
+      movie: "23 August", us: "us"
+    }
+  },
+
   places: [
-    { id:"marine",   name:"Marine Drive",        hours:"5:30 – 8:00 PM", plan:"Sunset walk, sit on the promenade, food nearby, far too many photos.", vibe:"the classic, and it earns it" },
-    { id:"bandstand",name:"Bandra Bandstand",    hours:"5:00 – 8:00 PM", plan:"Sunset by the sea, then wander into Bandra for coffee or dinner.",     vibe:"chill, scenic, talkative" },
-    { id:"kala",     name:"Kala Ghoda",          hours:"4:00 – 8:00 PM", plan:"Walk the lanes, art and old buildings, a café, then dinner.",           vibe:"creative, a little fancy" },
-    { id:"juhu",     name:"Juhu",                hours:"5:00 – 9:00 PM", plan:"Beach walk, street food, sunset, a conversation that overruns.",        vibe:"casual and loud, like us" },
-    { id:"powai",    name:"Powai",               hours:"5:00 – 9:00 PM", plan:"Lakeside walk, a café that lets us sit too long, dinner.",              vibe:"quiet and comfortable" },
-    { id:"sgnp",     name:"Sanjay Gandhi Park",  hours:"8:00 AM – 12 PM",plan:"Morning walk, trees, no phones, breakfast after.",                      vibe:"peaceful, an actual escape" },
-    { id:"sobo",     name:"South Mumbai, all of it", hours:"4:30 – 9:00 PM", plan:"Fort, Gateway, a café, Marine Drive, dinner. A mini expedition.",  vibe:"ambitious. worth it." }
+    { id:"marine",    name:"Marine Drive",         hours:"5:30 – 8:00 PM", plan:"Sunset walk, sit on the promenade, food nearby, far too many photos.", vibe:"the classic, and it earns it", emoji:"🌇", grad:"#ff9a76,#c8567a", photo:"" },
+    { id:"bandstand", name:"Bandra Bandstand",     hours:"5:00 – 8:00 PM", plan:"Sunset by the sea, then wander into Bandra for coffee or dinner.",     vibe:"chill, scenic, talkative",      emoji:"🌊", grad:"#4aa3c7,#3b6bd0", photo:"" },
+    { id:"kala",      name:"Kala Ghoda",           hours:"4:00 – 8:00 PM", plan:"Walk the lanes, art and old buildings, a café, then dinner.",           vibe:"creative, a little fancy",      emoji:"🎨", grad:"#b58cff,#7a5fd0", photo:"" },
+    { id:"juhu",      name:"Juhu",                 hours:"5:00 – 9:00 PM", plan:"Beach walk, street food, sunset, a conversation that overruns.",        vibe:"casual and loud, like us",      emoji:"🏖️", grad:"#f0b73a,#e0533d", photo:"" },
+    { id:"powai",     name:"Powai",                hours:"5:00 – 9:00 PM", plan:"Lakeside walk, a café that lets us sit too long, dinner.",              vibe:"quiet and comfortable",         emoji:"🌿", grad:"#5fd0a0,#2b9c7a", photo:"" },
+    { id:"sgnp",      name:"Sanjay Gandhi Park",   hours:"8:00 AM – 12 PM",plan:"Morning walk, trees, no phones, breakfast after.",                      vibe:"peaceful, an actual escape",    emoji:"🌳", grad:"#7bd88f,#1f6f5c", photo:"" },
+    { id:"sobo",      name:"South Mumbai, all of it", hours:"4:30 – 9:00 PM", plan:"Fort, Gateway, a café, Marine Drive, dinner. A mini expedition.",   vibe:"ambitious. worth it.",          emoji:"🏛️", grad:"#ffb389,#8c3f7d", photo:"" }
   ],
   activities: ["Food","Coffee","A long walk","Sunset","Wander with no plan","Street food","A movie","Photos","Just sit and talk","Badminton (obviously)","You pick"]
 };
 
-const state = { when:null, time:null, place:null, acts:[], smashes:0, homes:0 };
+const $  = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const state = { when:null, time:null, place:null, acts:[], smashes:0, homes:0 };
 
-/* =========================================================================
-   SPINE + NAVIGATION
-   ========================================================================= */
-const INNINGS = [
-  "Cover",
-  "18 Jul — the assist",
-  "18 Jul — the smash",
-  "Jul–Aug — Ludo",
-  "Aug — late calls",
-  "22–23 Aug — the weekend",
-  "Ongoing — 4am",
-  "Today — a letter",
-  "The question",
-  "Planning — when",
-  "Planning — where",
-  "Final"
-];
-const LIGHT = ["day","day","day","day","night","night","night","candle","candle","dawn","dawn","dawn"];
-
-const spineList = document.getElementById("spine-list");
-INNINGS.forEach((label, i) => {
-  const li = document.createElement("li");
-  li.textContent = label;
-  li.dataset.i = i;
-  spineList.appendChild(li);
-});
-
-let current = 0;
-function go(i){
-  i = Number(i);
-  const next = document.querySelector('.panel[data-i="'+i+'"]');
-  if (!next || i === current) return;
-  document.querySelectorAll(".panel").forEach(p => p.classList.remove("on"));
-  next.classList.add("on");
-  current = i;
-
-  document.body.dataset.light = LIGHT[i] || "day";
-  document.querySelectorAll("#spine li").forEach(li => {
-    const n = Number(li.dataset.i);
-    li.classList.toggle("seen", n < i);
-    li.classList.toggle("here", n === i);
-  });
-  document.querySelector("#thread i").style.width = ((i) / (INNINGS.length - 1) * 100) + "%";
-  window.scrollTo({ top:0, behavior: reduced ? "auto" : "smooth" });
-
-  if (typeof setCast === "function") setCast(i);
-  if (i === 4) resetDial();
-  if (i === 8) runAsk();
-  if (i === 11) runFinale();
+/* ---- photo URL helper: turns Google Drive share links into direct image links ---- */
+function fixUrl(u){
+  if (!u) return "";
+  u = String(u).trim();
+  const m = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]{10,})/);
+  if (m) return "https://lh3.googleusercontent.com/d/" + m[1];
+  return u;
 }
-document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => go(b.dataset.go)));
-go(0);
 
 /* toast */
 let toastT;
 function toast(msg){
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  clearTimeout(toastT);
-  toastT = setTimeout(() => t.classList.remove("show"), 2800);
+  const t = $("#toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2800);
 }
 
 /* =========================================================================
-   COVER — the rally, drawn on a 2D canvas
+   THE CAST — Parth, Gauri and Sakshi, drawn from scratch as tiny people
    ========================================================================= */
-(function rally(){
-  const cv = document.getElementById("rally");
-  const ctx = cv.getContext("2d");
-  let w = 0, h = 0, t = 0, dir = 1;
+const PAL = {
+  p:{ skin:"#f2c6a0", hair:"#2b2233", top:"#5f8df0", bot:"#3b4270", shoe:"#f5efe6" },
+  g:{ skin:"#f7cfb0", hair:"#2d2030", top:"#ff8fb0", bot:"#7a5fb0", shoe:"#f5efe6" },
+  s:{ skin:"#ecb98f", hair:"#3b2a30", top:"#ffd06e", bot:"#4b7aa6", shoe:"#f5efe6" }
+};
+const INK = "#2a1d2e";
 
-  function size(){
-    const r = cv.getBoundingClientRect();
-    const dpr = Math.min(devicePixelRatio || 1, 2);
-    w = r.width; h = r.height;
-    cv.width = w * dpr; cv.height = h * dpr;
-    ctx.setTransform(dpr,0,0,dpr,0,0);
+function chibi(o){
+  const c = PAL[o.who || "p"], k = o.s || 1.3, sit = !!o.sit, face = o.face || "happy";
+  const cls = (o.cls === undefined) ? "bob" : o.cls;
+
+  const arm = (side, cfg) => {
+    cfg = cfg || {};
+    const E = { down:[5,13,4,7], up:[13,-10,9,-1], out:[16,5,9,4] }[cfg.type || "down"];
+    const ex = side*E[0], ey = E[1], cx = side*E[2], cy = E[3];
+    return '<g transform="translate('+(side*9)+',-27)"><g class="arm '+(cfg.cls||"")+'">' +
+      '<path d="M0,0 Q'+cx+','+cy+' '+ex+','+ey+'" stroke="'+c.top+'" stroke-width="5.2" stroke-linecap="round" fill="none"/>' +
+      '<circle cx="'+ex+'" cy="'+ey+'" r="3" fill="'+c.skin+'"/>' +
+      '<g transform="translate('+ex+','+ey+')">'+(cfg.item||"")+'</g></g></g>';
+  };
+
+  const legs = sit
+    ? '<ellipse cx="-9" cy="-3.5" rx="8" ry="3.8" fill="'+c.bot+'"/><ellipse cx="9" cy="-3.5" rx="8" ry="3.8" fill="'+c.bot+'"/>' +
+      '<ellipse cx="-15" cy="-3" rx="3.6" ry="2.6" fill="'+c.shoe+'"/><ellipse cx="15" cy="-3" rx="3.6" ry="2.6" fill="'+c.shoe+'"/>'
+    : '<rect x="-6.6" y="-13" width="5.4" height="12" rx="2.7" fill="'+c.bot+'"/><rect x="1.2" y="-13" width="5.4" height="12" rx="2.7" fill="'+c.bot+'"/>' +
+      '<ellipse cx="-4" cy="-1" rx="4.6" ry="2.5" fill="'+c.shoe+'"/><ellipse cx="4" cy="-1" rx="4.6" ry="2.5" fill="'+c.shoe+'"/>';
+
+  const body = '<path d="M-9.5,-12 Q-11.5,-25 -6.5,-30 L6.5,-30 Q11.5,-25 9.5,-12 Q0,-9 -9.5,-12Z" fill="'+c.top+'"/>' +
+    (o.who === "g" ? '<path d="M-9.8,-14 L-13,-8 Q0,-4 13,-8 L9.8,-14Z" fill="'+c.bot+'"/>' : '');
+
+  const hairBack =
+    o.who === "g" ? '<path d="M-16.5,-46 Q-20,-22 -12,-19 L12,-19 Q20,-22 16.5,-46 Q0,-66 -16.5,-46Z" fill="'+c.hair+'"/>' :
+    o.who === "s" ? '<path d="M12,-54 Q26,-52 22,-32 Q17,-40 12,-44Z" fill="'+c.hair+'"/>' : '';
+
+  const hairFront =
+    o.who === "g"
+      ? '<path d="M-15.5,-45 Q-17,-61 0,-61 Q17,-61 15.5,-45 Q9,-52 3,-50 Q-4,-55 -15.5,-45Z" fill="'+c.hair+'"/>' +
+        '<path d="M9,-54 l1.4,3 3.2,.3 -2.4,2.1 .8,3.1 -3,-1.7 -3,1.7 .8,-3.1 -2.4,-2.1 3.2,-.3z" fill="#ffd98a"/>'
+      : o.who === "s"
+      ? '<path d="M-15.5,-45 Q-17,-62 0,-62 Q17,-62 15.5,-45 Q11,-53 5,-52 Q-1,-57 -8,-52 Q-13,-50 -15.5,-45Z" fill="'+c.hair+'"/>'
+      : '<path d="M-15.5,-45 Q-17,-62 0,-62 Q17,-62 15.5,-45 Q11,-53 5,-52 Q-1,-57 -8,-52 Q-13,-50 -15.5,-45Z" fill="'+c.hair+'"/>' +
+        '<path d="M-2,-61.5 L3,-68 L7,-60.5Z" fill="'+c.hair+'"/>';
+
+  const eyes = (r) =>
+    '<ellipse cx="-5.5" cy="-43" rx="'+(2.1*r)+'" ry="'+(2.7*r)+'" fill="'+INK+'"/><ellipse cx="5.5" cy="-43" rx="'+(2.1*r)+'" ry="'+(2.7*r)+'" fill="'+INK+'"/>' +
+    '<circle cx="-4.8" cy="-44" r=".85" fill="#fff"/><circle cx="6.2" cy="-44" r=".85" fill="#fff"/>';
+
+  const faces = {
+    happy: eyes(1) + '<path d="M-3.4,-36.6 Q0,-33 3.4,-36.6" stroke="'+INK+'" stroke-width="1.7" fill="none" stroke-linecap="round"/>',
+    laugh: '<path d="M-8.4,-42.6 Q-5.5,-46.6 -2.6,-42.6" stroke="'+INK+'" stroke-width="1.8" fill="none" stroke-linecap="round"/>' +
+           '<path d="M2.6,-42.6 Q5.5,-46.6 8.4,-42.6" stroke="'+INK+'" stroke-width="1.8" fill="none" stroke-linecap="round"/>' +
+           '<path d="M-4.4,-37.4 Q0,-30 4.4,-37.4Z" fill="#7a2a3e"/>',
+    oh:    eyes(1.12) + '<ellipse cx="0" cy="-35.6" rx="2.3" ry="2.9" fill="#7a2a3e"/>',
+    cross: '<ellipse cx="-5.5" cy="-42.5" rx="1.9" ry="2.2" fill="'+INK+'"/><ellipse cx="5.5" cy="-42.5" rx="1.9" ry="2.2" fill="'+INK+'"/>' +
+           '<path d="M-9.5,-48.2 L-2.6,-46" stroke="'+INK+'" stroke-width="1.7" stroke-linecap="round"/>' +
+           '<path d="M9.5,-48.2 L2.6,-46" stroke="'+INK+'" stroke-width="1.7" stroke-linecap="round"/>' +
+           '<path d="M-3,-35 Q0,-37.6 3,-35" stroke="'+INK+'" stroke-width="1.7" fill="none" stroke-linecap="round"/>',
+    sorry: eyes(1) +
+           '<path d="M-9.5,-47 L-2.8,-49.2" stroke="'+INK+'" stroke-width="1.6" stroke-linecap="round"/>' +
+           '<path d="M9.5,-47 L2.8,-49.2" stroke="'+INK+'" stroke-width="1.6" stroke-linecap="round"/>' +
+           '<path d="M-3,-35.6 Q0,-37.2 3,-35.6" stroke="'+INK+'" stroke-width="1.6" fill="none" stroke-linecap="round"/>',
+    sleep: '<path d="M-8.4,-43 Q-5.5,-40.2 -2.6,-43" stroke="'+INK+'" stroke-width="1.8" fill="none" stroke-linecap="round"/>' +
+           '<path d="M2.6,-43 Q5.5,-40.2 8.4,-43" stroke="'+INK+'" stroke-width="1.8" fill="none" stroke-linecap="round"/>' +
+           '<ellipse cx="0" cy="-35.6" rx="1.7" ry="1.9" fill="'+INK+'" opacity=".7"/>'
+  };
+  const blush = '<ellipse cx="-10.6" cy="-38.4" rx="3.2" ry="2" fill="#ff8fa3" opacity=".55"/><ellipse cx="10.6" cy="-38.4" rx="3.2" ry="2" fill="#ff8fa3" opacity=".55"/>';
+
+  const upper = hairBack + body + arm(-1, o.L) + arm(1, o.R) +
+    '<circle cx="0" cy="-44" r="15" fill="'+c.skin+'"/>' + (faces[face] || faces.happy) + blush + hairFront;
+
+  return '<g transform="translate('+o.x+','+o.y+') scale('+k+')">' +
+    '<ellipse cx="1" cy="1.5" rx="17" ry="3.6" fill="#000" opacity=".2"/>' +
+    (sit ? '' : legs) +
+    '<g class="'+cls+'"><g transform="translate(0,'+(sit?9:0)+')">' + upper + '</g></g>' +
+    (sit ? legs : '') +
+  '</g>';
+}
+
+/* small props (drawn in the hand's own coordinates) */
+const racket = (col, d) =>
+  '<g transform="rotate('+(d*24)+')"><path d="M0,1 L0,-9" stroke="#efe6d6" stroke-width="2" stroke-linecap="round"/>' +
+  '<ellipse cx="0" cy="-17" rx="6.4" ry="8.4" fill="none" stroke="'+col+'" stroke-width="2.4"/>' +
+  '<path d="M-4,-20 h8 M-5,-16 h10 M-4,-12 h8 M-2,-24 v14 M2,-24 v14" stroke="'+col+'" stroke-width=".6" opacity=".6"/></g>';
+const phone = (d) =>
+  '<g transform="rotate('+(d*-14)+')"><rect x="-3.6" y="-13" width="7.2" height="12.5" rx="1.7" fill="#1d1a2b" stroke="rgba(255,255,255,.5)" stroke-width=".6"/>' +
+  '<rect x="-2.7" y="-11.6" width="5.4" height="9.4" rx="1" fill="#9fd0ff" opacity=".95"/></g>';
+const flower =
+  '<g transform="rotate(-8)"><path d="M0,0 L0,-15" stroke="#5fd0a0" stroke-width="2" stroke-linecap="round"/>' +
+  '<g transform="translate(0,-18)"><circle r="3" fill="#ffd98a"/>' +
+  [0,72,144,216,288].map(a => '<ellipse rx="2.6" ry="4" cy="-5" transform="rotate('+a+')" fill="#ff9fbd"/>').join("") + '</g></g>';
+const envelope =
+  '<g transform="translate(-1,-16) rotate(-6)"><rect x="-8" y="-5.5" width="16" height="11" rx="1.5" fill="#f7e2bf" stroke="#c9a06a" stroke-width=".8"/>' +
+  '<path d="M-8,-5.5 L0,1 L8,-5.5" fill="none" stroke="#c9a06a" stroke-width=".9"/><circle cx="0" cy="1" r="2" fill="#ff7a9a"/></g>';
+
+const bubble = (x, y, t) => {
+  const w = t.length * 5.7 + 18;
+  return '<g transform="translate('+x+','+y+')"><g class="bub fb">' +
+    '<rect x="'+(-w/2)+'" y="-14" width="'+w+'" height="21" rx="10.5" fill="#fff6ee"/><path d="M-4,6.5 L0,12.5 L4,6.5Z" fill="#fff6ee"/>' +
+    '<text x="0" y="0.5" text-anchor="middle" font-family="Nunito,sans-serif" font-size="10.5" font-weight="800" fill="#2a1740">'+t+'</text></g></g>';
+};
+const emo = (x, y, ch, fs, cls, extra) =>
+  '<g transform="translate('+x+','+y+')"><g class="'+(cls||"")+' fb"'+(extra?' style="'+extra+'"':'')+'><text text-anchor="middle" font-size="'+(fs||18)+'">'+ch+'</text></g></g>';
+
+const FLOOR = '<ellipse cx="200" cy="163" rx="176" ry="5" fill="#000" opacity=".2"/>';
+const TW = [[26,28,1.6,0],[64,70,1.1,.7],[118,20,1.3,1.3],[286,24,1.6,.3],[344,58,1.1,1],[240,44,1,1.8],[378,26,1.2,.5],[14,102,1,1.4],[388,98,1,.9],[160,54,1,2.2]]
+  .map(a => '<circle class="tw" style="animation-delay:'+a[3]+'s" cx="'+a[0]+'" cy="'+a[1]+'" r="'+a[2]+'" fill="#fff6ee"/>').join("");
+const net = (cx, top, half) => {
+  const w = half*2, h = 160 - top;
+  let s = '<rect x="'+(cx-half)+'" y="'+top+'" width="'+w+'" height="'+(h)+'" rx="2" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.3)" stroke-width="1"/>';
+  for (let y = top + 10; y < 160; y += 10) s += '<path d="M'+(cx-half)+','+y+' H'+(cx+half)+'" stroke="rgba(255,255,255,.14)"/>';
+  for (let x = cx - half + 10; x < cx + half; x += 10) s += '<path d="M'+x+','+top+' V160" stroke="rgba(255,255,255,.14)"/>';
+  return s + '<path d="M'+(cx-half)+','+top+' H'+(cx+half)+'" stroke="#fff6ee" stroke-width="3" opacity=".8" stroke-linecap="round"/>' +
+    '<path d="M'+(cx-half)+','+(top-4)+' V160 M'+(cx+half)+','+(top-4)+' V160" stroke="#fff6ee" stroke-width="2.6" opacity=".7" stroke-linecap="round"/>';
+};
+const shuttle = '<circle cx="0" cy="0" r="3" fill="#ffd98a"/><path d="M-2.4,-2 L-6.5,-10.5 L6.5,-10.5 L2.4,-2Z" fill="#fff6ee" stroke="#cbbba8" stroke-width=".5"/>';
+const flyer = (path, dur, rot, extra) =>
+  '<g><animateMotion dur="'+dur+'" repeatCount="indefinite" path="'+path+'" '+(extra||"")+'/><g transform="rotate('+rot+')" filter="url(#glow)">'+shuttle+'</g></g>';
+
+const SCENES = {
+  rally: () => FLOOR + TW + net(200, 116, 46) +
+    chibi({ x:62, y:160, who:"p", face:"laugh", R:{ type:"up", cls:"swingR", item:racket("#7fb0ff", 1) } }) +
+    chibi({ x:338, y:160, who:"g", face:"happy", L:{ type:"up", cls:"swingL", item:racket("#ff8fb0", -1) } }) +
+    flyer("M96,92 Q200,8 304,92 Q200,8 96,92", "2.8s", -20),
+
+  assist: () => FLOOR + TW +
+    chibi({ x:72, y:160, who:"s", face:"laugh", L:{ type:"up", cls:"wave" } }) +
+    chibi({ x:172, y:160, who:"g", face:"oh" }) +
+    chibi({ x:330, y:160, who:"p", face:"happy", R:{ type:"out", item:racket("#7fb0ff", 1) } }) +
+    bubble(72, 52, "come play!") + bubble(330, 52, "hi!") +
+    emo(122, 96, "✨", 16, "tw"),
+
+  smash: () => FLOOR + TW + net(200, 122, 30) +
+    chibi({ x:74, y:160, who:"p", face:"laugh", R:{ type:"up", cls:"swingR", item:racket("#7fb0ff", 1) } }) +
+    '<g class="duck">' + chibi({ x:326, y:160, who:"g", face:"oh" }) + '</g>' +
+    '<g><animateMotion dur="1.6s" repeatCount="indefinite" path="M112,84 L312,140" keyPoints="0;1;1" keyTimes="0;.45;1" calcMode="linear"/>' +
+    '<animate attributeName="opacity" values="1;1;0;0" keyTimes="0;.44;.5;1" dur="1.6s" repeatCount="indefinite"/>' +
+    '<g transform="rotate(-72)" filter="url(#glow)">'+shuttle+'</g></g>' +
+    emo(360, 66, "💢", 20, "tw") + bubble(326, 40, "…"),
+
+  ludo: () => FLOOR + TW +
+    chibi({ x:64, y:160, who:"p", sit:true, face:"laugh" }) +
+    chibi({ x:336, y:160, who:"g", sit:true, face:"cross" }) +
+    '<g transform="translate(160,128)"><rect width="80" height="34" rx="4" fill="#fff6ee"/>' +
+      '<rect x="3" y="3" width="30" height="13" fill="#e0533d"/><rect x="47" y="3" width="30" height="13" fill="#3b6bd0"/>' +
+      '<rect x="3" y="18" width="30" height="13" fill="#f0b73a"/><rect x="47" y="18" width="30" height="13" fill="#2b9c7a"/>' +
+      '<path d="M40,4 L50,17 L40,30 L30,17Z" fill="#ffd98a"/></g>' +
+    '<g transform="translate(200,100)"><g class="roll fb"><rect x="-9" y="-9" width="18" height="18" rx="4" fill="#fff6ee"/>' +
+      '<circle cx="-3.5" cy="-3.5" r="1.7" fill="#2a1740"/><circle cx="3.5" cy="3.5" r="1.7" fill="#2a1740"/><circle cx="0" cy="0" r="1.7" fill="#2a1740"/>' +
+      '<circle cx="3.5" cy="-3.5" r="1.7" fill="#2a1740"/><circle cx="-3.5" cy="3.5" r="1.7" fill="#2a1740"/></g></g>' +
+    '<g transform="translate(236,126)"><g class="pawnOut fb"><circle cy="-8" r="4.2" fill="#ff6b5a" stroke="#2a1740" stroke-width="1.2"/>' +
+      '<path d="M-5.5,0 Q0,-10 5.5,0Z" fill="#ff6b5a" stroke="#2a1740" stroke-width="1.2"/></g></g>' +
+    emo(360, 84, "💢", 20, "tw") + bubble(336, 56, "seriously?"),
+
+  call: () => TW +
+    emo(200, 50, "🌙", 40, "sway") +
+    chibi({ x:70, y:160, who:"p", face:"laugh", R:{ type:"up", item:phone(1) } }) +
+    chibi({ x:330, y:160, who:"g", face:"happy", L:{ type:"up", item:phone(-1) } }) +
+    '<path d="M96,100 Q200,40 304,100" stroke="#fff6ee" stroke-width="1.6" stroke-dasharray="2 7" stroke-linecap="round" fill="none" opacity=".5"/>' +
+    '<g><animateMotion dur="3.4s" repeatCount="indefinite" path="M96,100 Q200,40 304,100"/><text text-anchor="middle" font-size="14" y="5">💗</text></g>' +
+    '<g><animateMotion dur="3.4s" begin="1.7s" repeatCount="indefinite" path="M304,100 Q200,40 96,100"/><text text-anchor="middle" font-size="14" y="5">💛</text></g>' +
+    '<text x="200" y="128" text-anchor="middle" font-family="Caveat,cursive" font-size="24" font-weight="700" fill="#ffd98a">4:00 AM, office at 10</text>',
+
+  movie: () => FLOOR + TW +
+    '<rect x="112" y="18" width="176" height="76" rx="8" fill="#ffe9b0" class="flick"/>' +
+    '<rect x="112" y="18" width="176" height="76" rx="8" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>' +
+    '<path d="M112,18 L152,58 M112,18 L172,34 M112,18 L134,82 M120,26 Q136,30 142,48 M130,34 Q152,34 164,50" stroke="#fff6ee" stroke-width="1.1" fill="none" opacity=".7"/>' +
+    '<g transform="translate(262,18)"><g class="dangle"><path d="M0,0 V26" stroke="#fff6ee" stroke-width="1.2" opacity=".7"/><text y="36" text-anchor="middle" font-size="16">🕷️</text></g></g>' +
+    chibi({ x:150, y:160, who:"p", sit:true, face:"laugh" }) +
+    chibi({ x:250, y:160, who:"g", sit:true, face:"happy" }) +
+    '<g transform="translate(200,132)"><path d="M-13,0 L13,0 L10,28 L-10,28Z" fill="#ff6b5a"/>' +
+      '<path d="M-6,0 L-5,28 M0,0 L0,28 M6,0 L5,28" stroke="#fff6ee" stroke-width="2.4"/>' +
+      '<circle cx="-7" cy="-3" r="4.4" fill="#fff6ee"/><circle cx="0" cy="-6" r="5" fill="#ffe9b0"/><circle cx="7" cy="-3" r="4.4" fill="#fff6ee"/></g>' +
+    emo(44, 116, "🎲", 20, "fz") + emo(360, 112, "🃏", 20, "fz", "animation-delay:1.6s"),
+
+  sleep: () => TW +
+    emo(66, 46, "🌙", 34, "sway") +
+    '<rect x="196" y="147" width="146" height="17" rx="9" fill="#7a5fb0" opacity=".9"/>' +
+    '<ellipse cx="222" cy="138" rx="21" ry="10" fill="#fff6ee"/>' +
+    '<g transform="translate(298,133) rotate(-90)">' + chibi({ x:0, y:0, who:"g", s:1.22, face:"sleep", cls:"bob2" }) + '</g>' +
+    '<rect x="246" y="116" width="82" height="34" rx="14" fill="#ff9fbd" opacity=".95"/>' +
+    '<path d="M258,124 q6,6 12,0 q6,6 12,0 q6,6 12,0 q6,6 12,0" stroke="#fff6ee" stroke-width="1.6" fill="none" opacity=".6"/>' +
+    chibi({ x:96, y:160, who:"p", sit:true, face:"happy", R:{ type:"up", item:phone(1) } }) +
+    '<path d="M124,112 Q170,70 216,110" stroke="#fff6ee" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round" fill="none" opacity=".5"/>' +
+    '<g><animateMotion dur="4.4s" repeatCount="indefinite" path="M124,112 Q170,70 216,110"/><text text-anchor="middle" font-size="12" y="4">💗</text></g>' +
+    emo(226, 96, "💤", 22, "fz") + emo(246, 98, "💤", 16, "fz", "animation-delay:2.2s"),
+
+  jar: () => FLOOR + TW +
+    '<rect x="146" y="150" width="108" height="8" rx="4" fill="#9a7bd0"/>' +
+    '<g transform="translate(200,20)">' +
+      '<rect x="-26" y="0" width="52" height="11" rx="5" fill="#d9b672"/>' +
+      '<path d="M-30,11 Q-42,20 -42,42 V108 Q-42,130 -20,130 H20 Q42,130 42,108 V42 Q42,20 30,11Z" fill="rgba(255,255,255,.10)" stroke="rgba(255,255,255,.5)" stroke-width="2"/>' +
+      '<path d="M-31,34 V100" stroke="rgba(255,255,255,.4)" stroke-width="3" stroke-linecap="round"/>' +
+      [[-14,52,0],[10,44,.6],[-4,72,1.2],[18,80,.3],[-20,94,1.7],[6,104,2.3],[-8,118,.9],[22,60,2.6],[-24,66,1.4]]
+        .map(f => '<circle class="ff" style="animation-delay:'+f[2]+'s;animation-duration:'+(3+f[2])+'s" cx="'+f[0]+'" cy="'+f[1]+'" r="3" fill="#ffe28a" filter="url(#glow)"/>').join("") +
+    '</g>' +
+    chibi({ x:74, y:160, who:"p", face:"happy", R:{ type:"out" } }) +
+    chibi({ x:326, y:160, who:"g", face:"happy", L:{ type:"out" } }) +
+    emo(110, 84, "✨", 16, "fz") + emo(292, 88, "✨", 16, "fz", "animation-delay:2s"),
+
+  sorry: () => FLOOR + TW +
+    chibi({ x:132, y:160, who:"p", face:"sorry", R:{ type:"out", cls:"offer", item:envelope } }) +
+    chibi({ x:274, y:160, who:"g", face:"cross" }) +
+    bubble(274, 52, "…") +
+    emo(200, 100, "💌", 20, "fz"),
+
+  ask: () => FLOOR + TW +
+    chibi({ x:140, y:160, who:"p", face:"happy", R:{ type:"out", cls:"offer", item:flower } }) +
+    chibi({ x:262, y:160, who:"g", face:"oh" }) +
+    emo(201, 78, "❤️", 26, "pulse") + emo(110, 92, "✨", 16, "tw") + emo(300, 96, "✨", 14, "tw"),
+
+  plan: () => FLOOR + TW +
+    chibi({ x:140, y:160, who:"p", face:"happy" }) +
+    chibi({ x:260, y:160, who:"g", face:"laugh" }) +
+    '<g transform="translate(200,100)"><g class="bub fb"><rect x="-32" y="-22" width="64" height="44" rx="6" fill="#fff6ee"/>' +
+      '<path d="M-24,10 Q-14,-12 -4,2 T18,-8" stroke="#3b6bd0" stroke-width="2" fill="none" stroke-dasharray="3 3"/>' +
+      '<circle cx="20" cy="-9" r="4.4" fill="#e0533d"/><circle cx="-24" cy="10" r="3" fill="#2b9c7a"/></g></g>' +
+    emo(200, 52, "📍", 20, "pulse")
+};
+
+$$("svg.stage[data-scene]").forEach(svg => {
+  const fn = SCENES[svg.dataset.scene];
+  if (fn) svg.innerHTML = fn();
+  if (reduced && svg.pauseAnimations) svg.pauseAnimations();
+});
+
+/* =========================================================================
+   THE FINAL STAGE — thirteen stars that draw a heart
+   ========================================================================= */
+(function buildHeart(){
+  const svg = $("#heart");
+  const f = t => [16*Math.pow(Math.sin(t),3), 13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t)];
+  const P = t => { const v = f(t); return [200 + v[0]*5.3, 84 - v[1]*5.3]; };
+  let d = "";
+  for (let i = 0; i <= 160; i++){
+    const p = P(Math.PI + (Math.PI*2)*i/160);
+    d += (i ? "L" : "M") + p[0].toFixed(1) + "," + p[1].toFixed(1);
   }
-  addEventListener("resize", size); size();
-
-  function ink(){ return getComputedStyle(document.body).getPropertyValue("--ink").trim(); }
-  function accent(){ return getComputedStyle(document.body).getPropertyValue("--accent").trim(); }
-
-  const trail = [];
-
-  function frame(){
-    requestAnimationFrame(frame);
-    if (!w) size();
-    ctx.clearRect(0,0,w,h);
-
-    const padX = 18;
-    const left = padX, right = w - padX, mid = w/2;
-    const baseY = h - 24;
-
-    // net
-    ctx.strokeStyle = ink(); ctx.globalAlpha = .28; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(mid, baseY); ctx.lineTo(mid, baseY - h*0.42); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(left, baseY); ctx.lineTo(right, baseY); ctx.stroke();
-
-    t += reduced ? 0.004 : 0.009;
-    if (t >= 1){ t = 0; dir *= -1; }
-
-    const p = t;
-    const x = dir > 0 ? left + (right-left)*p : right - (right-left)*p;
-    const y = baseY - Math.sin(p * Math.PI) * (h*0.62) - 8;
-
-    trail.push({x,y});
-    if (trail.length > 26) trail.shift();
-
-    ctx.globalAlpha = 1;
-    trail.forEach((pt,i) => {
-      ctx.globalAlpha = (i / trail.length) * 0.35;
-      ctx.fillStyle = accent();
-      ctx.beginPath(); ctx.arc(pt.x, pt.y, 2.2, 0, Math.PI*2); ctx.fill();
-    });
-
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = ink();
-    ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI*2); ctx.fill();
-    ctx.strokeStyle = ink(); ctx.globalAlpha = .55; ctx.lineWidth = 1;
-    for (let a = -0.6; a <= 0.6; a += 0.3){
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x - dir*Math.cos(a)*13, y - Math.sin(a)*13 - 2);
-      ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
+  let s = TW + '<path class="hl" pathLength="1" d="'+d+'"/>';
+  for (let k = 0; k < 13; k++){
+    const p = P(Math.PI + (Math.PI*2)*k/13);
+    s += '<g transform="translate('+p[0].toFixed(1)+','+p[1].toFixed(1)+')"><path class="hs" style="animation-delay:'+(0.4 + 3.4*k/13).toFixed(2)+'s" ' +
+      'd="M0,-7 Q1,-1.2 7,0 Q1,1.2 0,7 Q-1,1.2 -7,0 Q-1,-1.2 0,-7Z" fill="#ffd98a" filter="url(#glow)"/></g>';
   }
-  frame();
+  s += chibi({ x:170, y:238, who:"p", s:1.05, face:"happy", cls:"hop" }) +
+       chibi({ x:230, y:238, who:"g", s:1.05, face:"happy", cls:"hop" }) +
+       emo(200, 196, "💗", 16, "pulse") + emo(120, 190, "✨", 14, "fz") + emo(280, 194, "✨", 14, "fz", "animation-delay:1.8s");
+  svg.innerHTML = s;
+  if (reduced && svg.pauseAnimations) svg.pauseAnimations();
 })();
 
 /* =========================================================================
-   1 — ASSIST STAMP
+   SKY, CHAPTERS, CONSTELLATION, NAVIGATION
    ========================================================================= */
-document.getElementById("assist-btn").addEventListener("click", function(){
-  document.getElementById("assist-stamp").classList.add("shown");
-  this.disabled = true;
-  this.textContent = "Credited";
+const CH = [
+  "a small sky", "18 July · the invitation", "18 July · the smash", "July–August · ludo", "August · the late calls",
+  "22–23 August · the weekend", "one night · asleep on the call", "ever since · the jar", "a letter",
+  "the question", "planning · when", "planning · where", "the last star"
+];
+const SKY = ["dusk","dusk","dusk","dusk","night","night","night","night","moon","dawn","dawn","dawn","dawn"];
+const N = CH.length;
+let current = 0, maxSeen = 0;
+
+/* constellation bar */
+const CW = 560, CHT = 40;
+const CPTS = CH.map((_, i) => [14 + i*(CW-28)/(N-1), 20 + Math.sin(i*1.15)*8]);
+(function buildBar(){
+  const svg = $("#const");
+  svg.setAttribute("viewBox", "0 0 "+CW+" "+CHT);
+  let s = "";
+  for (let i = 0; i < N-1; i++)
+    s += '<line data-l="'+i+'" x1="'+CPTS[i][0]+'" y1="'+CPTS[i][1]+'" x2="'+CPTS[i+1][0]+'" y2="'+CPTS[i+1][1]+'"/>';
+  CPTS.forEach((p, i) => {
+    s += '<g class="cs" data-i="'+i+'" transform="translate('+p[0]+','+p[1]+')"><circle r="13" fill="transparent"/>' +
+         '<g class="tw2"><path d="M0,-6 Q.9,-.9 6,0 Q.9,.9 0,6 Q-.9,.9 -6,0 Q-.9,-.9 0,-6Z"/></g></g>';
+  });
+  svg.innerHTML = s;
+  svg.addEventListener("click", e => {
+    const g = e.target.closest(".cs"); if (!g) return;
+    const i = Number(g.dataset.i);
+    if (i <= maxSeen) go(i);
+  });
+})();
+
+function paintBar(){
+  $$("#const .cs").forEach(g => {
+    const i = Number(g.dataset.i);
+    g.classList.toggle("seen", i <= maxSeen && i !== current);
+    g.classList.toggle("here", i === current);
+  });
+  $$("#const line").forEach(l => l.classList.toggle("lit", Number(l.dataset.l) < maxSeen));
+  $("#chapter").textContent = CH[current];
+}
+
+/* photo background */
+let pbFlip = 0;
+function setPhotoBG(i){
+  const list = (CONFIG.photos.background || []).map(fixUrl).filter(Boolean);
+  if (!list.length) return;
+  const url = list[i % list.length];
+  const img = new Image(); img.referrerPolicy = "no-referrer";
+  img.onload = () => {
+    const layers = $$("#photobg .pb");
+    const next = layers[pbFlip % 2], prev = layers[(pbFlip+1) % 2];
+    pbFlip++;
+    next.style.backgroundImage = 'url("'+url+'")';
+    next.classList.add("on"); prev.classList.remove("on");
+  };
+  img.src = url;
+}
+$("#photobg").style.setProperty("--bgop", CONFIG.photos.bgOpacity);
+
+function setSky(i){
+  const s = SKY[i] || "dusk";
+  document.body.dataset.sky = s;
+  $$(".sky").forEach(el => el.classList.toggle("on", el.id === "sky-" + s));
+  starTarget = ({ dusk:.5, night:1, moon:1, dawn:.35 })[s];
+}
+
+function go(i){
+  i = Number(i);
+  const next = $('.panel[data-i="'+i+'"]');
+  if (!next || i === current) return;
+  $$(".panel").forEach(p => p.classList.remove("on"));
+  next.classList.add("on");
+  current = i;
+  maxSeen = Math.max(maxSeen, i);
+  setSky(i); paintBar(); setPhotoBG(i);
+  $("#back").hidden = (i === 0);
+  document.body.classList.remove("hush");
+  window.scrollTo({ top:0, behavior: reduced ? "auto" : "smooth" });
+  if (i === 4) paintHour();
+  if (i === 9) runAsk();
+  if (i === 12) runFinale();
+}
+$$("[data-go]").forEach(b => b.addEventListener("click", () => go(b.dataset.go)));
+$("#back").addEventListener("click", () => go(Math.max(0, current - 1)));
+addEventListener("keydown", e => {
+  if (e.target.matches("input,textarea")) return;
+  if (e.key === "ArrowRight" && current < maxSeen) go(current + 1);
+  if (e.key === "ArrowLeft" && current > 0) go(current - 1);
+});
+
+/* =========================================================================
+   STAR CANVAS — twinkling stars, shooting stars, drifting fireflies
+   ========================================================================= */
+let starTarget = .5;
+(function skyCanvas(){
+  const cv = $("#stars"), ctx = cv.getContext("2d");
+  let W = 0, H = 0, stars = [], flies = [], shoot = null, nextShoot = 0, alpha = .5;
+
+  function size(){
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    const n = Math.round(W*H/5200);
+    stars = Array.from({ length:n }, () => ({ x:Math.random()*W, y:Math.random()*H*.9, r:Math.random()*1.3+.3, p:Math.random()*6.28, s:Math.random()*1.4+.5 }));
+    flies = Array.from({ length:Math.max(9, Math.round(W/85)) }, () => ({ x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-.5)*.25, vy:-Math.random()*.2-.04, r:Math.random()*2+1.2, p:Math.random()*6.28 }));
+  }
+  addEventListener("resize", size); size();
+
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+    alpha += (starTarget - alpha) * .02;
+
+    for (const s of stars){
+      const a = (reduced ? .7 : .35 + .65*Math.abs(Math.sin(t/1000*s.s + s.p))) * alpha;
+      ctx.globalAlpha = a; ctx.fillStyle = "#fff6ee";
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.283); ctx.fill();
+    }
+
+    if (!reduced){
+      for (const f of flies){
+        f.x += f.vx + Math.sin(t/1400 + f.p)*.18; f.y += f.vy;
+        if (f.y < -10){ f.y = H + 10; f.x = Math.random()*W; }
+        if (f.x < -10) f.x = W + 10; if (f.x > W + 10) f.x = -10;
+        const a = (.25 + .5*Math.abs(Math.sin(t/900 + f.p)));
+        const g = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r*6);
+        g.addColorStop(0, "rgba(255,226,138,"+a+")"); g.addColorStop(1, "rgba(255,226,138,0)");
+        ctx.globalAlpha = 1; ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r*6, 0, 6.283); ctx.fill();
+      }
+
+      if (!shoot && t > nextShoot){
+        shoot = { x:Math.random()*W*.8 + W*.1, y:Math.random()*H*.35, vx:7+Math.random()*4, vy:3+Math.random()*2, life:0 };
+        nextShoot = t + 6000 + Math.random()*7000;
+      }
+      if (shoot){
+        shoot.x += shoot.vx; shoot.y += shoot.vy; shoot.life++;
+        const g = ctx.createLinearGradient(shoot.x, shoot.y, shoot.x - shoot.vx*9, shoot.y - shoot.vy*9);
+        g.addColorStop(0, "rgba(255,246,238,"+(.9*alpha)+")"); g.addColorStop(1, "rgba(255,246,238,0)");
+        ctx.globalAlpha = 1; ctx.strokeStyle = g; ctx.lineWidth = 2; ctx.lineCap = "round";
+        ctx.beginPath(); ctx.moveTo(shoot.x, shoot.y); ctx.lineTo(shoot.x - shoot.vx*9, shoot.y - shoot.vy*9); ctx.stroke();
+        if (shoot.life > 46 || shoot.x > W + 40 || shoot.y > H + 40) shoot = null;
+      }
+    }
+    ctx.globalAlpha = 1;
+    if (!reduced) requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && !reduced) requestAnimationFrame(draw); });
+  if (reduced) addEventListener("resize", () => requestAnimationFrame(draw));
+})();
+
+/* tap sparkles */
+addEventListener("pointerdown", e => {
+  if (reduced || e.target.closest("input,textarea,#court")) return;
+  const bits = ["✦","♡","✧","✨"];
+  for (let i = 0; i < 5; i++){
+    const s = document.createElement("span");
+    s.textContent = bits[Math.floor(Math.random()*bits.length)];
+    s.style.cssText = "position:fixed;left:"+e.clientX+"px;top:"+e.clientY+"px;z-index:120;pointer-events:none;font-size:"+(11+Math.random()*10)+"px;color:"+(Math.random()<.5?"#ffd98a":"#ff9fbd")+";";
+    document.body.appendChild(s);
+    const ang = Math.random()*6.283, dist = 26 + Math.random()*36;
+    const a = s.animate([{ transform:"translate(-50%,-50%) scale(.4)", opacity:1 },
+      { transform:"translate(calc(-50% + "+Math.cos(ang)*dist+"px), calc(-50% + "+Math.sin(ang)*dist+"px)) scale(1.1)", opacity:0 }],
+      { duration:700 + Math.random()*400, easing:"cubic-bezier(.2,.7,.3,1)", fill:"forwards" });
+    a.onfinish = () => s.remove();
+  }
+});
+
+/* =========================================================================
+   PHOTO SLOTS (polaroids) — hidden unless a link is set in CONFIG
+   ========================================================================= */
+$$("[data-slot]").forEach(box => {
+  box.hidden = true;
+  box.dataset.slot.split(",").forEach((key, idx) => {
+    const url = fixUrl(CONFIG.photos.slots[key.trim()]);
+    if (!url) return;
+    const img = new Image(); img.referrerPolicy = "no-referrer"; img.alt = "";
+    img.onload = () => {
+      const fig = document.createElement("figure");
+      fig.className = "polaroid"; fig.style.setProperty("--tilt", (idx % 2 ? 3 : -3) + "deg");
+      fig.appendChild(img);
+      const cap = document.createElement("figcaption");
+      cap.textContent = (CONFIG.photos.captions || {})[key.trim()] || "";
+      fig.appendChild(cap);
+      box.appendChild(fig); box.hidden = false;
+    };
+    img.src = url;
+  });
+});
+
+/* =========================================================================
+   1 · ASSIST
+   ========================================================================= */
+$("#assist-btn").addEventListener("click", function(){
+  $("#assist-stamp").classList.add("shown");
+  this.disabled = true; this.textContent = "Credited";
   toast("Sakshi has been officially thanked.");
 });
 
 /* =========================================================================
-   2 — SMASH COURT
+   2 · SMASH COURT
    ========================================================================= */
 (function smash(){
-  const court = document.getElementById("court");
-  const birdie = document.getElementById("birdie");
-  const count = document.getElementById("smash-count");
-  const REACTIONS = ["...", "really?", "hey", "😐", "stop", "ok wow", "PARTH", "😭"];
-
-  court.addEventListener("click", (e) => {
+  const court = $("#court"), bird = $("#bird"), count = $("#smash-count");
+  const R = ["…", "really?", "hey", "😐", "stop", "ok wow", "PARTH", "😭"];
+  court.addEventListener("click", e => {
     const r = court.getBoundingClientRect();
-    const tx = r.width * (0.62 + Math.random()*0.30);
-    const ty = r.height * (0.22 + Math.random()*0.58);
-
-    birdie.style.transition = "none";
-    birdie.style.left = (e.clientX - r.left - 6) + "px";
-    birdie.style.top  = (e.clientY - r.top - 6) + "px";
-    void birdie.offsetWidth;
-    birdie.style.transition = "left .38s cubic-bezier(.3,1.5,.5,1), top .38s cubic-bezier(.3,.2,.6,1)";
-    birdie.style.left = (tx - 6) + "px";
-    birdie.style.top  = (ty - 6) + "px";
-
+    const tx = r.width*(.6 + Math.random()*.32), ty = r.height*(.2 + Math.random()*.6);
+    bird.style.transition = "none";
+    bird.style.left = (e.clientX - r.left - 7) + "px"; bird.style.top = (e.clientY - r.top - 7) + "px";
+    void bird.offsetWidth;
+    bird.style.transition = "left .38s cubic-bezier(.3,1.4,.5,1), top .38s cubic-bezier(.3,.2,.6,1)";
+    bird.style.left = (tx - 7) + "px"; bird.style.top = (ty - 7) + "px";
     setTimeout(() => {
-      const m = document.createElement("div");
-      m.className = "mark"; m.style.left = tx+"px"; m.style.top = ty+"px";
-      court.appendChild(m); setTimeout(()=>m.remove(), 750);
-
-      const rx = document.createElement("div");
-      rx.className = "reaction";
-      rx.textContent = REACTIONS[Math.min(state.smashes, REACTIONS.length-1)];
-      rx.style.left = (tx - 12) + "px"; rx.style.top = (ty - 22) + "px";
-      court.appendChild(rx); setTimeout(()=>rx.remove(), 1350);
-
-      state.smashes++;
-      count.textContent = state.smashes;
-      if (state.smashes === 8) toast("This is roughly the ratio from real life.");
+      const m = document.createElement("div"); m.className = "ping"; m.style.left = tx + "px"; m.style.top = ty + "px";
+      court.appendChild(m); setTimeout(() => m.remove(), 750);
+      const rx = document.createElement("div"); rx.className = "rx";
+      rx.textContent = R[Math.min(state.smashes, R.length - 1)];
+      rx.style.left = Math.max(6, Math.min(r.width - 90, tx - 20)) + "px"; rx.style.top = (ty - 26) + "px";
+      court.appendChild(rx); setTimeout(() => rx.remove(), 1450);
+      state.smashes++; count.textContent = state.smashes;
+      if (state.smashes === 8) toast("Gauri's patience: officially tested.");
     }, 380);
   });
 })();
 
 /* =========================================================================
-   3 — LUDO BOARD
+   3 · LUDO
    ========================================================================= */
 (function ludo(){
-  const board = document.getElementById("board");
-  const cells = ["q-tl","q-lane","q-tr","q-lane","q-mid","q-lane","q-bl","q-lane","q-br"];
-  cells.forEach(c => {
-    const d = document.createElement("div");
-    d.className = c;
+  const board = $("#board");
+  ["q-tl","q-lane","q-tr","q-lane","q-mid","q-lane","q-bl","q-lane","q-br"].forEach(c => {
+    const d = document.createElement("div"); d.className = c;
     if (c === "q-mid") d.textContent = "🎲";
     board.appendChild(d);
   });
-
   const RAGE = [
     "Fully intact. Send a piece home and let's see.",
-    "Slight pause. You said nothing. That's worse.",
+    "A slight pause. You said nothing, which is worse.",
     "\"seriously?\"",
     "You've stopped talking to me mid-game.",
     "The \"I'm fine\" phase. You are not fine.",
     "Rage-bait confirmed. Rolling with intent now.",
-    "Okay I think I should stop. I won't, but I should."
+    "Okay, I should stop. I won't, but I should."
   ];
-
-  board.querySelectorAll(".q-tl,.q-tr,.q-bl,.q-br").forEach(q => {
-    for (let i=0;i<2;i++){
-      const p = document.createElement("div");
-      p.className = "pawn";
-      p.style.left = (26 + Math.random()*46) + "%";
-      p.style.top  = (26 + Math.random()*46) + "%";
+  $$(".q-tl,.q-tr,.q-bl,.q-br", board).forEach(q => {
+    for (let i = 0; i < 2; i++){
+      const p = document.createElement("div"); p.className = "pawn";
+      p.style.left = (28 + Math.random()*44) + "%"; p.style.top = (28 + Math.random()*44) + "%";
       p.addEventListener("click", () => {
         if (p.classList.contains("home")) return;
-        p.classList.add("home");
-        state.homes++;
-        const pct = Math.min(state.homes / 7, 1) * 100;
-        document.getElementById("rage-bar").style.width = pct + "%";
-        document.getElementById("rage-label").textContent = RAGE[Math.min(state.homes, RAGE.length-1)];
+        p.classList.add("home"); state.homes++;
+        $("#rage-bar").style.width = Math.min(state.homes/7, 1)*100 + "%";
+        $("#rage-label").textContent = RAGE[Math.min(state.homes, RAGE.length - 1)];
         if (state.homes === 8) toast("All eight. You'd have left the call by now.");
       });
       q.appendChild(p);
@@ -1161,506 +1431,265 @@ document.getElementById("assist-btn").addEventListener("click", function(){
 })();
 
 /* =========================================================================
-   4 — THE NIGHT DIAL
+   4 · THE NIGHT DIAL
    ========================================================================= */
 const HOURS = [
-  ["10:30 PM", "Group call. Six people. Normal."],
-  ["11:00 PM", "Four people. Still normal."],
-  ["11:30 PM", "Two people. Nobody comments on this."],
-  ["12:00 AM", "Gossip. Full coverage. No topic survives."],
+  ["10:30 PM", "Group call. Loud. Completely normal."],
+  ["11:00 PM", "Fewer voices. Still normal."],
+  ["11:30 PM", "Somehow it's just the two of us. Nobody mentions it."],
+  ["12:00 AM", "Gossip, full coverage. No topic survives."],
   ["12:30 AM", "\"one more thing and then I'll sleep\""],
-  ["1:00 AM",  "Overthinking begins. Both of us. Enthusiastically."],
+  ["1:00 AM",  "The overthinking starts. Both of us. Enthusiastically."],
   ["1:30 AM",  "The conversation gets quieter and more honest."],
-  ["2:00 AM",  "Secrets. Real ones. Neither of us flinches."],
-  ["2:30 AM",  "\"we have office tomorrow\" — said, ignored."],
-  ["3:00 AM",  "Still going. Nothing urgent. Nothing we'd trade."],
+  ["2:00 AM",  "Secrets. Real ones."],
+  ["2:30 AM",  "\"we have office tomorrow\" (said, ignored)"],
+  ["3:00 AM",  "Still going. Nothing urgent. Nothing I'd trade."],
   ["3:30 AM",  "You've gone quiet."],
-  ["4:00 AM",  "You're asleep. Line still open. I didn't hang up either."]
+  ["4:00 AM",  "You're asleep. The line is still open. I didn't hang up either."]
 ];
-const hourEl = document.getElementById("hour");
 function paintHour(){
-  const [t, line] = HOURS[Number(hourEl.value)];
-  document.getElementById("clock").textContent = t;
-  document.getElementById("hour-caption").textContent = line;
+  const h = HOURS[Number($("#hour").value)];
+  $("#clock").textContent = h[0]; $("#hour-caption").textContent = h[1];
 }
-hourEl.addEventListener("input", paintHour);
-function resetDial(){ paintHour(); }
+$("#hour").addEventListener("input", paintHour);
 paintHour();
 
 /* =========================================================================
-   5 — TICKET STUBS
+   5 · FLIP CARDS   6 · HUSH   7 · JAR
    ========================================================================= */
-document.querySelectorAll("[data-stub]").forEach(s => {
-  s.addEventListener("click", () => s.classList.toggle("open"));
+$$("[data-flip]").forEach(f => f.addEventListener("click", () => f.classList.toggle("open")));
+
+$("#hush").addEventListener("click", function(){
+  const on = document.body.classList.toggle("hush");
+  $("#hushnote").hidden = !on;
+  this.textContent = on ? "Turn the lights back on" : "Hush the room";
+});
+
+$$("#lights .light").forEach(b => b.addEventListener("click", () => {
+  $$("#lights .light").forEach(x => x.classList.remove("on"));
+  b.classList.add("on");
+  $("#lightnote").textContent = b.dataset.t;
+}));
+
+/* =========================================================================
+   FORM DELIVERY (Web3Forms) — fetch first, hidden-form backup second
+   ========================================================================= */
+function sendViaForm(data){
+  const form = $("#w3f-form");
+  Object.keys(data).forEach(k => {
+    let field = form.querySelector('[name="'+k+'"]');
+    if (!field){ field = document.createElement("input"); field.type = "hidden"; field.name = k; form.appendChild(field); }
+    if (field.type !== "checkbox") field.value = data[k];
+  });
+  form.submit();
+}
+async function deliver(fields, statusEl, okText, retry){
+  const data = Object.assign({ access_key: CONFIG.web3formsKey, from_name: "A small sky" }, fields);
+  if (statusEl) statusEl.textContent = "Letting " + CONFIG.myName + " know…";
+  let ok = false;
+  try {
+    const fd = new FormData(); Object.keys(data).forEach(k => fd.append(k, data[k]));
+    const res = await fetch("https://api.web3forms.com/submit", { method:"POST", body:fd });
+    const j = await res.json().catch(() => ({}));
+    ok = res.ok && j.success !== false;
+  } catch (err) { ok = false; }
+  if (ok){ if (statusEl) statusEl.textContent = okText; return; }
+  sendViaForm(data);
+  if (!statusEl) return;
+  statusEl.innerHTML = 'Sent by the backup route. <button type="button" class="resend" style="background:none;border:none;padding:0;font:inherit;color:var(--accent);font-weight:800;text-decoration:underline;cursor:pointer">Send it again</button>';
+  $(".resend", statusEl).addEventListener("click", () => deliver(fields, statusEl, okText));
+}
+
+/* =========================================================================
+   8 · THE LETTER
+   ========================================================================= */
+$("#env").addEventListener("click", function(){
+  if (this.classList.contains("open")) return;
+  this.classList.add("open");
+  $("#env-hint").hidden = true;
+  setTimeout(() => {
+    $("#env-wrap").classList.add("gone");
+    const L = $("#letter"); L.hidden = false;
+    $$("p", L).forEach((p, i) => p.style.setProperty("--n", i));
+    requestAnimationFrame(() => L.classList.add("show"));
+    setTimeout(() => { $("#letter-btns").hidden = false; }, reduced ? 100 : 2600);
+    L.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block:"start" });
+  }, reduced ? 50 : 800);
+});
+$("#not-ready").addEventListener("click", function(){
+  $("#paused").hidden = false; this.hidden = true;
+  $("#paused").scrollIntoView({ behavior: reduced ? "auto" : "smooth", block:"nearest" });
+});
+$("#reply-send").addEventListener("click", function(){
+  const t = $("#reply-text").value.trim();
+  if (!t){ toast("Write a line first, if you want to."); return; }
+  deliver({
+    subject: CONFIG.herName + " replied to your letter",
+    Answer: "REPLY TO THE LETTER",
+    Message: t
+  }, $("#reply-status"), "Sent. " + CONFIG.myName + " will read it.");
 });
 
 /* =========================================================================
-   7 — THE LETTER
-   ========================================================================= */
-document.getElementById("not-ready").addEventListener("click", function(){
-  document.getElementById("paused").hidden = false;
-  this.hidden = true;
-  this.parentElement.querySelector('[data-go="8"]').textContent = "Actually, keep going";
-});
-
-/* =========================================================================
-   8 — THE ASK
+   9 · THE QUESTION
    ========================================================================= */
 let askRan = false;
 function runAsk(){
   if (askRan) return; askRan = true;
-  const beats = ["ask-2","ask-3","ask-choices"];
-  beats.forEach((id, i) => {
-    setTimeout(() => { document.getElementById(id).hidden = false; }, (reduced ? 200 : 750) * (i+1));
-  });
+  const gap = reduced ? 150 : 1000;
+  $$("#reasons .lantern").forEach((el, i) => setTimeout(() => { el.hidden = false; }, gap*(i+1)));
+  setTimeout(() => { $("#ask-q").hidden = false; }, gap*4);
+  setTimeout(() => { $("#ask-choices").hidden = false; }, gap*4.8);
 }
-document.getElementById("ask-yes").addEventListener("click", () => {
-  document.getElementById("ask-choices").hidden = true;
-  document.getElementById("ask-yes-box").hidden = false;
-});
-document.getElementById("ask-maybe").addEventListener("click", () => {
-  document.getElementById("ask-choices").hidden = true;
-  document.getElementById("ask-maybe-box").hidden = false;
-});
+$("#ask-yes").addEventListener("click", () => { $("#ask-choices").hidden = true; $("#ask-yes-box").hidden = false; });
+$("#ask-maybe").addEventListener("click", () => { $("#ask-choices").hidden = true; $("#ask-maybe-box").hidden = false; });
 
 /* =========================================================================
-   9 — WHEN + TIME
+   10 · WHEN + TIME
    ========================================================================= */
 const TIME_NOTE = {
-  "Morning":   "Early enough that it counts as effort from both of us.",
-  "Afternoon": "Food, wandering, and an unreasonable amount of gossip.",
-  "Sunset":    "The correct answer, but I'm not biased at all.",
-  "Evening":   "Lights, dinner, city noise.",
+  "Morning":"Early enough that it counts as effort from both of us.",
+  "Afternoon":"Food, wandering, and an unreasonable amount of gossip.",
+  "Sunset":"The correct answer, but I'm not biased at all.",
+  "Evening":"Lights, dinner, city noise.",
   "Late night":"Only if we're both fine losing track of time again."
 };
-
-document.getElementById("when-opts").addEventListener("click", e => {
-  const b = e.target.closest(".opt"); if (!b) return;
-  document.querySelectorAll("#when-opts .opt").forEach(x => x.classList.remove("picked"));
-  b.classList.add("picked");
-  state.when = b.dataset.when;
-  document.getElementById("d-date").value = "";
-  document.getElementById("when-note").textContent = "Noted.";
-  refreshPlan();
+$("#when-opts").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  $$("#when-opts .chip").forEach(x => x.classList.remove("picked")); b.classList.add("picked");
+  state.when = b.dataset.when; $("#d-date").value = ""; $("#when-note").textContent = "Noted."; refreshPlan();
 });
-document.getElementById("d-date").addEventListener("change", e => {
+$("#d-date").addEventListener("change", e => {
   if (!e.target.value) return;
-  document.querySelectorAll("#when-opts .opt").forEach(x => x.classList.remove("picked"));
+  $$("#when-opts .chip").forEach(x => x.classList.remove("picked"));
   const d = new Date(e.target.value + "T00:00:00");
   state.when = d.toLocaleDateString(undefined, { weekday:"long", day:"numeric", month:"long" });
-  document.getElementById("when-note").textContent = "Locked in: " + state.when;
-  refreshPlan();
+  $("#when-note").textContent = "Locked in: " + state.when; refreshPlan();
 });
-
-document.getElementById("time-opts").addEventListener("click", e => {
-  const b = e.target.closest(".opt"); if (!b) return;
-  document.querySelectorAll("#time-opts .opt").forEach(x => x.classList.remove("picked"));
-  b.classList.add("picked");
-  state.time = b.dataset.time;
-  document.getElementById("d-time").value = "";
-  document.getElementById("time-note").textContent = TIME_NOTE[state.time] || "";
-  refreshPlan();
+$("#time-opts").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  $$("#time-opts .chip").forEach(x => x.classList.remove("picked")); b.classList.add("picked");
+  state.time = b.dataset.time; $("#d-time").value = ""; $("#time-note").textContent = TIME_NOTE[state.time] || ""; refreshPlan();
 });
-document.getElementById("d-time").addEventListener("change", e => {
+$("#d-time").addEventListener("change", e => {
   if (!e.target.value) return;
-  document.querySelectorAll("#time-opts .opt").forEach(x => x.classList.remove("picked"));
-  state.time = e.target.value;
-  document.getElementById("time-note").textContent = "Works for me.";
-  refreshPlan();
+  $$("#time-opts .chip").forEach(x => x.classList.remove("picked"));
+  state.time = e.target.value; $("#time-note").textContent = "Works for me."; refreshPlan();
 });
 
 /* =========================================================================
-   10 — PLACES + ACTIVITIES
+   11 · PLACES + ACTIVITIES
    ========================================================================= */
 (function buildPlaces(){
-  const grid = document.getElementById("places");
+  const grid = $("#places");
   CONFIG.places.forEach(p => {
-    const b = document.createElement("button");
-    b.type = "button"; b.className = "place";
-    b.innerHTML =
-      '<div class="nm"></div><div class="hr2"></div><div class="pl"></div><div class="vb"></div>';
-    b.querySelector(".nm").textContent = p.name;
-    b.querySelector(".hr2").textContent = p.hours;
-    b.querySelector(".pl").textContent = p.plan;
-    b.querySelector(".vb").textContent = p.vibe;
+    const b = document.createElement("button"); b.type = "button"; b.className = "place";
+    b.innerHTML = '<div class="ph"><span class="em"></span><span class="pin"></span></div><div class="pb2"><div class="nm"></div><div class="hr2"></div><div class="pl"></div><div class="vb"></div></div>';
+    const ph = $(".ph", b);
+    ph.style.background = "linear-gradient(135deg," + p.grad + ")";
+    $(".em", b).textContent = p.emoji;
+    $(".pin", b).textContent = "Mumbai";
+    $(".nm", b).textContent = p.name; $(".hr2", b).textContent = p.hours;
+    $(".pl", b).textContent = p.plan;  $(".vb", b).textContent = p.vibe;
+    const url = fixUrl(p.photo);
+    if (url){
+      const img = new Image(); img.referrerPolicy = "no-referrer"; img.alt = ""; img.loading = "lazy";
+      img.onload = () => { ph.insertBefore(img, ph.firstChild); };
+      img.src = url;
+    }
     b.addEventListener("click", () => {
-      document.querySelectorAll(".place").forEach(x => x.classList.remove("picked"));
-      b.classList.add("picked");
-      state.place = p;
-      document.getElementById("acts-wrap").hidden = false;
-      document.getElementById("to-final").disabled = false;
-      refreshPlan();
+      $$(".place").forEach(x => x.classList.remove("picked")); b.classList.add("picked");
+      state.place = p; $("#acts-wrap").hidden = false; $("#to-final").disabled = false; refreshPlan();
     });
     grid.appendChild(b);
   });
 })();
-
 (function buildActs(){
-  const grid = document.getElementById("acts");
+  const grid = $("#acts");
   CONFIG.activities.forEach(a => {
-    const b = document.createElement("button");
-    b.type = "button"; b.className = "opt"; b.textContent = a;
+    const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = a;
     b.addEventListener("click", () => {
       b.classList.toggle("picked");
-      if (b.classList.contains("picked")) state.acts.push(a);
-      else state.acts = state.acts.filter(x => x !== a);
+      state.acts = b.classList.contains("picked") ? state.acts.concat(a) : state.acts.filter(x => x !== a);
       refreshPlan();
     });
     grid.appendChild(b);
   });
 })();
-
 function refreshPlan(){
   if (!state.place) return;
-  document.getElementById("plan-card").hidden = false;
-  document.getElementById("p-where").textContent = "Where — " + state.place.name;
-  document.getElementById("p-when").textContent  = "When — " + (state.when || "you tell me");
-  document.getElementById("p-time").textContent  = "Time — " + (state.time || "you tell me");
-  document.getElementById("p-acts").textContent  = "Doing — " + (state.acts.length ? state.acts.join(", ") : "we'll figure it out");
+  $("#plan-card").hidden = false;
+  $("#p-where").innerHTML = "<b>Where</b> &nbsp;" + esc(state.place.name);
+  $("#p-when").innerHTML  = "<b>When</b> &nbsp;" + esc(state.when || "you tell me");
+  $("#p-time").innerHTML  = "<b>Time</b> &nbsp;" + esc(state.time || "you tell me");
+  $("#p-acts").innerHTML  = "<b>Doing</b> &nbsp;" + esc(state.acts.length ? state.acts.join(", ") : "we'll figure it out");
 }
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
 
 /* =========================================================================
-   11 — FINALE
+   12 · FINALE
    ========================================================================= */
 let finaleRan = false;
 function runFinale(){
   if (finaleRan) return; finaleRan = true;
-  const seq = ["fl-1","fl-2","fl-3","fl-4","final-choices"];
-  seq.forEach((id, i) => {
-    setTimeout(() => {
-      const el = document.getElementById(id);
-      el.hidden = false; el.classList.add("in");
-    }, (reduced ? 180 : 850) * i);
-  });
+  const seq = ["fl-1","fl-2","fl-3","fl-4","fl-5","final-choices"];
+  const gap = reduced ? 150 : 1150;
+  seq.forEach((id, i) => setTimeout(() => { $("#" + id).hidden = false; }, 1200 + gap*i));
 }
 
-document.getElementById("f-yes").addEventListener("click", async () => {
-  document.getElementById("final-choices").hidden = true;
-  document.getElementById("f-yes-box").hidden = false;
-
-  const p = state.place;
-  document.getElementById("final-card").innerHTML =
-    '<h3>Confirmed</h3>' +
-    '<p>Where — ' + (p ? p.name : "to be decided") + '</p>' +
-    '<p>When — ' + (state.when || "you tell me") + '</p>' +
-    '<p>Time — ' + (state.time || "you tell me") + '</p>' +
-    '<p>Doing — ' + (state.acts.length ? state.acts.join(", ") : "we'll figure it out") + '</p>';
-
-  confetti();
-  sendAnswer("YES");
-});
-
-/* -------------------------------------------------------------------------
-   DELIVERY
-   Tries fetch first (FormData — no JSON preflight, most reliable with
-   Web3Forms). If that fails for any reason, falls back to submitting a real
-   HTML form into a hidden iframe, which cannot be blocked by CORS and works
-   even when the page is opened straight off the disk.
-   ------------------------------------------------------------------------- */
 function answerPayload(answer){
   const p = state.place;
   return {
-    access_key: CONFIG.web3formsKey,
-    subject: CONFIG.herName + " said " + answer + " — date confirmed",
-    from_name: "The Match Log",
+    subject: CONFIG.herName + " said " + answer,
     Answer: answer,
     Where: p ? p.name : "To be decided",
     When: state.when || "Not specified",
     Time: state.time || "Not specified",
     Doing: state.acts.length ? state.acts.join(", ") : "Not specified",
+    Note_from_her: ($("#d-note").value || "").trim() || "None",
     Smashes_replayed: String(state.smashes),
     Pieces_sent_home: String(state.homes)
   };
 }
 
-function sendViaForm(data){
-  const form = document.getElementById("w3f-form");
-  Object.keys(data).forEach(k => {
-    let field = form.querySelector('[name="' + k + '"]');
-    if (!field){
-      field = document.createElement("input");
-      field.type = "hidden"; field.name = k;
-      form.appendChild(field);
-    }
-    if (field.type !== "checkbox") field.value = data[k];
-  });
-  form.submit();
-}
-
-async function sendAnswer(answer){
-  const status = document.getElementById("send-status");
-  const data = answerPayload(answer);
-  if (status) status.textContent = "Letting " + CONFIG.myName + " know…";
-
-  let ok = false;
-  try {
-    const fd = new FormData();
-    Object.keys(data).forEach(k => fd.append(k, data[k]));
-    const res = await fetch("https://api.web3forms.com/submit", { method:"POST", body: fd });
-    const json = await res.json().catch(() => ({}));
-    ok = res.ok && json.success !== false;
-  } catch (err) {
-    ok = false;
-  }
-
-  if (ok){
-    if (status) status.textContent = "He knows. It's official.";
-  } else {
-    // silent, CORS-proof fallback
-    sendViaForm(data);
-    if (!status) return;
-    status.innerHTML = 'Sent. <button type="button" id="resend" ' +
-      'style="background:none;border:none;padding:0;font:inherit;color:var(--accent);' +
-      'font-weight:700;text-decoration:underline;cursor:pointer">Send it again</button>';
-    const rb = document.getElementById("resend");
-    if (rb) rb.addEventListener("click", () => sendAnswer(answer));
-  }
-}
-
-document.getElementById("f-think").addEventListener("click", () => {
-  document.getElementById("final-choices").hidden = true;
-  document.getElementById("f-think-box").hidden = false;
-  sendAnswer("STILL THINKING");
+$("#f-yes").addEventListener("click", () => {
+  $("#final-choices").hidden = true; $("#f-yes-box").hidden = false;
+  const p = state.place, note = ($("#d-note").value || "").trim();
+  $("#final-card").innerHTML =
+    "<h3>Confirmed</h3>" +
+    "<p><b>Where</b> &nbsp;" + esc(p ? p.name : "to be decided") + "</p>" +
+    "<p><b>When</b> &nbsp;" + esc(state.when || "you tell me") + "</p>" +
+    "<p><b>Time</b> &nbsp;" + esc(state.time || "you tell me") + "</p>" +
+    "<p><b>Doing</b> &nbsp;" + esc(state.acts.length ? state.acts.join(", ") : "we'll figure it out") + "</p>" +
+    (note ? "<p><b>Your note</b> &nbsp;" + esc(note) + "</p>" : "");
+  confetti();
+  deliver(answerPayload("YES, date confirmed"), $("#send-status"), CONFIG.myName + " knows. It's official.");
 });
-
-document.getElementById("restart").addEventListener("click", () => location.reload());
+$("#f-think").addEventListener("click", () => {
+  $("#final-choices").hidden = true; $("#f-think-box").hidden = false;
+  deliver(answerPayload("STILL THINKING"), $("#think-status"), CONFIG.myName + " knows, and he's not going anywhere.");
+});
+$("#restart").addEventListener("click", () => location.reload());
 
 function confetti(){
   if (reduced) return;
-  const bits = ["🏸","🎲","❤️","✦","🎬"];
-  for (let i=0;i<30;i++){
+  const bits = ["🏸","🎲","❤️","✦","🎬","✨","🌙"];
+  for (let i = 0; i < 34; i++){
     const s = document.createElement("span");
     s.textContent = bits[Math.floor(Math.random()*bits.length)];
-    s.style.cssText = "position:fixed;top:-40px;z-index:200;pointer-events:none;left:" +
-      (Math.random()*100) + "vw;font-size:" + (13 + Math.random()*16) + "px;";
+    s.style.cssText = "position:fixed;top:-40px;z-index:200;pointer-events:none;left:" + (Math.random()*100) + "vw;font-size:" + (13 + Math.random()*16) + "px;";
     document.body.appendChild(s);
-    const dur = 2600 + Math.random()*1800, delay = Math.random()*500;
-    s.animate(
-      [{ transform:"translate(0,0) rotate(0deg)", opacity:.95 },
-       { transform:"translate(" + ((Math.random()-.5)*160) + "px," + (innerHeight+80) + "px) rotate(" + ((Math.random()-.5)*720) + "deg)", opacity:.15 }],
-      { duration:dur, delay, easing:"cubic-bezier(.2,.6,.4,1)", fill:"forwards" }
-    );
-    setTimeout(() => s.remove(), dur + delay + 120);
+    const dur = 2800 + Math.random()*1800, delay = Math.random()*600;
+    s.animate([
+      { transform:"translate(0,0) rotate(0deg)", opacity:.95 },
+      { transform:"translate(" + ((Math.random()-.5)*180) + "px," + (innerHeight+80) + "px) rotate(" + ((Math.random()-.5)*720) + "deg)", opacity:.15 }
+    ], { duration:dur, delay:delay, easing:"cubic-bezier(.2,.6,.4,1)", fill:"forwards" });
+    setTimeout(() => s.remove(), dur + delay + 150);
   }
 }
 
-/* keyboard: left/right to move through the log */
-addEventListener("keydown", e => {
-  if (e.target.matches("input")) return;
-  if (e.key === "ArrowRight" && current < INNINGS.length - 1) go(current + 1);
-  if (e.key === "ArrowLeft" && current > 0) go(current - 1);
-});
-</script>
-<script>
-/* =========================================================================
-   THE CAST — a tiny two-person company that acts out each inning
-   Drawn from scratch so they inherit the page's ink colour and work in
-   every light state (day / night / candle / dawn).
-   ========================================================================= */
-(function(){
-  const SVG = document.querySelector("#cast svg");
-
-  const SKIN = { g:"#F0C39A", p:"#E3B184" };
-  const SUIT = { g:"#D4574A", p:"#3A62A8", s:"#E0A32B" };
-  const HAIR = { g:"#2A2028", p:"#221C24", s:"#3A2A2E" };
-
-  /* ---- one little person ------------------------------------------------ */
-  function person(o){
-    const who  = o.who || "p";
-    const skin = SKIN[who] || SKIN.p;
-    const suit = o.suit || SUIT[who] || SUIT.p;
-    const hair = HAIR[who] || HAIR.p;
-    const sit  = o.pose === "sit";
-    const s    = o.s || 1;
-    const flip = o.flip ? " scale(-1,1)" : "";
-
-    const legs = sit
-      ? '<rect x="-4" y="-13" width="20" height="6" rx="3" fill="'+suit+'"/>' +
-        '<rect x="10" y="-9" width="6" height="9" rx="3" fill="'+hair+'"/>'
-      : '<rect x="-6.5" y="-14" width="5.5" height="14" rx="2.7" fill="'+hair+'"/>' +
-        '<rect x="1" y="-14" width="5.5" height="14" rx="2.7" fill="'+hair+'"/>';
-
-    const bun = who === "g"
-      ? '<circle cx="1" cy="-55" r="5.4" fill="'+hair+'"/>' +
-        '<path d="M-11,-45 q0,-13 11,-13 q11,0 11,13 q-4,-7 -11,-7 q-7,0 -11,7 Z" fill="'+hair+'"/>'
-      : who === "s"
-      ? '<path d="M-11,-45 q0,-13 11,-13 q11,0 11,13 q-3,-6 -11,-6 q-8,0 -11,6 Z" fill="'+hair+'"/>' +
-        '<path d="M-11,-47 q-4,7 -3,13" class="ink" stroke="'+hair+'"/>' +
-        '<path d="M11,-47 q4,7 3,13" class="ink" stroke="'+hair+'"/>'
-      : '<path d="M-11,-45 q0,-13 11,-13 q11,0 11,13 q-5,-6 -12,-4 q-5,1 -10,4 Z" fill="'+hair+'"/>' +
-        '<path d="M4,-56 q6,-3 7,4" class="ink" stroke="'+hair+'"/>';
-
-    const face =
-      o.face === "sleep"
-        ? '<path d="M-6,-43 q2.5,2.5 5,0" class="ink" stroke="#2A2028" stroke-width="1.7"/>' +
-          '<path d="M2,-43 q2.5,2.5 5,0" class="ink" stroke="#2A2028" stroke-width="1.7"/>' +
-          '<path d="M-2,-36 q2.5,2 5,0" class="ink" stroke="#2A2028" stroke-width="1.6"/>'
-      : o.face === "cross"
-        ? '<g class="eyes"><circle cx="-4" cy="-43" r="1.8" fill="#2A2028"/><circle cx="5" cy="-43" r="1.8" fill="#2A2028"/></g>' +
-          '<path d="M-8,-48 l6,2" class="ink" stroke="#2A2028" stroke-width="1.6"/>' +
-          '<path d="M9,-48 l-6,2" class="ink" stroke="#2A2028" stroke-width="1.6"/>' +
-          '<path d="M-3,-36 q3,-2.4 6,0" class="ink" stroke="#2A2028" stroke-width="1.6"/>'
-      : o.face === "sorry"
-        ? '<g class="eyes"><circle cx="-4" cy="-42" r="1.8" fill="#2A2028"/><circle cx="5" cy="-42" r="1.8" fill="#2A2028"/></g>' +
-          '<path d="M-8,-47 q3,-2 6,1" class="ink" stroke="#2A2028" stroke-width="1.5"/>' +
-          '<path d="M9,-47 q-3,-2 -6,1" class="ink" stroke="#2A2028" stroke-width="1.5"/>' +
-          '<path d="M-3,-35 q3,-1.6 6,0" class="ink" stroke="#2A2028" stroke-width="1.6"/>'
-      : o.face === "oh"
-        ? '<g class="eyes"><circle cx="-4" cy="-44" r="2.1" fill="#2A2028"/><circle cx="5" cy="-44" r="2.1" fill="#2A2028"/></g>' +
-          '<ellipse cx="1" cy="-36" rx="2.6" ry="3.2" fill="#2A2028" opacity=".8"/>'
-        : '<g class="eyes"><circle cx="-4" cy="-43" r="1.9" fill="#2A2028"/><circle cx="5" cy="-43" r="1.9" fill="#2A2028"/></g>' +
-          '<path d="M-3.5,-37 q4.5,4 9,0" class="ink" stroke="#2A2028" stroke-width="1.7"/>';
-
-    const blush =
-      '<ellipse cx="-8" cy="-38.5" rx="3" ry="1.9" fill="#E08A7A" opacity=".55"/>' +
-      '<ellipse cx="9.5" cy="-38.5" rx="3" ry="1.9" fill="#E08A7A" opacity=".55"/>';
-
-    const armL = '<g transform="translate(-9,-29)"><g class="'+(o.armL||"")+'">' +
-      '<path d="M0,0 q-7,7 -8,15" class="ink" stroke="'+suit+'" stroke-width="5"/>' +
-      '<circle cx="-8" cy="15" r="3.2" fill="'+skin+'"/>' + (o.handL||"") + '</g></g>';
-    const armR = '<g transform="translate(9,-29)"><g class="'+(o.armR||"")+'">' +
-      '<path d="M0,0 q7,7 8,15" class="ink" stroke="'+suit+'" stroke-width="5"/>' +
-      '<circle cx="8" cy="15" r="3.2" fill="'+skin+'"/>' + (o.handR||"") + '</g></g>';
-
-    return '<g transform="translate('+o.x+','+o.y+') scale('+s+')'+flip+'">' +
-      '<ellipse class="shadow" cx="1" cy="3" rx="15" ry="3.4"/>' +
-      '<g class="'+(o.cls||"a-bob")+'">' +
-        '<g transform="translate(0,'+(sit?9:0)+')">' +
-          legs +
-          armL +
-          '<path d="M-9.5,-14 L-11,-28.5 Q0,-35 11,-28.5 L9.5,-14 Q0,-11 -9.5,-14 Z" fill="'+suit+'"/>' +
-          '<circle cx="0.5" cy="-42" r="11.5" fill="'+skin+'"/>' +
-          bun + face + blush +
-          armR +
-        '</g>' +
-      '</g>' +
-    '</g>';
-  }
-
-  const racket = (c) =>
-    '<g transform="translate(6,16) rotate(20)">' +
-      '<ellipse cx="0" cy="-9" rx="5.6" ry="7.6" fill="none" stroke="'+c+'" stroke-width="2.2"/>' +
-      '<path d="M0,-1 L0,6" stroke="'+c+'" stroke-width="2.6" stroke-linecap="round"/>' +
-    '</g>';
-
-  const floor = '<path class="floor" d="M14,124 L366,124"/>';
-  const label = (x,y,t) => '<text class="say" x="'+x+'" y="'+y+'" text-anchor="middle">'+t+'</text>';
-  const prop  = (x,y,t,style) => '<text class="prop" x="'+x+'" y="'+y+'" text-anchor="middle"'+(style?' style="'+style+'"':'')+'>'+t+'</text>';
-
-  /* ---- the scenes ------------------------------------------------------- */
-  const SCENES = {
-
-    rally: floor +
-      '<path class="floor" d="M190,124 L190,92"/>' +
-      person({ x:78, y:124, who:"p", armR:"", handR:racket("#3A62A8"), cls:"a-bob" }) +
-      person({ x:300, y:124, who:"g", flip:true, handR:racket("#D4574A"), cls:"a-bob" }) +
-      '<g transform="translate(88,84)"><g style="animation:birdieAcross 2.6s ease-in-out infinite alternate">' +
-        prop(0,0,"🏸") + '</g></g>',
-
-    assist: floor +
-      person({ x:52, y:124, who:"s", s:.88, armR:"", handR:"", cls:"a-bob" }) +
-      '<g style="animation:nudgeIn 2.8s ease-in-out infinite">' +
-        person({ x:132, y:124, who:"g", face:"oh", cls:"a-bob" }) +
-      '</g>' +
-      person({ x:300, y:124, who:"p", flip:true, handR:racket("#3A62A8"), cls:"a-bob" }) +
-      label(52,140,"Sakshi") +
-      prop(92,74,"👉",'animation:pointAt 2.8s ease-in-out infinite; transform-origin:center'),
-
-    smash: floor +
-      person({ x:74, y:124, who:"p", armR:"a-swing", handR:racket("#3A62A8"), cls:"a-bob" }) +
-      '<g style="animation:duck 2.4s ease-in-out infinite">' +
-        person({ x:302, y:124, who:"g", flip:true, face:"oh", cls:"" }) +
-      '</g>' +
-      '<g transform="translate(110,92)"><g style="animation:birdieSmash 2.4s ease-in-out infinite">' +
-        prop(0,0,"🏸") + '</g></g>' +
-      prop(324,70,"💢",'animation:fume 2.4s ease-in-out infinite'),
-
-    ludo: floor +
-      person({ x:78, y:118, who:"p", pose:"sit", cls:"a-bob-slow" }) +
-      person({ x:302, y:118, who:"g", pose:"sit", flip:true, face:"cross", cls:"a-bob-slow" }) +
-      '<g transform="translate(168,96)">' +
-        '<rect x="0" y="0" width="44" height="30" rx="4" fill="#F2EDE3" stroke="#2A2028" stroke-width="1.6"/>' +
-        '<rect x="3" y="3" width="15" height="10" fill="#C8452F"/>' +
-        '<rect x="26" y="3" width="15" height="10" fill="#2F5AA8"/>' +
-        '<rect x="3" y="17" width="15" height="10" fill="#E0A32B"/>' +
-        '<rect x="26" y="17" width="15" height="10" fill="#1F6F5C"/>' +
-      '</g>' +
-      '<g transform="translate(240,100)"><g style="animation:pawnOut 3s ease-in-out infinite">' +
-        '<path d="M0,0 a4,4 0 1,1 .1,0 Z" fill="#D4574A" stroke="#2A2028" stroke-width="1.4"/>' +
-      '</g></g>' +
-      prop(320,72,"💢",'animation:fume 3s ease-in-out infinite'),
-
-    call: floor +
-      prop(190,44,"🌙") +
-      person({ x:74, y:124, who:"p", armR:"a-lean-r", handR:'<text class="tiny-prop" x="4" y="20">📱</text>', cls:"a-bob-slow" }) +
-      person({ x:304, y:124, who:"g", flip:true, armR:"a-lean-r", handR:'<text class="tiny-prop" x="4" y="20" transform="scale(-1,1) translate(-8,0)">📱</text>', cls:"a-bob-slow" }) +
-      '<g opacity=".85">' +
-        prop(120,74,"💬",'animation:floatZ 3.4s ease-in-out infinite') +
-        prop(250,78,"💬",'animation:floatZ 3.4s ease-in-out infinite 1.7s') +
-      '</g>',
-
-    movie: floor +
-      '<rect x="120" y="30" width="142" height="54" rx="4" fill="var(--ink)" opacity=".18" style="animation:flicker 2.6s ease-in-out infinite"/>' +
-      person({ x:150, y:120, who:"p", pose:"sit", cls:"a-bob-slow" }) +
-      person({ x:236, y:120, who:"g", pose:"sit", flip:true, cls:"a-bob-slow" }) +
-      prop(193,120,"🍿",'animation:shuffle 3.2s ease-in-out infinite; transform-origin:center') +
-      prop(300,64,"🎬"),
-
-    sleep: floor +
-      '<rect x="228" y="108" width="120" height="14" rx="7" fill="var(--ink)" opacity=".13"/>' +
-      '<g transform="translate(312,108) rotate(-86)">' +
-        person({ x:0, y:0, who:"g", face:"sleep", cls:"a-bob-slow" }) +
-      '</g>' +
-      person({ x:96, y:124, who:"p", armR:"a-lean-r", handR:'<text class="tiny-prop" x="4" y="20">📱</text>', cls:"a-bob-slow" }) +
-      prop(268,74,"💤",'animation:floatZ 4.2s ease-in-out infinite') +
-      prop(288,82,"💤",'animation:floatZ 4.2s ease-in-out infinite 2.1s'),
-
-    sorry: floor +
-      person({ x:132, y:124, who:"p", face:"sorry", armR:"a-offer", handR:'<text class="tiny-prop" x="3" y="20">✉️</text>', cls:"a-bob-slow" }) +
-      person({ x:274, y:124, who:"g", flip:true, face:"cross", cls:"a-lean-l" }) +
-      '<path class="floor" d="M196,96 q10,-10 20,0" opacity=".3"/>',
-
-    ask: floor +
-      person({ x:140, y:124, who:"p", armR:"a-offer", handR:'<text class="tiny-prop" x="3" y="20">🌼</text>', cls:"a-bob" }) +
-      person({ x:266, y:124, who:"g", flip:true, cls:"a-bob" }) +
-      prop(203,64,"❤️",'animation:pulseHeart 2.2s ease-in-out infinite; transform-origin:center'),
-
-    plan: floor +
-      person({ x:152, y:124, who:"p", cls:"a-bob-slow" }) +
-      person({ x:242, y:124, who:"g", flip:true, cls:"a-bob-slow" }) +
-      '<g transform="translate(197,88)">' +
-        '<rect x="-21" y="-13" width="42" height="27" rx="3" fill="#F2EDE3" stroke="#2A2028" stroke-width="1.6"/>' +
-        '<path d="M-14,6 q9,-16 12,-4 q4,10 15,-6" stroke="#2F5AA8" stroke-width="1.6" fill="none"/>' +
-        '<circle cx="13" cy="-4" r="2.6" fill="#C8452F"/>' +
-      '</g>',
-
-    together: floor +
-      person({ x:164, y:124, who:"p", cls:"a-hop" }) +
-      person({ x:230, y:124, who:"g", flip:true, cls:"a-hop" }) +
-      prop(197,58,"❤️",'animation:pulseHeart 1.9s ease-in-out infinite; transform-origin:center') +
-      prop(140,72,"✨",'animation:floatZ 3s ease-in-out infinite') +
-      prop(256,76,"🏸",'animation:floatZ 3.4s ease-in-out infinite 1.2s')
-  };
-
-  /* extra animation classes used above */
-  const extra = document.createElement("style");
-  extra.textContent =
-    ".a-swing{ animation:swingHit 2.4s ease-in-out infinite; }" +
-    ".a-offer{ animation:offerUp 2.8s ease-in-out infinite; }" +
-    ".a-hop{ animation:hop 2.2s ease-in-out infinite; }";
-  document.head.appendChild(extra);
-
-  SVG.innerHTML = Object.keys(SCENES)
-    .map(k => '<g data-s="'+k+'">' + SCENES[k] + '</g>').join("");
-
-  /* inning -> scene */
-  const MAP = ["rally","assist","smash","ludo","call","movie","sleep","sorry","ask","plan","plan","together"];
-  window.setCast = function(i){
-    document.getElementById("cast").dataset.scene = MAP[i] || "rally";
-  };
-  setCast(typeof current === "number" ? current : 0);
-})();
-
+/* start */
+setSky(0); paintBar();
 </script>
 </body>
 </html>
