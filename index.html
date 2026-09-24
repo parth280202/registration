@@ -1,1695 +1,1136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#0b1030" />
-<meta name="robots" content="noindex,nofollow" />
-<title>A small sky, for Gauri</title>
-<meta name="description" content="Thirteen stars since 18 July." />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Gauri • A Story of Goofs, Smiles & Second Chances 🌸</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,500&family=Sacramento&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Nunito:wght@400;600;700;800&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pastelPink: '#FFF0F5',
+                        candyPink: '#FF70A6',
+                        blushRose: '#FF9770',
+                        bubbleYellow: '#FFD670',
+                        mintSoft: '#E8F5E9',
+                        nightSky: '#1A1830',
+                        sakura: '#FFD1DC'
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        hand: ['Sacramento', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
 
-<style>
-/* =========================================================================
-   A SMALL SKY
-   Every memory since 18 July is a star. The sky changes with the story:
-   dusk (badminton, ludo)  ->  night (calls)  ->  moonlit (the letter)
-   ->  dawn (the question)  ->  and the stars draw a heart.
-   ========================================================================= */
+    <style>
+        :root {
+            --bg-base: #fdf6f7;
+        }
 
-:root{
-  --ink:#fff6ee;
-  --soft:rgba(255,246,238,.76);
-  --faint:rgba(255,246,238,.5);
-  --gold:#ffd98a;
-  --rose:#ff9fbd;
-  --peach:#ffb389;
-  --lav:#c0b0ff;
-  --mint:#9ae6cd;
-  --accent:#ffd98a;
-  --glass:rgba(20,13,46,.6);
-  --line:rgba(255,255,255,.17);
+        body {
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 112, 166, 0.08) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(192, 132, 252, 0.08) 0%, transparent 25%),
+                radial-gradient(#fbcfe8 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 24px 24px;
+            color: #334155;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
 
-  --display:'Fraunces', Georgia, 'Times New Roman', serif;
-  --body:'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --hand:'Caveat', 'Segoe Print', 'Comic Sans MS', cursive;
+        /* Glassmorphism Cards */
+        .story-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(14px);
+            border: 2px solid rgba(255, 182, 193, 0.5);
+            border-radius: 2rem;
+            box-shadow: 0 16px 36px -8px rgba(255, 112, 166, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
+        }
+        .story-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 24px 44px -8px rgba(255, 112, 166, 0.2);
+        }
 
-  --ease:cubic-bezier(.22,.8,.26,1);
-  --spring:cubic-bezier(.34,1.56,.64,1);
+        /* Float & Bounce keyframes */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(3deg); }
+        }
+        .animate-float {
+            animation: floatSlow 4s ease-in-out infinite;
+        }
 
-  box-sizing:border-box;
-}
+        @keyframes pulseGlow {
+            0%, 100% { filter: drop-shadow(0 0 4px rgba(255, 112, 166, 0.4)); }
+            50% { filter: drop-shadow(0 0 16px rgba(255, 112, 166, 0.8)); }
+        }
+        .animate-glow {
+            animation: pulseGlow 2.5s ease-in-out infinite;
+        }
 
-/* sky states also steer the sun/moon and the accent colour */
-body[data-sky="dusk"]{ --ox:72vw; --oy:64vh; --orb:#ffb36b; --orb-glow:rgba(255,170,100,.55); --crater:0; --accent:#ffd98a; }
-body[data-sky="night"]{ --ox:66vw; --oy:9vh;  --orb:#f3efe0; --orb-glow:rgba(190,200,255,.38); --crater:.5; --accent:#ffd98a; }
-body[data-sky="moon"]{ --ox:42vw; --oy:4vh;  --orb:#fff3d6; --orb-glow:rgba(255,220,160,.45); --crater:.5; --accent:#ffc0d4; }
-body[data-sky="dawn"]{ --ox:8vw;  --oy:58vh; --orb:#ffe08a; --orb-glow:rgba(255,200,110,.62); --crater:0; --accent:#ffe08a; }
+        @keyframes headShake {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-6px) rotate(-4deg); }
+            40% { transform: translateX(6px) rotate(4deg); }
+            60% { transform: translateX(-4px) rotate(-2deg); }
+            80% { transform: translateX(4px) rotate(2deg); }
+            100% { transform: translateX(0); }
+        }
+        .animate-headshake {
+            animation: headShake 0.5s ease-in-out;
+        }
 
-*,*::before,*::after{ box-sizing:inherit; }
-html{ scroll-padding-top:calc(env(safe-area-inset-top,0px) + 70px); }
-html,body{ margin:0; padding:0; }
-body{
-  background:#0b1030;
-  color:var(--ink);
-  font-family:var(--body);
-  font-size:17px;
-  line-height:1.6;
-  -webkit-font-smoothing:antialiased;
-  -webkit-tap-highlight-color:transparent;
-  overflow-x:hidden;
-}
-h1,h2,h3{ font-family:var(--display); font-weight:400; margin:0; line-height:1.08; letter-spacing:-.012em; font-variation-settings:"SOFT" 100; }
-p{ margin:0; }
-button{ font-family:var(--body); color:inherit; }
-::selection{ background:var(--accent); color:#2a1740; }
-:focus-visible{ outline:2.5px solid var(--accent); outline-offset:3px; border-radius:6px; }
-[hidden]{ display:none !important; }
+        @keyframes orbitFly {
+            0% { transform: scale(1) translate(0, 0) rotate(0deg); opacity: 1; }
+            40% { transform: scale(1.4) translate(-40px, -90px) rotate(360deg); }
+            100% { transform: scale(0.2) translate(180px, -340px) rotate(1080deg); opacity: 0; }
+        }
+        .animate-orbit {
+            animation: orbitFly 1.2s forwards cubic-bezier(0.12, 0.8, 0.32, 1);
+        }
 
-/* =========================================================================
-   SKY LAYERS (crossfade), PHOTO LAYER, SUN/MOON, STAR CANVAS
-   ========================================================================= */
-.sky{ position:fixed; inset:0; z-index:0; opacity:0; transition:opacity 1.8s var(--ease); }
-.sky.on{ opacity:1; }
-#sky-dusk{  background:linear-gradient(180deg,#241a4a 0%,#5a2f72 40%,#c8567a 76%,#ff9f7a 100%); }
-#sky-night{ background:linear-gradient(180deg,#060a24 0%,#111850 55%,#2b2a72 100%); }
-#sky-moon{  background:linear-gradient(180deg,#0d1533 0%,#233069 55%,#4b4692 100%); }
-#sky-dawn{  background:linear-gradient(180deg,#2b1a4f 0%,#8c3f7d 38%,#f27f8f 74%,#ffc27a 100%); }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #ffe4e6;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f472b6;
+            border-radius: 99px;
+        }
 
-#photobg{ position:fixed; inset:0; z-index:1; pointer-events:none; }
-#photobg .pb{
-  position:absolute; inset:-3%; background-size:cover; background-position:center;
-  opacity:0; transition:opacity 1.6s var(--ease); filter:saturate(1.1) blur(1.5px);
-  -webkit-mask-image:radial-gradient(ellipse at 50% 40%, #000 25%, transparent 85%);
-          mask-image:radial-gradient(ellipse at 50% 40%, #000 25%, transparent 85%);
-}
-#photobg .pb.on{ opacity:var(--bgop,.34); }
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 34px;
+            width: 34px;
+            border-radius: 50%;
+            background: #ff70a6;
+            cursor: grab;
+            margin-top: -12px;
+            box-shadow: 0 4px 10px rgba(255, 112, 166, 0.4);
+            border: 3px solid white;
+            transition: transform 0.15s ease;
+        }
+        input[type=range]::-webkit-slider-thumb:active {
+            transform: scale(1.15);
+            cursor: grabbing;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(90deg, #fbcfe8, #c084fc, #34d399);
+            border-radius: 99px;
+        }
 
-#orb{
-  position:fixed; left:0; top:0; z-index:2; pointer-events:none;
-  width:clamp(74px,14vw,118px); aspect-ratio:1; border-radius:50%;
-  background:var(--orb);
-  box-shadow:0 0 70px 26px var(--orb-glow);
-  transform:translate(var(--ox),var(--oy));
-  transition:transform 2.6s var(--ease), background-color 1.8s, box-shadow 1.8s;
-}
-#orb::before{
-  content:""; position:absolute; inset:0; border-radius:50%; opacity:var(--crater);
-  background:
-    radial-gradient(circle at 30% 34%, rgba(90,95,150,.22) 0 9%, transparent 10%),
-    radial-gradient(circle at 64% 58%, rgba(90,95,150,.2) 0 12%, transparent 13%),
-    radial-gradient(circle at 44% 76%, rgba(90,95,150,.16) 0 7%, transparent 8%);
-  transition:opacity 1.6s;
-}
+        .fade-section {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .fade-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-#stars{ position:fixed; inset:0; width:100%; height:100%; z-index:3; pointer-events:none; }
-
-/* =========================================================================
-   TOP BAR — the constellation of chapters
-   ========================================================================= */
-#top{
-  position:fixed; top:0; left:0; right:0; z-index:40;
-  padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 6px;
-  display:grid; grid-template-columns:44px 1fr 44px; align-items:center;
-  pointer-events:none;
-}
-#top > *{ pointer-events:auto; }
-#back{
-  width:40px; height:40px; border-radius:50%; border:1px solid var(--line);
-  background:rgba(20,13,46,.5); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
-  cursor:pointer; font-size:20px; line-height:1; display:grid; place-items:center;
-  transition:opacity .4s, transform .25s var(--spring);
-}
-#back:hover{ transform:scale(1.08); }
-#back[hidden]{ display:none !important; }
-#conwrap{ justify-self:center; width:100%; max-width:520px; }
-#const{ width:100%; height:auto; display:block; overflow:visible; }
-#const line{ stroke:rgba(255,255,255,.16); stroke-width:1.2; transition:stroke .8s; }
-#const line.lit{ stroke:var(--accent); opacity:.75; }
-#const .cs{ cursor:default; }
-#const .cs.seen{ cursor:pointer; }
-#const .cs path{ fill:rgba(255,255,255,.34); transition:fill .6s; }
-#const .cs.seen path{ fill:var(--accent); }
-#const .cs.here path{ fill:#fff; filter:drop-shadow(0 0 5px var(--accent)); }
-#const .cs.here .tw2{ animation:twinkle 2.2s ease-in-out infinite; transform-box:fill-box; transform-origin:center; }
-@keyframes twinkle{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.55); } }
-#chapter{
-  font-family:var(--hand); font-size:19px; text-align:center; color:var(--accent);
-  margin-top:2px; min-height:1.3em; text-shadow:0 1px 10px rgba(0,0,0,.35);
-}
-
-/* =========================================================================
-   PANELS + CARD
-   ========================================================================= */
-#app{ position:relative; z-index:10; }
-.panel{
-  display:none; min-height:100vh; min-height:100dvh;
-  padding:calc(env(safe-area-inset-top,0px) + 92px) 16px calc(env(safe-area-inset-bottom,0px) + 56px);
-}
-.panel.on{ display:flex; }
-.card{
-  margin:auto; width:100%; max-width:640px;
-  background:var(--glass);
-  -webkit-backdrop-filter:blur(18px) saturate(1.25); backdrop-filter:blur(18px) saturate(1.25);
-  border:1px solid var(--line); border-radius:32px;
-  padding:clamp(20px,4.6vw,36px);
-  box-shadow:0 34px 80px -34px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.12);
-}
-.panel.on .card{ animation:rise .9s var(--ease) both; }
-@keyframes rise{ from{ opacity:0; transform:translateY(22px) scale(.985); } to{ opacity:1; transform:none; } }
-.card > * + *{ margin-top:18px; }
-.card.center{ text-align:center; }
-.card.center .row{ justify-content:center; }
-
-.hand{ font-family:var(--hand); font-weight:700; font-size:clamp(21px,4.6vw,26px); color:var(--accent); line-height:1.1; }
-h1{ font-size:clamp(2.3rem,9.4vw,3.9rem); font-weight:500; }
-h2{ font-size:clamp(1.7rem,6.2vw,2.55rem); font-weight:500; }
-h2.sm{ font-size:clamp(1.35rem,4.8vw,1.85rem); }
-.say{ font-size:clamp(1.02rem,2.6vw,1.13rem); max-width:56ch; }
-.center .say{ margin-left:auto; margin-right:auto; }
-.soft{ color:var(--soft); }
-.tiny{ font-size:13.5px; color:var(--soft); }
-
-/* =========================================================================
-   BUTTONS + CHIPS
-   ========================================================================= */
-.btn{
-  appearance:none; border:0; cursor:pointer;
-  font:800 15.5px/1 var(--body);
-  padding:15px 26px; border-radius:999px;
-  background:linear-gradient(135deg,#ffe3a3,#ffb389 60%,#ff9fbd);
-  color:#2a1740;
-  box-shadow:0 12px 28px -12px rgba(255,159,189,.8);
-  transition:transform .28s var(--spring), box-shadow .28s;
-}
-.btn:hover{ transform:translateY(-2px) scale(1.025); }
-.btn:active{ transform:scale(.96); }
-.btn.ghost{ background:rgba(255,255,255,.08); color:var(--ink); box-shadow:inset 0 0 0 1.5px var(--line); }
-.btn.ghost:hover{ box-shadow:inset 0 0 0 1.5px var(--accent); }
-.btn[disabled]{ opacity:.38; cursor:not-allowed; transform:none; }
-.row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
-@media (max-width:520px){ .row .btn{ width:100%; text-align:center; } }
-
-.chips{ display:flex; flex-wrap:wrap; gap:9px; }
-.chip{
-  appearance:none; cursor:pointer; border:1.5px solid var(--line); background:rgba(255,255,255,.05);
-  border-radius:999px; padding:10px 16px; font:700 14.5px/1.1 var(--body);
-  transition:background .2s, border-color .2s, color .2s, transform .25s var(--spring);
-}
-.chip:hover{ border-color:var(--accent); transform:translateY(-1px); }
-.chip.picked{ background:var(--accent); border-color:var(--accent); color:#2a1740; }
-
-/* =========================================================================
-   STAGE — the little illustrated scene at the top of every chapter
-   ========================================================================= */
-.stage{ width:100%; height:auto; display:block; overflow:visible; margin-bottom:-2px; }
-.stage .fb{ transform-box:fill-box; transform-origin:center; }
-.arm{ transform-origin:0 0; }
-.bob{ animation:bob 2.6s ease-in-out infinite; }
-.bob2{ animation:bob 4.2s ease-in-out infinite; }
-.hop{ animation:hop 1.9s ease-in-out infinite; }
-.swingR{ animation:swingR 1.3s ease-in-out infinite; }
-.swingL{ animation:swingL 1.3s ease-in-out infinite; }
-.wave{ animation:wave 1.1s ease-in-out infinite; }
-.offer{ animation:offer 2.8s ease-in-out infinite; }
-.duck{ animation:duck 2.4s ease-in-out infinite; }
-.tw{ animation:tw 3s ease-in-out infinite; }
-.fz{ animation:fz 4.4s ease-in-out infinite; }
-.pulse{ animation:pulse 1.9s ease-in-out infinite; }
-.flick{ animation:flick 2.6s ease-in-out infinite; }
-.roll{ animation:roll 2.2s ease-in-out infinite; }
-.pawnOut{ animation:pawnOut 3.2s ease-in-out infinite; }
-.bub{ animation:bub 3s ease-in-out infinite; }
-.dangle{ animation:dangle 3s ease-in-out infinite; transform-origin:50% 0; }
-.ff{ animation:ff 4s ease-in-out infinite; }
-.sway{ animation:sway 3.6s ease-in-out infinite; }
-@keyframes bob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-2.6px); } }
-@keyframes hop{ 0%,60%,100%{ transform:translateY(0); } 74%{ transform:translateY(-9px); } 88%{ transform:translateY(-1px); } }
-@keyframes swingR{ 0%,100%{ transform:rotate(-24deg); } 45%{ transform:rotate(32deg); } }
-@keyframes swingL{ 0%,100%{ transform:rotate(24deg); } 45%{ transform:rotate(-32deg); } }
-@keyframes wave{ 0%,100%{ transform:rotate(-12deg); } 50%{ transform:rotate(16deg); } }
-@keyframes offer{ 0%,100%{ transform:translateX(0); } 50%{ transform:translateX(5px) rotate(-6deg); } }
-@keyframes duck{ 0%,55%,100%{ transform:translateY(0); } 66%,82%{ transform:translateY(10px); } }
-@keyframes tw{ 0%,100%{ opacity:.25; } 50%{ opacity:1; } }
-@keyframes fz{ 0%{ transform:translate(0,0) scale(.6); opacity:0; } 25%{ opacity:1; } 100%{ transform:translate(12px,-30px) scale(1.15); opacity:0; } }
-@keyframes pulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.22); } }
-@keyframes flick{ 0%,100%{ opacity:.16; } 50%{ opacity:.34; } }
-@keyframes roll{ 0%{ transform:translateY(0) rotate(0); } 38%{ transform:translateY(-18px) rotate(200deg); } 70%,100%{ transform:translateY(0) rotate(360deg); } }
-@keyframes pawnOut{ 0%,28%{ transform:translate(0,0) scale(1) rotate(0); opacity:1; } 58%{ transform:translate(-52px,-46px) scale(1.15) rotate(200deg); opacity:1; } 88%,100%{ transform:translate(-92px,10px) scale(.4) rotate(400deg); opacity:0; } }
-@keyframes bub{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-3px); } }
-@keyframes dangle{ 0%,100%{ transform:rotate(-5deg); } 50%{ transform:rotate(5deg); } }
-@keyframes ff{ 0%,100%{ opacity:.35; transform:translate(0,0); } 30%{ opacity:1; transform:translate(4px,-5px); } 65%{ opacity:.6; transform:translate(-4px,-2px); } }
-@keyframes sway{ 0%,100%{ transform:rotate(-4deg); } 50%{ transform:rotate(4deg); } }
-
-/* =========================================================================
-   COVER
-   ========================================================================= */
-.cover-tags{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
-.cover-tags span{
-  font:700 13px/1 var(--body); padding:9px 14px; border-radius:999px;
-  background:rgba(255,255,255,.07); border:1px solid var(--line); color:var(--soft);
-}
-
-/* =========================================================================
-   POLAROIDS — only appear when you add a photo link in CONFIG.photos.slots
-   ========================================================================= */
-.polaroids{ display:flex; gap:18px; justify-content:center; flex-wrap:wrap; padding:6px 0 4px; }
-.polaroid{
-  margin:0; width:min(210px,44vw); background:#fff8ec; color:#3a2a2e;
-  padding:10px 10px 8px; border-radius:6px; position:relative;
-  box-shadow:0 18px 30px -14px rgba(0,0,0,.6);
-  transform:rotate(var(--tilt,-3deg)); transition:transform .4s var(--spring);
-}
-.polaroid:hover{ transform:rotate(0deg) scale(1.05); }
-.polaroid img{ width:100%; aspect-ratio:1; object-fit:cover; display:block; border-radius:3px; }
-.polaroid figcaption{ font-family:var(--hand); font-size:20px; text-align:center; padding-top:6px; line-height:1.1; }
-.polaroid::before{
-  content:""; position:absolute; top:-10px; left:50%; width:64px; height:20px; transform:translateX(-50%) rotate(-3deg);
-  background:rgba(255,217,138,.75); border-radius:2px;
-}
-
-/* =========================================================================
-   INTERACTIVE PIECES
-   ========================================================================= */
-.assist-stamp{
-  display:inline-block; font:800 13px/1 var(--body); letter-spacing:.06em; color:var(--mint);
-  border:2.5px solid var(--mint); padding:9px 14px; border-radius:6px;
-  transform:rotate(-5deg) scale(1.6); opacity:0; transition:opacity .3s, transform .5s var(--spring);
-}
-.assist-stamp.shown{ opacity:1; transform:rotate(-5deg) scale(1); }
-
-/* smash court */
-.court{
-  position:relative; height:190px; border-radius:22px; overflow:hidden; cursor:crosshair; touch-action:manipulation;
-  border:1.5px solid var(--line); user-select:none; -webkit-user-select:none;
-  background:
-    linear-gradient(90deg, rgba(255,255,255,.07) 0 49.5%, rgba(255,255,255,.4) 49.5% 50.5%, rgba(255,255,255,.02) 50.5%),
-    repeating-linear-gradient(0deg, transparent 0 22px, rgba(255,255,255,.04) 22px 23px);
-}
-.court::after{ content:"tap this side"; position:absolute; left:14px; bottom:9px; font:700 12px var(--body); color:var(--faint); }
-.court .yours{ position:absolute; right:14px; bottom:9px; font:700 12px var(--body); color:var(--faint); }
-.bird{
-  position:absolute; width:14px; height:14px; border-radius:50% 50% 50% 8%; background:#fff6ee;
-  box-shadow:0 0 14px rgba(255,246,238,.8); pointer-events:none; transform:rotate(-45deg);
-}
-.ping{ position:absolute; width:26px; height:26px; margin:-13px 0 0 -13px; border-radius:50%; border:2px solid var(--rose); pointer-events:none; animation:ping .7s var(--ease) forwards; }
-@keyframes ping{ from{ transform:scale(.3); opacity:1; } to{ transform:scale(1.7); opacity:0; } }
-.rx{ position:absolute; font:800 13px var(--body); background:#fff6ee; color:#2a1740; padding:4px 10px; border-radius:99px; pointer-events:none; animation:rxf 1.4s var(--ease) forwards; white-space:nowrap; }
-@keyframes rxf{ from{ transform:translateY(0) scale(.8); opacity:1; } to{ transform:translateY(-36px) scale(1); opacity:0; } }
-.count{ font-family:var(--display); font-size:clamp(2.8rem,11vw,4.4rem); line-height:.9; color:var(--accent); }
-.count small{ display:block; font:700 13.5px var(--body); color:var(--soft); margin-top:6px; }
-
-/* ludo */
-.ludo-row{ display:flex; gap:26px; flex-wrap:wrap; align-items:center; }
-.board{ width:200px; height:200px; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); border-radius:16px; overflow:hidden; border:3px solid #fff6ee; box-shadow:0 14px 30px -14px rgba(0,0,0,.6); }
-.board div{ position:relative; }
-.q-tl{ background:#e0533d; } .q-tr{ background:#3b6bd0; } .q-bl{ background:#f0b73a; } .q-br{ background:#2b9c7a; }
-.q-lane{ background:#fff6ee; }
-.q-mid{ background:#f7ead6; display:grid; place-items:center; font-size:26px; }
-.pawn{
-  position:absolute; width:19px; height:19px; margin:-9px 0 0 -9px; cursor:pointer;
-  border-radius:50% 50% 50% 3px; background:#fff6ee; border:2px solid rgba(0,0,0,.28);
-  transform:rotate(45deg); transition:transform .3s var(--spring);
-}
-.pawn:hover{ transform:rotate(45deg) scale(1.2); }
-.pawn.home{ animation:sent .6s var(--ease) forwards; pointer-events:none; }
-@keyframes sent{ 0%{ transform:rotate(45deg) scale(1); } 35%{ transform:rotate(200deg) scale(1.5); } 100%{ transform:rotate(45deg) scale(0) translateY(28px); opacity:0; } }
-.meter{ width:200px; }
-.meter .bar{ height:10px; border-radius:99px; background:rgba(255,255,255,.12); overflow:hidden; }
-.meter .bar i{ display:block; height:100%; width:0; background:linear-gradient(90deg,var(--mint),var(--gold),var(--rose)); transition:width .5s var(--ease); border-radius:99px; }
-.meter .label{ font-size:13.5px; color:var(--soft); margin-top:9px; min-height:2.9em; }
-
-/* late calls dial */
-.clock{ font-family:var(--display); font-size:clamp(3.2rem,14vw,5.4rem); line-height:.95; color:var(--accent); font-weight:500; }
-.dial input[type=range]{
-  -webkit-appearance:none; appearance:none; width:100%; height:8px; border-radius:99px; outline:none; margin:22px 0 10px;
-  background:linear-gradient(90deg,#ffb389,#7a5fd0 45%,#1a1f5c);
-}
-.dial input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none; width:32px; height:32px; border-radius:50%; border:0; cursor:grab;
-  background:#fff3d6; box-shadow:0 0 0 5px rgba(255,217,138,.3), 0 0 22px rgba(255,217,138,.9);
-}
-.dial input[type=range]::-moz-range-thumb{
-  width:32px; height:32px; border-radius:50%; border:0; cursor:grab;
-  background:#fff3d6; box-shadow:0 0 0 5px rgba(255,217,138,.3), 0 0 22px rgba(255,217,138,.9);
-}
-.dial .ticks{ display:flex; justify-content:space-between; font:700 12.5px var(--body); color:var(--faint); }
-.dial .caption{ font-size:1.08rem; min-height:3.6em; margin-top:10px; }
-
-/* flip cards */
-.flips{ display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); }
-.flip{ perspective:1000px; cursor:pointer; background:none; border:0; padding:0; text-align:left; color:inherit; }
-.flip-in{ display:grid; transition:transform .8s var(--ease); transform-style:preserve-3d; min-height:200px; }
-.flip.open .flip-in{ transform:rotateY(180deg); }
-.face{
-  grid-area:1/1; backface-visibility:hidden; -webkit-backface-visibility:hidden;
-  border-radius:22px; padding:20px; display:flex; flex-direction:column; gap:8px; justify-content:center;
-  border:1.5px dashed rgba(255,255,255,.3); background:rgba(255,255,255,.06);
-}
-.face.back{ transform:rotateY(180deg); background:linear-gradient(140deg,rgba(255,217,138,.22),rgba(255,159,189,.2)); border-style:solid; border-color:rgba(255,217,138,.55); }
-.face h3{ font-size:1.5rem; }
-.face .emoji{ font-size:30px; }
-.face .when{ font-family:var(--hand); font-size:22px; color:var(--accent); font-weight:700; }
-.face .flip-hint{ font-size:12.5px; color:var(--faint); margin-top:auto; }
-
-/* breathing */
-.breath{ position:relative; width:64px; height:64px; margin:6px auto 0; }
-.breath i{ position:absolute; inset:0; border-radius:50%; background:var(--accent); opacity:.85; animation:breathe 4.8s ease-in-out infinite; }
-.breath i:nth-child(2){ animation-delay:-1.6s; opacity:.4; }
-.breath i:nth-child(3){ animation-delay:-3.2s; opacity:.2; }
-@keyframes breathe{ 0%,100%{ transform:scale(.4); } 50%{ transform:scale(1.15); } }
-body.hush::after{ content:""; position:fixed; inset:0; z-index:5; background:rgba(3,5,20,.55); pointer-events:none; animation:fadein 1.4s both; }
-@keyframes fadein{ from{ opacity:0; } to{ opacity:1; } }
-.hushnote{ font-family:var(--hand); font-size:24px; color:var(--accent); text-align:center; }
-
-/* jar lights */
-.lights{ display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); }
-.light{
-  appearance:none; cursor:pointer; text-align:left; display:flex; gap:12px; align-items:center;
-  border:1.5px solid var(--line); background:rgba(255,255,255,.05); border-radius:18px; padding:13px 15px;
-  font:700 15px var(--body); transition:border-color .2s, background .2s, transform .25s var(--spring);
-}
-.light:hover{ transform:translateY(-2px); border-color:var(--accent); }
-.light .orb{ width:14px; height:14px; border-radius:50%; background:#ffe28a; box-shadow:0 0 14px 4px rgba(255,226,138,.7); flex:none; animation:ffo 2.6s ease-in-out infinite; }
-.light.on{ background:rgba(255,217,138,.16); border-color:var(--accent); }
-@keyframes ffo{ 0%,100%{ opacity:.55; } 50%{ opacity:1; } }
-.lightnote{ min-height:3.4em; font-size:1.05rem; color:var(--ink); border-left:3px solid var(--accent); padding-left:14px; }
-
-/* envelope + letter */
-.env-wrap{ display:grid; place-items:center; transition:opacity .7s var(--ease), max-height .9s var(--ease); max-height:260px; overflow:hidden; }
-.env-wrap.gone{ opacity:0; max-height:0; }
-.env{
-  position:relative; width:min(300px,80%); aspect-ratio:1.5; border:0; padding:0; cursor:pointer; background:none;
-  filter:drop-shadow(0 20px 26px rgba(0,0,0,.5)); animation:bob 3s ease-in-out infinite;
-}
-.env .back{ position:absolute; inset:0; background:#f3d8b0; border-radius:8px; }
-.env .flap{
-  position:absolute; left:0; right:0; top:0; height:56%; background:#e8c48f; transform-origin:50% 0;
-  clip-path:polygon(0 0,100% 0,50% 100%); transition:transform .7s var(--ease); z-index:3;
-}
-.env .front{
-  position:absolute; inset:0; z-index:2; background:linear-gradient(#f7e2bf,#efd0a2);
-  clip-path:polygon(0 0,50% 52%,100% 0,100% 100%,0 100%); border-radius:8px;
-}
-.env .seal{
-  position:absolute; left:50%; top:47%; transform:translate(-50%,-50%); z-index:4; width:44px; height:44px; border-radius:50%;
-  background:radial-gradient(circle at 35% 30%,#ff8fa8,#c93b62); display:grid; place-items:center; color:#fff; font-size:20px;
-  box-shadow:0 4px 10px rgba(0,0,0,.35); transition:opacity .3s;
-}
-.env.open{ animation:none; }
-.env.open .flap{ transform:rotateX(180deg); z-index:1; }
-.env.open .seal{ opacity:0; }
-.env-hint{ font-family:var(--hand); font-size:24px; color:var(--accent); text-align:center; }
-
-.paper{
-  background:#fff4e2; color:#3a2630; border-radius:14px; padding:clamp(22px,5vw,38px) clamp(20px,5vw,40px);
-  box-shadow:0 26px 50px -24px rgba(0,0,0,.65);
-  background-image:repeating-linear-gradient(transparent 0 33px, rgba(120,80,90,.09) 33px 34px);
-  position:relative;
-}
-.paper p{ font-size:1.06rem; line-height:34px; margin-top:0; opacity:0; }
-.paper p + p{ margin-top:12px; }
-.paper.show p{ animation:rise .9s var(--ease) both; animation-delay:calc(var(--n) * .28s); }
-.paper .sign{ font-family:var(--hand); font-size:2rem; line-height:1.1; margin-top:20px; }
-.paper .said{ font-style:italic; }
-.paper .star{ position:absolute; top:14px; right:18px; font-size:18px; color:#e0a32b; }
-.reply textarea, .note-in textarea{
-  width:100%; min-height:96px; resize:vertical; border-radius:16px; border:1.5px solid var(--line);
-  background:rgba(255,255,255,.07); color:var(--ink); padding:13px 15px; font:600 15.5px/1.5 var(--body);
-}
-.reply textarea::placeholder, .note-in textarea::placeholder{ color:var(--faint); }
-.slab{ border:1.5px solid var(--line); background:rgba(255,255,255,.06); border-radius:22px; padding:20px 22px; }
-.slab h3{ font-size:1.4rem; margin-bottom:8px; }
-
-/* the ask */
-.reasons{ display:grid; gap:12px; }
-.lantern{
-  border-radius:20px; padding:15px 18px; font-size:1.05rem;
-  background:linear-gradient(120deg,rgba(255,217,138,.16),rgba(255,159,189,.12));
-  border:1px solid rgba(255,217,138,.35); box-shadow:0 0 32px -12px rgba(255,217,138,.6);
-  animation:rise .9s var(--ease) both;
-}
-
-/* planning */
-.field{ display:flex; flex-direction:column; gap:6px; max-width:260px; }
-.field label{ font:700 13px var(--body); color:var(--soft); }
-.field input{
-  background:rgba(255,255,255,.08); color:var(--ink); border:1.5px solid var(--line); border-radius:14px;
-  padding:11px 13px; font:600 15px var(--body); color-scheme:dark;
-}
-.note{ font-family:var(--hand); font-size:22px; color:var(--accent); min-height:1.3em; }
-.rule{ height:1px; background:var(--line); margin:26px 0 !important; }
-.places{ display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); }
-.place{
-  appearance:none; padding:0; text-align:left; cursor:pointer; overflow:hidden; color:inherit;
-  border:1.5px solid var(--line); border-radius:22px; background:rgba(255,255,255,.05);
-  transition:border-color .2s, transform .3s var(--spring), background .2s;
-}
-.place:hover{ transform:translateY(-3px); border-color:rgba(255,255,255,.5); }
-.place.picked{ border-color:var(--accent); background:rgba(255,217,138,.12); box-shadow:0 0 0 1px var(--accent); }
-.place .ph{ position:relative; height:104px; display:grid; place-items:center; font-size:38px; }
-.place .ph img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-.place .ph .pin{
-  position:absolute; right:10px; top:10px; font:800 12px var(--body); padding:5px 10px; border-radius:99px;
-  background:rgba(20,13,46,.7); color:var(--accent);
-}
-.place .pb2{ padding:14px 16px 16px; }
-.place .nm{ font-family:var(--display); font-size:1.3rem; font-weight:500; }
-.place .hr2{ font:700 12.5px var(--body); color:var(--accent); margin:2px 0 6px; }
-.place .pl{ font-size:14px; color:var(--soft); line-height:1.5; }
-.place .vb{ font:600 13px var(--body); font-style:italic; color:var(--faint); margin-top:6px; }
-
-.ticket{
-  border-radius:22px; padding:20px 22px;
-  background:linear-gradient(135deg,rgba(255,217,138,.18),rgba(255,159,189,.14));
-  border:1.5px solid rgba(255,217,138,.5);
-}
-.ticket h3{ font-size:1.4rem; padding-bottom:12px; border-bottom:2px dashed rgba(255,255,255,.3); margin-bottom:10px; }
-.ticket p{ font-size:15px; color:var(--ink); margin-top:5px; }
-.ticket b{ color:var(--accent); font-weight:800; }
-
-/* the finale */
-#heart .hl{ fill:none; stroke:var(--accent); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1; stroke-dashoffset:1; opacity:.85; }
-.panel.on #heart .hl{ animation:draw 3.4s linear .4s forwards; }
-@keyframes draw{ to{ stroke-dashoffset:0; } }
-#heart .hs{ opacity:0; transform-box:fill-box; transform-origin:center; }
-.panel.on #heart .hs{ animation:starpop .6s var(--spring) forwards; }
-@keyframes starpop{ from{ opacity:0; transform:scale(0); } to{ opacity:1; transform:scale(1); } }
-.fin-line{ animation:rise .9s var(--ease) both; }
-
-#toast{
-  position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom,0px) + 22px); transform:translate(-50%,18px);
-  background:#fff6ee; color:#2a1740; padding:11px 20px; border-radius:99px; font:800 14px var(--body);
-  z-index:90; opacity:0; pointer-events:none; transition:all .4s var(--ease); max-width:calc(100vw - 36px); text-align:center;
-}
-#toast.show{ opacity:1; transform:translate(-50%,0); }
-
-@media (prefers-reduced-motion: reduce){
-  *,*::before,*::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
-  #heart .hl{ stroke-dashoffset:0; }
-  #heart .hs{ opacity:1; }
-}
-</style>
+        /* Night Sky stars */
+        .star-dot {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite ease-in-out;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+    </style>
 </head>
-<body data-sky="dusk">
+<body class="font-sans antialiased text-slate-700 selection:bg-pink-200">
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <defs>
-    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
-      <feGaussianBlur stdDeviation="2.4" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
-</svg>
-
-<div class="sky on" id="sky-dusk"></div>
-<div class="sky" id="sky-night"></div>
-<div class="sky" id="sky-moon"></div>
-<div class="sky" id="sky-dawn"></div>
-<div id="photobg" aria-hidden="true"><div class="pb"></div><div class="pb"></div></div>
-<div id="orb" aria-hidden="true"></div>
-<canvas id="stars" aria-hidden="true"></canvas>
-
-<header id="top">
-  <button id="back" type="button" aria-label="Go back one star" hidden>&#8249;</button>
-  <div id="conwrap">
-    <svg id="const" aria-hidden="true"></svg>
-    <div id="chapter"></div>
-  </div>
-  <span></span>
-</header>
-
-<main id="app">
-
-  <!-- ===== 0 · COVER ===== -->
-  <section class="panel on" data-i="0">
-    <div class="card center">
-      <svg class="stage" viewBox="0 0 400 190" data-scene="rally" aria-hidden="true"></svg>
-      <p class="hand">a small sky, for Gauri</p>
-      <h1>Every good thing since 18 July turned out to be a star.</h1>
-      <p class="say soft">I kept count. There are thirteen. Tap the first one and I'll show you.</p>
-      <div class="cover-tags"><span>13 stars</span><span>1 honest letter</span><span>1 question</span></div>
-      <div class="row"><button class="btn" data-go="1">Light the first star &#10022;</button></div>
-    </div>
-  </section>
-
-  <!-- ===== 1 · THE INVITATION ===== -->
-  <section class="panel" data-i="1">
-    <div class="card">
-      <svg class="stage" viewBox="0 0 400 190" data-scene="assist" aria-hidden="true"></svg>
-      <p class="hand">18 July &middot; the invitation</p>
-      <h2>Sakshi brought you to badminton. Thank you, Sakshi.</h2>
-      <p class="say">That's the whole beginning: a casual invite, a court, and no idea what it would turn into. One yes from her and here we are.</p>
-      <div class="row">
-        <button class="btn ghost" id="assist-btn" type="button">Credit the assist</button>
-        <span class="assist-stamp" id="assist-stamp">ASSIST: SAKSHI, 18/07</span>
-      </div>
-      <div class="polaroids" data-slot="court"></div>
-      <div class="row"><button class="btn" data-go="2">Then I started smashing</button></div>
-    </div>
-  </section>
-
-  <!-- ===== 2 · THE SMASH ===== -->
-  <section class="panel" data-i="2">
-    <div class="card">
-      <svg class="stage" viewBox="0 0 400 190" data-scene="smash" aria-hidden="true"></svg>
-      <p class="hand">18 July &middot; the smash</p>
-      <h2>I smashed a few at you. On purpose.</h2>
-      <p class="say">Not hard enough to be rude. Just hard enough to get a reaction. You gave me a small one, and it was completely worth it, because that's what got us talking.</p>
-      <div class="court" id="court"><div class="bird" id="bird" style="left:24px; top:88px;"></div><span class="yours">Gauri's side</span></div>
-      <div class="count"><span id="smash-count">0</span><small>smashes landed on your side</small></div>
-      <div class="row"><button class="btn" data-go="3">Then came Ludo</button></div>
-    </div>
-  </section>
-
-  <!-- ===== 3 · LUDO ===== -->
-  <section class="panel" data-i="3">
-    <div class="card">
-      <svg class="stage" viewBox="0 0 400 190" data-scene="ludo" aria-hidden="true"></svg>
-      <p class="hand">July to August &middot; ludo</p>
-      <h2>I sent your pieces home. Repeatedly.</h2>
-      <p class="say">You were one square from safety and I was one dice roll from ruining it. You called it rage-baiting. It was rage-baiting. Try it: tap a pawn and see how long your composure lasts.</p>
-      <div class="ludo-row">
-        <div class="board" id="board" aria-hidden="true"></div>
-        <div class="meter">
-          <p class="tiny" style="margin-bottom:8px;">Gauri's composure</p>
-          <div class="bar"><i id="rage-bar"></i></div>
-          <p class="label" id="rage-label">Fully intact. Send a piece home and let's see.</p>
-        </div>
-      </div>
-      <div class="polaroids" data-slot="ludo"></div>
-      <div class="row"><button class="btn" data-go="4">Then the calls started</button></div>
-    </div>
-  </section>
-
-  <!-- ===== 4 · LATE CALLS ===== -->
-  <section class="panel" data-i="4">
-    <div class="card">
-      <svg class="stage" viewBox="0 0 400 190" data-scene="call" aria-hidden="true"></svg>
-      <p class="hand">August &middot; the late calls</p>
-      <h2>Then we stopped hanging up.</h2>
-      <p class="say">It started as a group call. Somewhere along the way it turned into just the two of us, and neither of us said a word about it. Drag the moon and watch the night go by.</p>
-      <div class="dial">
-        <p class="clock" id="clock">10:30 PM</p>
-        <input type="range" id="hour" min="0" max="11" step="1" value="0" aria-label="Move through the night" />
-        <div class="ticks"><span>10:30 PM</span><span>1 AM</span><span>4 AM</span></div>
-        <p class="caption" id="hour-caption">Group call. Loud. Completely normal.</p>
-      </div>
-      <div class="row"><button class="btn" data-go="5">And then the weekend</button></div>
-    </div>
-  </section>
-
-  <!-- ===== 5 · THE WEEKEND ===== -->
-  <section class="panel" data-i="5">
-    <div class="card">
-      <svg class="stage" viewBox="0 0 400 190" data-scene="movie" aria-hidden="true"></svg>
-      <p class="hand">22 &amp; 23 August &middot; two nights in a row</p>
-      <h2>The weekend I remember the dates of.</h2>
-      <p class="say">Tap a ticket to turn it over.</p>
-      <div class="flips">
-        <button class="flip" type="button" data-flip>
-          <div class="flip-in">
-            <div class="face"><span class="emoji">&#127922;</span><p class="when">22 August, Dhwani's place</p><h3>Board game night</h3><p class="soft">Long. Loud. Competitive. Officially, a fair game.</p><p class="flip-hint">tap for the unofficial version</p></div>
-            <div class="face back"><span class="emoji">&#128520;</span><h3>Unofficially</h3><p>We both cheated. We both had fun. Somehow that was the best part.</p></div>
-          </div>
+    <!-- Audio & Sound Controls Floating Pill -->
+    <div class="fixed top-4 right-4 z-50 flex items-center gap-2 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full border border-pink-200 shadow-md">
+        <button id="soundToggle" onclick="toggleMute()" class="flex items-center gap-2 text-xs font-fredoka font-semibold text-pink-600 hover:text-pink-700 transition">
+            <span id="soundIcon" class="text-base">🔊</span>
+            <span id="soundText">Sound ON</span>
         </button>
-        <button class="flip" type="button" data-flip>
-          <div class="flip-in">
-            <div class="face"><span class="emoji">&#127871;</span><p class="when">23 August, the next day</p><h3>Spider-Man</h3><p class="soft">Popcorn, dark theatre, a very good film.</p><p class="flip-hint">tap for what I actually took away</p></div>
-            <div class="face back"><span class="emoji">&#128375;&#65039;</span><h3>What I took away</h3><p>We enjoyed it a lot. Honestly, the best part of the movie was who I watched it with.</p></div>
-          </div>
-        </button>
-      </div>
-      <p class="say soft">After that it just kept happening: more badminton, more ludo, more nights that ran too long.</p>
-      <div class="polaroids" data-slot="boardgame,movie"></div>
-      <div class="row"><button class="btn" data-go="6">Then the 4 AM ones</button></div>
     </div>
-  </section>
 
-  <!-- ===== 6 · ASLEEP ON THE CALL ===== -->
-  <section class="panel" data-i="6">
-    <div class="card">
-      <svg class="stage" viewBox="0 0 400 190" data-scene="sleep" aria-hidden="true"></svg>
-      <p class="hand">One night &middot; asleep on the call</p>
-      <h2>You fell asleep on the call, and I stayed.</h2>
-      <p class="say">You didn't hang up. You just went quiet and left the line open. It doesn't sound like much, but you were so comfortable around me that you fell asleep, and that's when I knew I liked you even more.</p>
-      <div class="breath" aria-hidden="true"><i></i><i></i><i></i></div>
-      <div class="row" style="justify-content:center;"><button class="btn ghost" id="hush" type="button">Hush the room</button></div>
-      <p class="hushnote" id="hushnote" hidden>Line's still open. I didn't hang up either.</p>
-      <div class="row"><button class="btn" data-go="7">What we've kept since</button></div>
-    </div>
-  </section>
-
-  <!-- ===== 7 · THE JAR ===== -->
-  <section class="panel" data-i="7">
-    <div class="card">
-      <svg class="stage" viewBox="0 0 400 190" data-scene="jar" aria-hidden="true"></svg>
-      <p class="hand">Ever since &middot; the jar</p>
-      <h2>Some things I'm keeping in a jar.</h2>
-      <p class="say">The small stuff that stacked up along the way. Tap a light.</p>
-      <div class="lights" id="lights">
-        <button class="light" type="button" data-t="The nicknames we gave each other. I'm not writing them here. Some things stay ours."><i class="orb"></i>Nicknames</button>
-        <button class="light" type="button" data-t="Told late at night, kept in daylight. Yours are safe with me."><i class="orb"></i>Secrets</button>
-        <button class="light" type="button" data-t="Out loud, together, at volumes that would embarrass us in daylight."><i class="orb"></i>Overthinking</button>
-        <button class="light" type="button" data-t="The kind where the jokes stop and neither of us notices."><i class="orb"></i>The deep talks</button>
-      </div>
-      <p class="lightnote" id="lightnote">Pick one.</p>
-      <div class="polaroids" data-slot="us"></div>
-      <div class="row"><button class="btn" data-go="8">Before anything else, though</button></div>
-    </div>
-  </section>
-
-  <!-- ===== 8 · THE LETTER ===== -->
-  <section class="panel" data-i="8">
-    <div class="card">
-      <svg class="stage" viewBox="0 0 400 190" data-scene="sorry" aria-hidden="true"></svg>
-      <p class="hand">Before I ask you anything</p>
-      <h2>You said you don't want an apology. So this isn't one.</h2>
-
-      <div class="env-wrap" id="env-wrap">
-        <button class="env" id="env" type="button" aria-label="Open the letter">
-          <span class="back"></span><span class="front"></span><span class="flap"></span><span class="seal">&#9825;</span>
-        </button>
-      </div>
-      <p class="env-hint" id="env-hint">tap to open</p>
-
-      <div class="paper" id="letter" hidden>
-        <span class="star">&#10022;</span>
-        <p>Gauri,</p>
-        <p>You told me you're not looking for an apology. I heard that. So I'm not writing one to get you to say it's okay. Think of this as something different: me telling you what I understand now, so you never have to explain it to me twice.</p>
-        <p>You asked what I'd do if you and my best friend of thirteen years ever fell out, whether I'd stop talking to you. I said yes, quickly, like it was a quiz and I was proud to know the answer. But you weren't asking about her. You were asking whether you have a place in my life, or whether you're a guest in it. I answered the hypothetical and missed you completely.</p>
-        <p>So here's the real answer. You are not a guest. You don't have to audition for a place you already have. I shouldn't have set you and a thirteen-year friendship against each other like a contest. I can't predict every hypothetical, but I can tell you where you stand: you are not optional to me.</p>
-        <p>Then there's <span class="said">"OK Miss Gauri."</span> I say it because I love getting a reaction out of you. But I've said it while you were being serious, and all it does is turn your voice down, which is the opposite of what I want. I'm retiring it for the serious moments.</p>
-        <p>You don't owe me forgiveness, a reply, or even a reaction. If you're still annoyed, that's fair. I'd rather earn back the ease between us than have you pretend it's already there.</p>
-        <p>What changes is simple. When you ask me something that sounds small, I'll assume it isn't. I'll answer you, not the hypothetical. And when you're being serious, I'll drop the bit.</p>
-        <p>You've stayed on the line with me at 4 AM on nights before office. I'd like to be that for you too, for as long as you'll have me around.</p>
-        <p class="sign">Parth</p>
-      </div>
-
-      <div class="row" id="letter-btns" hidden>
-        <button class="btn" data-go="9">Okay. Keep going.</button>
-        <button class="btn ghost" id="not-ready" type="button">Not ready for more</button>
-      </div>
-
-      <div class="slab reply" id="paused" hidden>
-        <h3>Completely fair.</h3>
-        <p class="say soft">Then nothing else gets asked. The letter doesn't come with conditions, and you don't owe me an answer. If you ever want to tell me anything, this goes straight to me:</p>
-        <textarea id="reply-text" placeholder="Whatever you want to say. No rush, no wrong answer."></textarea>
-        <div class="row" style="margin-top:12px;">
-          <button class="btn" id="reply-send" type="button">Send it to Parth</button>
-          <button class="btn ghost" data-go="9">Actually, keep going</button>
+    <!-- Hero Header -->
+    <header class="relative pt-16 pb-12 px-4 text-center overflow-hidden">
+        <div class="inline-block relative">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-pink-100 text-pink-600 font-fredoka text-sm mb-3 tracking-wide border border-pink-200 shadow-sm animate-pulse">
+                A digital diary for Gauri • From Parth 🌸
+            </span>
+            <h1 class="text-4xl sm:text-6xl font-fredoka font-bold text-slate-800 tracking-tight leading-tight">
+                Our Story <span class="text-candyPink font-hand text-5xl sm:text-7xl block sm:inline font-normal">and the times my brain glitched</span>
+            </h1>
         </div>
-        <p class="tiny" id="reply-status" style="margin-top:10px;"></p>
-      </div>
-    </div>
-  </section>
+        <p class="max-w-xl mx-auto mt-4 text-slate-600 text-base sm:text-lg font-medium">
+            From random Valentine's photos and badminton smashes to late-night phone sleeps, soft toy rescues... and some dumb things I truly regret.
+        </p>
 
-  <!-- ===== 9 · THE QUESTION ===== -->
-  <section class="panel" data-i="9">
-    <div class="card">
-      <svg class="stage" viewBox="0 0 400 190" data-scene="ask" aria-hidden="true"></svg>
-      <p class="hand">The question</p>
-      <h2>Here's the real reason for all of this.</h2>
-      <div class="reasons" id="reasons">
-        <p class="lantern" hidden>You make me laugh, properly, without me having to try.</p>
-        <p class="lantern" hidden>Talking to you feels safe. Saying what I actually think feels worth it with you.</p>
-        <p class="lantern" hidden>You helped me through the overthinking and through the days that were bad.</p>
-      </div>
-      <h2 id="ask-q" hidden>So, Gauri: can I take you out?</h2>
-      <div class="row" id="ask-choices" hidden>
-        <button class="btn" id="ask-yes" type="button">Yes</button>
-        <button class="btn ghost" id="ask-maybe" type="button">Let me think</button>
-      </div>
-      <div class="slab" id="ask-yes-box" hidden>
-        <h3>Good. Then help me plan it.</h3>
-        <p class="say soft">Two quick pages, and then you can go back to beating me at Ludo.</p>
-        <div class="row" style="margin-top:14px;"><button class="btn" data-go="10">Plan it</button></div>
-      </div>
-      <div class="slab" id="ask-maybe-box" hidden>
-        <h3>That's allowed.</h3>
-        <p class="say soft">Take all the time you need. If it helps, have a look at what I had in mind. Picking a place doesn't commit you to anything.</p>
-        <div class="row" style="margin-top:14px;"><button class="btn" data-go="10">Show me what you had in mind</button></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== 10 · WHEN ===== -->
-  <section class="panel" data-i="10">
-    <div class="card">
-      <svg class="stage" viewBox="0 0 400 190" data-scene="plan" aria-hidden="true"></svg>
-      <p class="hand">Planning &middot; when</p>
-      <h2>When would suit you?</h2>
-      <div class="chips" id="when-opts">
-        <button class="chip" type="button" data-when="This weekend">This weekend</button>
-        <button class="chip" type="button" data-when="Next weekend">Next weekend</button>
-        <button class="chip" type="button" data-when="A weekday evening">A weekday evening</button>
-        <button class="chip" type="button" data-when="Whenever you decide">You decide</button>
-        <button class="chip" type="button" data-when="Surprise me">Surprise me</button>
-      </div>
-      <div class="field"><label for="d-date">Or an exact date</label><input type="date" id="d-date" /></div>
-      <p class="note" id="when-note"></p>
-
-      <div class="rule"></div>
-
-      <h2 class="sm">And what time of day?</h2>
-      <div class="chips" id="time-opts">
-        <button class="chip" type="button" data-time="Morning">Morning</button>
-        <button class="chip" type="button" data-time="Afternoon">Afternoon</button>
-        <button class="chip" type="button" data-time="Sunset">Sunset</button>
-        <button class="chip" type="button" data-time="Evening">Evening</button>
-        <button class="chip" type="button" data-time="Late night">Late night</button>
-      </div>
-      <div class="field"><label for="d-time">Or an exact time</label><input type="time" id="d-time" /></div>
-      <p class="note" id="time-note"></p>
-
-      <div class="row"><button class="btn" data-go="11">Now the where</button></div>
-    </div>
-  </section>
-
-  <!-- ===== 11 · WHERE ===== -->
-  <section class="panel" data-i="11">
-    <div class="card" style="max-width:820px;">
-      <p class="hand">Planning &middot; where</p>
-      <h2>Where should we go?</h2>
-      <p class="say soft">Seven places around Mumbai. Pick one, then tell me what we'd do there.</p>
-      <div class="places" id="places"></div>
-
-      <div id="acts-wrap" hidden>
-        <div class="rule"></div>
-        <h2 class="sm">And what are we doing?</h2>
-        <p class="say soft" style="margin:8px 0 14px;">Choose as many as you like.</p>
-        <div class="chips" id="acts"></div>
-        <div class="note-in" style="margin-top:20px;">
-          <p class="tiny" style="margin-bottom:8px;">Anything I should know? Food you love, food you don't, what time you need to be home.</p>
-          <textarea id="d-note" placeholder="Optional"></textarea>
+        <!-- Dynamic Expressive Gauri Mascot Bar -->
+        <div class="mt-8 flex justify-center items-center gap-3 flex-wrap">
+            <span class="text-xs font-bold text-slate-400 font-fredoka uppercase tracking-wider">Gauri's Mood Deck:</span>
+            <button onclick="setAvatarMood('sideEye')" class="px-3 py-1 bg-white hover:bg-pink-50 rounded-full text-xs font-bold border border-pink-200 shadow-sm transition">😒 Suspect</button>
+            <button onclick="setAvatarMood('shocked')" class="px-3 py-1 bg-white hover:bg-pink-50 rounded-full text-xs font-bold border border-pink-200 shadow-sm transition">😱 Face Smash</button>
+            <button onclick="setAvatarMood('angry')" class="px-3 py-1 bg-white hover:bg-pink-50 rounded-full text-xs font-bold border border-pink-200 shadow-sm transition">😤 Ludo Karma</button>
+            <button onclick="setAvatarMood('soft')" class="px-3 py-1 bg-white hover:bg-pink-50 rounded-full text-xs font-bold border border-pink-200 shadow-sm transition">🥰 Soft Smile</button>
+            <button onclick="setAvatarMood('unimpressed')" class="px-3 py-1 bg-white hover:bg-pink-50 rounded-full text-xs font-bold border border-pink-200 shadow-sm transition">🤦‍♀️ "Parth Pls"</button>
         </div>
-      </div>
-
-      <div class="ticket" id="plan-card" hidden>
-        <h3>The plan so far</h3>
-        <p id="p-where">-</p><p id="p-when">-</p><p id="p-time">-</p><p id="p-acts">-</p>
-      </div>
-
-      <div class="row"><button class="btn" data-go="12" id="to-final" disabled>One last question</button></div>
-    </div>
-  </section>
-
-  <!-- ===== 12 · THE LAST STAR ===== -->
-  <section class="panel" data-i="12">
-    <div class="card center">
-      <svg class="stage" id="heart" viewBox="0 0 400 245" aria-hidden="true"></svg>
-      <p class="hand">The last star</p>
-      <div id="final-lines">
-        <h2 class="sm fin-line" id="fl-1" hidden>Badminton lit the first one.</h2>
-        <h2 class="sm fin-line" id="fl-2" hidden style="margin-top:8px;">Ludo made it a rivalry.</h2>
-        <h2 class="sm fin-line" id="fl-3" hidden style="margin-top:8px;">The 4 AM calls made it something else.</h2>
-      </div>
-      <p class="say fin-line" id="fl-4" hidden>Thirteen stars, and it turns out they were drawing something the whole time.</p>
-      <h2 class="fin-line" id="fl-5" hidden>Gauri, is it a date?</h2>
-      <div class="row" id="final-choices" hidden>
-        <button class="btn" id="f-yes" type="button">It's a date &#10022;</button>
-        <button class="btn ghost" id="f-think" type="button">I need a little time</button>
-      </div>
-
-      <div id="f-yes-box" hidden>
-        <h2>Then it's a date.</h2>
-        <p class="say soft" style="margin-top:10px;">I'll stop talking now before I ruin it.</p>
-        <div class="ticket" id="final-card" style="margin-top:20px; text-align:left;"></div>
-        <p class="tiny" id="send-status" style="margin-top:14px;"></p>
-      </div>
-
-      <div id="f-think-box" hidden>
-        <h2>Take your time.</h2>
-        <p class="say soft" style="margin-top:10px;">Nothing here expires, and nothing between us changes whatever the answer is. I just didn't want to be the person who never asked.</p>
-        <div class="row" style="margin-top:18px;"><button class="btn ghost" id="restart" type="button">Read it again from the start</button></div>
-        <p class="tiny" id="think-status" style="margin-top:12px;"></p>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<div id="toast" role="status" aria-live="polite"></div>
-
-<!-- Backup delivery: a real HTML form posted into a hidden frame. Works even from file:// or when fetch is blocked. -->
-<iframe name="w3f-sink" id="w3f-sink" title="submission" style="display:none;width:0;height:0;border:0"></iframe>
-<form id="w3f-form" action="https://api.web3forms.com/submit" method="POST" target="w3f-sink" style="display:none">
-  <input type="hidden" name="access_key" value="" />
-  <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off" />
-</form>
-
-<script>
-/* =========================================================================
-   EDIT HERE
-   -------------------------------------------------------------------------
-   PHOTOS: paste direct image links (they load straight from the web, nothing
-   to download or upload). Leave a slot empty ("") and it simply stays hidden.
-     - Any direct image link works: it should end in .jpg / .png / .webp, or be
-       an image host link (Unsplash, Pexels, Imgur, postimages, etc.).
-     - Google Drive: set the file to "Anyone with the link", then paste the
-       normal share link, it's converted automatically.
-     - Google Photos "share" links are web pages, not images, so they will not
-       load. Use "Copy image address" on the photo, or upload it to Drive.
-   ========================================================================= */
-const CONFIG = {
-  herName: "Gauri",
-  myName: "Parth",
-  web3formsKey: "bbd67653-cc36-42ef-9bf4-75ce95191cf2",
-
-  photos: {
-    // soft full-screen backgrounds behind the story (they cycle chapter to chapter)
-    background: [
-      // "https://images.example.com/night-sky.jpg",
-      // "https://drive.google.com/file/d/FILE_ID/view",
-    ],
-    bgOpacity: 0.34,
-    // small taped polaroids inside the story
-    slots: {
-      court:     "",   // chapter 1-ish: badminton court / first day
-      ludo:      "",   // the ludo game
-      boardgame: "",   // 22 Aug, Dhwani's place
-      movie:     "",   // 23 Aug, Spider-Man
-      us:        ""    // the jar chapter
-    },
-    captions: {
-      court: "where it started", ludo: "ludo, again", boardgame: "22 August",
-      movie: "23 August", us: "us"
-    }
-  },
-
-  places: [
-    { id:"marine",    name:"Marine Drive",         hours:"5:30 – 8:00 PM", plan:"Sunset walk, sit on the promenade, food nearby, far too many photos.", vibe:"the classic, and it earns it", emoji:"🌇", grad:"#ff9a76,#c8567a", photo:"" },
-    { id:"bandstand", name:"Bandra Bandstand",     hours:"5:00 – 8:00 PM", plan:"Sunset by the sea, then wander into Bandra for coffee or dinner.",     vibe:"chill, scenic, talkative",      emoji:"🌊", grad:"#4aa3c7,#3b6bd0", photo:"" },
-    { id:"kala",      name:"Kala Ghoda",           hours:"4:00 – 8:00 PM", plan:"Walk the lanes, art and old buildings, a café, then dinner.",           vibe:"creative, a little fancy",      emoji:"🎨", grad:"#b58cff,#7a5fd0", photo:"" },
-    { id:"juhu",      name:"Juhu",                 hours:"5:00 – 9:00 PM", plan:"Beach walk, street food, sunset, a conversation that overruns.",        vibe:"casual and loud, like us",      emoji:"🏖️", grad:"#f0b73a,#e0533d", photo:"" },
-    { id:"powai",     name:"Powai",                hours:"5:00 – 9:00 PM", plan:"Lakeside walk, a café that lets us sit too long, dinner.",              vibe:"quiet and comfortable",         emoji:"🌿", grad:"#5fd0a0,#2b9c7a", photo:"" },
-    { id:"sgnp",      name:"Sanjay Gandhi Park",   hours:"8:00 AM – 12 PM",plan:"Morning walk, trees, no phones, breakfast after.",                      vibe:"peaceful, an actual escape",    emoji:"🌳", grad:"#7bd88f,#1f6f5c", photo:"" },
-    { id:"sobo",      name:"South Mumbai, all of it", hours:"4:30 – 9:00 PM", plan:"Fort, Gateway, a café, Marine Drive, dinner. A mini expedition.",   vibe:"ambitious. worth it.",          emoji:"🏛️", grad:"#ffb389,#8c3f7d", photo:"" }
-  ],
-  activities: ["Food","Coffee","A long walk","Sunset","Wander with no plan","Street food","A movie","Photos","Just sit and talk","Badminton (obviously)","You pick"]
-};
-
-const $  = (s, r=document) => r.querySelector(s);
-const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
-const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const state = { when:null, time:null, place:null, acts:[], smashes:0, homes:0 };
-
-/* ---- photo URL helper: turns Google Drive share links into direct image links ---- */
-function fixUrl(u){
-  if (!u) return "";
-  u = String(u).trim();
-  const m = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]{10,})/);
-  if (m) return "https://lh3.googleusercontent.com/d/" + m[1];
-  return u;
-}
-
-/* toast */
-let toastT;
-function toast(msg){
-  const t = $("#toast");
-  t.textContent = msg; t.classList.add("show");
-  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2800);
-}
-
-/* =========================================================================
-   THE CAST — Parth, Gauri and Sakshi, drawn from scratch as tiny people
-   ========================================================================= */
-const PAL = {
-  p:{ skin:"#f2c6a0", hair:"#2b2233", top:"#5f8df0", bot:"#3b4270", shoe:"#f5efe6" },
-  g:{ skin:"#f7cfb0", hair:"#2d2030", top:"#ff8fb0", bot:"#7a5fb0", shoe:"#f5efe6" },
-  s:{ skin:"#ecb98f", hair:"#3b2a30", top:"#ffd06e", bot:"#4b7aa6", shoe:"#f5efe6" }
-};
-const INK = "#2a1d2e";
-
-function chibi(o){
-  const c = PAL[o.who || "p"], k = o.s || 1.3, sit = !!o.sit, face = o.face || "happy";
-  const cls = (o.cls === undefined) ? "bob" : o.cls;
-
-  const arm = (side, cfg) => {
-    cfg = cfg || {};
-    const E = { down:[5,13,4,7], up:[13,-10,9,-1], out:[16,5,9,4] }[cfg.type || "down"];
-    const ex = side*E[0], ey = E[1], cx = side*E[2], cy = E[3];
-    return '<g transform="translate('+(side*9)+',-27)"><g class="arm '+(cfg.cls||"")+'">' +
-      '<path d="M0,0 Q'+cx+','+cy+' '+ex+','+ey+'" stroke="'+c.top+'" stroke-width="5.2" stroke-linecap="round" fill="none"/>' +
-      '<circle cx="'+ex+'" cy="'+ey+'" r="3" fill="'+c.skin+'"/>' +
-      '<g transform="translate('+ex+','+ey+')">'+(cfg.item||"")+'</g></g></g>';
-  };
-
-  const legs = sit
-    ? '<ellipse cx="-9" cy="-3.5" rx="8" ry="3.8" fill="'+c.bot+'"/><ellipse cx="9" cy="-3.5" rx="8" ry="3.8" fill="'+c.bot+'"/>' +
-      '<ellipse cx="-15" cy="-3" rx="3.6" ry="2.6" fill="'+c.shoe+'"/><ellipse cx="15" cy="-3" rx="3.6" ry="2.6" fill="'+c.shoe+'"/>'
-    : '<rect x="-6.6" y="-13" width="5.4" height="12" rx="2.7" fill="'+c.bot+'"/><rect x="1.2" y="-13" width="5.4" height="12" rx="2.7" fill="'+c.bot+'"/>' +
-      '<ellipse cx="-4" cy="-1" rx="4.6" ry="2.5" fill="'+c.shoe+'"/><ellipse cx="4" cy="-1" rx="4.6" ry="2.5" fill="'+c.shoe+'"/>';
-
-  const body = '<path d="M-9.5,-12 Q-11.5,-25 -6.5,-30 L6.5,-30 Q11.5,-25 9.5,-12 Q0,-9 -9.5,-12Z" fill="'+c.top+'"/>' +
-    (o.who === "g" ? '<path d="M-9.8,-14 L-13,-8 Q0,-4 13,-8 L9.8,-14Z" fill="'+c.bot+'"/>' : '');
-
-  const hairBack =
-    o.who === "g" ? '<path d="M-16.5,-46 Q-20,-22 -12,-19 L12,-19 Q20,-22 16.5,-46 Q0,-66 -16.5,-46Z" fill="'+c.hair+'"/>' :
-    o.who === "s" ? '<path d="M12,-54 Q26,-52 22,-32 Q17,-40 12,-44Z" fill="'+c.hair+'"/>' : '';
-
-  const hairFront =
-    o.who === "g"
-      ? '<path d="M-15.5,-45 Q-17,-61 0,-61 Q17,-61 15.5,-45 Q9,-52 3,-50 Q-4,-55 -15.5,-45Z" fill="'+c.hair+'"/>' +
-        '<path d="M9,-54 l1.4,3 3.2,.3 -2.4,2.1 .8,3.1 -3,-1.7 -3,1.7 .8,-3.1 -2.4,-2.1 3.2,-.3z" fill="#ffd98a"/>'
-      : o.who === "s"
-      ? '<path d="M-15.5,-45 Q-17,-62 0,-62 Q17,-62 15.5,-45 Q11,-53 5,-52 Q-1,-57 -8,-52 Q-13,-50 -15.5,-45Z" fill="'+c.hair+'"/>'
-      : '<path d="M-15.5,-45 Q-17,-62 0,-62 Q17,-62 15.5,-45 Q11,-53 5,-52 Q-1,-57 -8,-52 Q-13,-50 -15.5,-45Z" fill="'+c.hair+'"/>' +
-        '<path d="M-2,-61.5 L3,-68 L7,-60.5Z" fill="'+c.hair+'"/>';
-
-  const eyes = (r) =>
-    '<ellipse cx="-5.5" cy="-43" rx="'+(2.1*r)+'" ry="'+(2.7*r)+'" fill="'+INK+'"/><ellipse cx="5.5" cy="-43" rx="'+(2.1*r)+'" ry="'+(2.7*r)+'" fill="'+INK+'"/>' +
-    '<circle cx="-4.8" cy="-44" r=".85" fill="#fff"/><circle cx="6.2" cy="-44" r=".85" fill="#fff"/>';
-
-  const faces = {
-    happy: eyes(1) + '<path d="M-3.4,-36.6 Q0,-33 3.4,-36.6" stroke="'+INK+'" stroke-width="1.7" fill="none" stroke-linecap="round"/>',
-    laugh: '<path d="M-8.4,-42.6 Q-5.5,-46.6 -2.6,-42.6" stroke="'+INK+'" stroke-width="1.8" fill="none" stroke-linecap="round"/>' +
-           '<path d="M2.6,-42.6 Q5.5,-46.6 8.4,-42.6" stroke="'+INK+'" stroke-width="1.8" fill="none" stroke-linecap="round"/>' +
-           '<path d="M-4.4,-37.4 Q0,-30 4.4,-37.4Z" fill="#7a2a3e"/>',
-    oh:    eyes(1.12) + '<ellipse cx="0" cy="-35.6" rx="2.3" ry="2.9" fill="#7a2a3e"/>',
-    cross: '<ellipse cx="-5.5" cy="-42.5" rx="1.9" ry="2.2" fill="'+INK+'"/><ellipse cx="5.5" cy="-42.5" rx="1.9" ry="2.2" fill="'+INK+'"/>' +
-           '<path d="M-9.5,-48.2 L-2.6,-46" stroke="'+INK+'" stroke-width="1.7" stroke-linecap="round"/>' +
-           '<path d="M9.5,-48.2 L2.6,-46" stroke="'+INK+'" stroke-width="1.7" stroke-linecap="round"/>' +
-           '<path d="M-3,-35 Q0,-37.6 3,-35" stroke="'+INK+'" stroke-width="1.7" fill="none" stroke-linecap="round"/>',
-    sorry: eyes(1) +
-           '<path d="M-9.5,-47 L-2.8,-49.2" stroke="'+INK+'" stroke-width="1.6" stroke-linecap="round"/>' +
-           '<path d="M9.5,-47 L2.8,-49.2" stroke="'+INK+'" stroke-width="1.6" stroke-linecap="round"/>' +
-           '<path d="M-3,-35.6 Q0,-37.2 3,-35.6" stroke="'+INK+'" stroke-width="1.6" fill="none" stroke-linecap="round"/>',
-    sleep: '<path d="M-8.4,-43 Q-5.5,-40.2 -2.6,-43" stroke="'+INK+'" stroke-width="1.8" fill="none" stroke-linecap="round"/>' +
-           '<path d="M2.6,-43 Q5.5,-40.2 8.4,-43" stroke="'+INK+'" stroke-width="1.8" fill="none" stroke-linecap="round"/>' +
-           '<ellipse cx="0" cy="-35.6" rx="1.7" ry="1.9" fill="'+INK+'" opacity=".7"/>'
-  };
-  const blush = '<ellipse cx="-10.6" cy="-38.4" rx="3.2" ry="2" fill="#ff8fa3" opacity=".55"/><ellipse cx="10.6" cy="-38.4" rx="3.2" ry="2" fill="#ff8fa3" opacity=".55"/>';
-
-  const upper = hairBack + body + arm(-1, o.L) + arm(1, o.R) +
-    '<circle cx="0" cy="-44" r="15" fill="'+c.skin+'"/>' + (faces[face] || faces.happy) + blush + hairFront;
-
-  return '<g transform="translate('+o.x+','+o.y+') scale('+k+')">' +
-    '<ellipse cx="1" cy="1.5" rx="17" ry="3.6" fill="#000" opacity=".2"/>' +
-    (sit ? '' : legs) +
-    '<g class="'+cls+'"><g transform="translate(0,'+(sit?9:0)+')">' + upper + '</g></g>' +
-    (sit ? legs : '') +
-  '</g>';
-}
-
-/* small props (drawn in the hand's own coordinates) */
-const racket = (col, d) =>
-  '<g transform="rotate('+(d*24)+')"><path d="M0,1 L0,-9" stroke="#efe6d6" stroke-width="2" stroke-linecap="round"/>' +
-  '<ellipse cx="0" cy="-17" rx="6.4" ry="8.4" fill="none" stroke="'+col+'" stroke-width="2.4"/>' +
-  '<path d="M-4,-20 h8 M-5,-16 h10 M-4,-12 h8 M-2,-24 v14 M2,-24 v14" stroke="'+col+'" stroke-width=".6" opacity=".6"/></g>';
-const phone = (d) =>
-  '<g transform="rotate('+(d*-14)+')"><rect x="-3.6" y="-13" width="7.2" height="12.5" rx="1.7" fill="#1d1a2b" stroke="rgba(255,255,255,.5)" stroke-width=".6"/>' +
-  '<rect x="-2.7" y="-11.6" width="5.4" height="9.4" rx="1" fill="#9fd0ff" opacity=".95"/></g>';
-const flower =
-  '<g transform="rotate(-8)"><path d="M0,0 L0,-15" stroke="#5fd0a0" stroke-width="2" stroke-linecap="round"/>' +
-  '<g transform="translate(0,-18)"><circle r="3" fill="#ffd98a"/>' +
-  [0,72,144,216,288].map(a => '<ellipse rx="2.6" ry="4" cy="-5" transform="rotate('+a+')" fill="#ff9fbd"/>').join("") + '</g></g>';
-const envelope =
-  '<g transform="translate(-1,-16) rotate(-6)"><rect x="-8" y="-5.5" width="16" height="11" rx="1.5" fill="#f7e2bf" stroke="#c9a06a" stroke-width=".8"/>' +
-  '<path d="M-8,-5.5 L0,1 L8,-5.5" fill="none" stroke="#c9a06a" stroke-width=".9"/><circle cx="0" cy="1" r="2" fill="#ff7a9a"/></g>';
-
-const bubble = (x, y, t) => {
-  const w = t.length * 5.7 + 18;
-  return '<g transform="translate('+x+','+y+')"><g class="bub fb">' +
-    '<rect x="'+(-w/2)+'" y="-14" width="'+w+'" height="21" rx="10.5" fill="#fff6ee"/><path d="M-4,6.5 L0,12.5 L4,6.5Z" fill="#fff6ee"/>' +
-    '<text x="0" y="0.5" text-anchor="middle" font-family="Nunito,sans-serif" font-size="10.5" font-weight="800" fill="#2a1740">'+t+'</text></g></g>';
-};
-const emo = (x, y, ch, fs, cls, extra) =>
-  '<g transform="translate('+x+','+y+')"><g class="'+(cls||"")+' fb"'+(extra?' style="'+extra+'"':'')+'><text text-anchor="middle" font-size="'+(fs||18)+'">'+ch+'</text></g></g>';
-
-const FLOOR = '<ellipse cx="200" cy="163" rx="176" ry="5" fill="#000" opacity=".2"/>';
-const TW = [[26,28,1.6,0],[64,70,1.1,.7],[118,20,1.3,1.3],[286,24,1.6,.3],[344,58,1.1,1],[240,44,1,1.8],[378,26,1.2,.5],[14,102,1,1.4],[388,98,1,.9],[160,54,1,2.2]]
-  .map(a => '<circle class="tw" style="animation-delay:'+a[3]+'s" cx="'+a[0]+'" cy="'+a[1]+'" r="'+a[2]+'" fill="#fff6ee"/>').join("");
-const net = (cx, top, half) => {
-  const w = half*2, h = 160 - top;
-  let s = '<rect x="'+(cx-half)+'" y="'+top+'" width="'+w+'" height="'+(h)+'" rx="2" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.3)" stroke-width="1"/>';
-  for (let y = top + 10; y < 160; y += 10) s += '<path d="M'+(cx-half)+','+y+' H'+(cx+half)+'" stroke="rgba(255,255,255,.14)"/>';
-  for (let x = cx - half + 10; x < cx + half; x += 10) s += '<path d="M'+x+','+top+' V160" stroke="rgba(255,255,255,.14)"/>';
-  return s + '<path d="M'+(cx-half)+','+top+' H'+(cx+half)+'" stroke="#fff6ee" stroke-width="3" opacity=".8" stroke-linecap="round"/>' +
-    '<path d="M'+(cx-half)+','+(top-4)+' V160 M'+(cx+half)+','+(top-4)+' V160" stroke="#fff6ee" stroke-width="2.6" opacity=".7" stroke-linecap="round"/>';
-};
-const shuttle = '<circle cx="0" cy="0" r="3" fill="#ffd98a"/><path d="M-2.4,-2 L-6.5,-10.5 L6.5,-10.5 L2.4,-2Z" fill="#fff6ee" stroke="#cbbba8" stroke-width=".5"/>';
-const flyer = (path, dur, rot, extra) =>
-  '<g><animateMotion dur="'+dur+'" repeatCount="indefinite" path="'+path+'" '+(extra||"")+'/><g transform="rotate('+rot+')" filter="url(#glow)">'+shuttle+'</g></g>';
-
-const SCENES = {
-  rally: () => FLOOR + TW + net(200, 116, 46) +
-    chibi({ x:62, y:160, who:"p", face:"laugh", R:{ type:"up", cls:"swingR", item:racket("#7fb0ff", 1) } }) +
-    chibi({ x:338, y:160, who:"g", face:"happy", L:{ type:"up", cls:"swingL", item:racket("#ff8fb0", -1) } }) +
-    flyer("M96,92 Q200,8 304,92 Q200,8 96,92", "2.8s", -20),
-
-  assist: () => FLOOR + TW +
-    chibi({ x:72, y:160, who:"s", face:"laugh", L:{ type:"up", cls:"wave" } }) +
-    chibi({ x:172, y:160, who:"g", face:"oh" }) +
-    chibi({ x:330, y:160, who:"p", face:"happy", R:{ type:"out", item:racket("#7fb0ff", 1) } }) +
-    bubble(72, 52, "come play!") + bubble(330, 52, "hi!") +
-    emo(122, 96, "✨", 16, "tw"),
-
-  smash: () => FLOOR + TW + net(200, 122, 30) +
-    chibi({ x:74, y:160, who:"p", face:"laugh", R:{ type:"up", cls:"swingR", item:racket("#7fb0ff", 1) } }) +
-    '<g class="duck">' + chibi({ x:326, y:160, who:"g", face:"oh" }) + '</g>' +
-    '<g><animateMotion dur="1.6s" repeatCount="indefinite" path="M112,84 L312,140" keyPoints="0;1;1" keyTimes="0;.45;1" calcMode="linear"/>' +
-    '<animate attributeName="opacity" values="1;1;0;0" keyTimes="0;.44;.5;1" dur="1.6s" repeatCount="indefinite"/>' +
-    '<g transform="rotate(-72)" filter="url(#glow)">'+shuttle+'</g></g>' +
-    emo(360, 66, "💢", 20, "tw") + bubble(326, 40, "…"),
-
-  ludo: () => FLOOR + TW +
-    chibi({ x:64, y:160, who:"p", sit:true, face:"laugh" }) +
-    chibi({ x:336, y:160, who:"g", sit:true, face:"cross" }) +
-    '<g transform="translate(160,128)"><rect width="80" height="34" rx="4" fill="#fff6ee"/>' +
-      '<rect x="3" y="3" width="30" height="13" fill="#e0533d"/><rect x="47" y="3" width="30" height="13" fill="#3b6bd0"/>' +
-      '<rect x="3" y="18" width="30" height="13" fill="#f0b73a"/><rect x="47" y="18" width="30" height="13" fill="#2b9c7a"/>' +
-      '<path d="M40,4 L50,17 L40,30 L30,17Z" fill="#ffd98a"/></g>' +
-    '<g transform="translate(200,100)"><g class="roll fb"><rect x="-9" y="-9" width="18" height="18" rx="4" fill="#fff6ee"/>' +
-      '<circle cx="-3.5" cy="-3.5" r="1.7" fill="#2a1740"/><circle cx="3.5" cy="3.5" r="1.7" fill="#2a1740"/><circle cx="0" cy="0" r="1.7" fill="#2a1740"/>' +
-      '<circle cx="3.5" cy="-3.5" r="1.7" fill="#2a1740"/><circle cx="-3.5" cy="3.5" r="1.7" fill="#2a1740"/></g></g>' +
-    '<g transform="translate(236,126)"><g class="pawnOut fb"><circle cy="-8" r="4.2" fill="#ff6b5a" stroke="#2a1740" stroke-width="1.2"/>' +
-      '<path d="M-5.5,0 Q0,-10 5.5,0Z" fill="#ff6b5a" stroke="#2a1740" stroke-width="1.2"/></g></g>' +
-    emo(360, 84, "💢", 20, "tw") + bubble(336, 56, "seriously?"),
-
-  call: () => TW +
-    emo(200, 50, "🌙", 40, "sway") +
-    chibi({ x:70, y:160, who:"p", face:"laugh", R:{ type:"up", item:phone(1) } }) +
-    chibi({ x:330, y:160, who:"g", face:"happy", L:{ type:"up", item:phone(-1) } }) +
-    '<path d="M96,100 Q200,40 304,100" stroke="#fff6ee" stroke-width="1.6" stroke-dasharray="2 7" stroke-linecap="round" fill="none" opacity=".5"/>' +
-    '<g><animateMotion dur="3.4s" repeatCount="indefinite" path="M96,100 Q200,40 304,100"/><text text-anchor="middle" font-size="14" y="5">💗</text></g>' +
-    '<g><animateMotion dur="3.4s" begin="1.7s" repeatCount="indefinite" path="M304,100 Q200,40 96,100"/><text text-anchor="middle" font-size="14" y="5">💛</text></g>' +
-    '<text x="200" y="128" text-anchor="middle" font-family="Caveat,cursive" font-size="24" font-weight="700" fill="#ffd98a">4:00 AM, office at 10</text>',
-
-  movie: () => FLOOR + TW +
-    '<rect x="112" y="18" width="176" height="76" rx="8" fill="#ffe9b0" class="flick"/>' +
-    '<rect x="112" y="18" width="176" height="76" rx="8" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>' +
-    '<path d="M112,18 L152,58 M112,18 L172,34 M112,18 L134,82 M120,26 Q136,30 142,48 M130,34 Q152,34 164,50" stroke="#fff6ee" stroke-width="1.1" fill="none" opacity=".7"/>' +
-    '<g transform="translate(262,18)"><g class="dangle"><path d="M0,0 V26" stroke="#fff6ee" stroke-width="1.2" opacity=".7"/><text y="36" text-anchor="middle" font-size="16">🕷️</text></g></g>' +
-    chibi({ x:150, y:160, who:"p", sit:true, face:"laugh" }) +
-    chibi({ x:250, y:160, who:"g", sit:true, face:"happy" }) +
-    '<g transform="translate(200,132)"><path d="M-13,0 L13,0 L10,28 L-10,28Z" fill="#ff6b5a"/>' +
-      '<path d="M-6,0 L-5,28 M0,0 L0,28 M6,0 L5,28" stroke="#fff6ee" stroke-width="2.4"/>' +
-      '<circle cx="-7" cy="-3" r="4.4" fill="#fff6ee"/><circle cx="0" cy="-6" r="5" fill="#ffe9b0"/><circle cx="7" cy="-3" r="4.4" fill="#fff6ee"/></g>' +
-    emo(44, 116, "🎲", 20, "fz") + emo(360, 112, "🃏", 20, "fz", "animation-delay:1.6s"),
-
-  sleep: () => TW +
-    emo(66, 46, "🌙", 34, "sway") +
-    '<rect x="196" y="147" width="146" height="17" rx="9" fill="#7a5fb0" opacity=".9"/>' +
-    '<ellipse cx="222" cy="138" rx="21" ry="10" fill="#fff6ee"/>' +
-    '<g transform="translate(298,133) rotate(-90)">' + chibi({ x:0, y:0, who:"g", s:1.22, face:"sleep", cls:"bob2" }) + '</g>' +
-    '<rect x="246" y="116" width="82" height="34" rx="14" fill="#ff9fbd" opacity=".95"/>' +
-    '<path d="M258,124 q6,6 12,0 q6,6 12,0 q6,6 12,0 q6,6 12,0" stroke="#fff6ee" stroke-width="1.6" fill="none" opacity=".6"/>' +
-    chibi({ x:96, y:160, who:"p", sit:true, face:"happy", R:{ type:"up", item:phone(1) } }) +
-    '<path d="M124,112 Q170,70 216,110" stroke="#fff6ee" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round" fill="none" opacity=".5"/>' +
-    '<g><animateMotion dur="4.4s" repeatCount="indefinite" path="M124,112 Q170,70 216,110"/><text text-anchor="middle" font-size="12" y="4">💗</text></g>' +
-    emo(226, 96, "💤", 22, "fz") + emo(246, 98, "💤", 16, "fz", "animation-delay:2.2s"),
-
-  jar: () => FLOOR + TW +
-    '<rect x="146" y="150" width="108" height="8" rx="4" fill="#9a7bd0"/>' +
-    '<g transform="translate(200,20)">' +
-      '<rect x="-26" y="0" width="52" height="11" rx="5" fill="#d9b672"/>' +
-      '<path d="M-30,11 Q-42,20 -42,42 V108 Q-42,130 -20,130 H20 Q42,130 42,108 V42 Q42,20 30,11Z" fill="rgba(255,255,255,.10)" stroke="rgba(255,255,255,.5)" stroke-width="2"/>' +
-      '<path d="M-31,34 V100" stroke="rgba(255,255,255,.4)" stroke-width="3" stroke-linecap="round"/>' +
-      [[-14,52,0],[10,44,.6],[-4,72,1.2],[18,80,.3],[-20,94,1.7],[6,104,2.3],[-8,118,.9],[22,60,2.6],[-24,66,1.4]]
-        .map(f => '<circle class="ff" style="animation-delay:'+f[2]+'s;animation-duration:'+(3+f[2])+'s" cx="'+f[0]+'" cy="'+f[1]+'" r="3" fill="#ffe28a" filter="url(#glow)"/>').join("") +
-    '</g>' +
-    chibi({ x:74, y:160, who:"p", face:"happy", R:{ type:"out" } }) +
-    chibi({ x:326, y:160, who:"g", face:"happy", L:{ type:"out" } }) +
-    emo(110, 84, "✨", 16, "fz") + emo(292, 88, "✨", 16, "fz", "animation-delay:2s"),
-
-  sorry: () => FLOOR + TW +
-    chibi({ x:132, y:160, who:"p", face:"sorry", R:{ type:"out", cls:"offer", item:envelope } }) +
-    chibi({ x:274, y:160, who:"g", face:"cross" }) +
-    bubble(274, 52, "…") +
-    emo(200, 100, "💌", 20, "fz"),
-
-  ask: () => FLOOR + TW +
-    chibi({ x:140, y:160, who:"p", face:"happy", R:{ type:"out", cls:"offer", item:flower } }) +
-    chibi({ x:262, y:160, who:"g", face:"oh" }) +
-    emo(201, 78, "❤️", 26, "pulse") + emo(110, 92, "✨", 16, "tw") + emo(300, 96, "✨", 14, "tw"),
-
-  plan: () => FLOOR + TW +
-    chibi({ x:140, y:160, who:"p", face:"happy" }) +
-    chibi({ x:260, y:160, who:"g", face:"laugh" }) +
-    '<g transform="translate(200,100)"><g class="bub fb"><rect x="-32" y="-22" width="64" height="44" rx="6" fill="#fff6ee"/>' +
-      '<path d="M-24,10 Q-14,-12 -4,2 T18,-8" stroke="#3b6bd0" stroke-width="2" fill="none" stroke-dasharray="3 3"/>' +
-      '<circle cx="20" cy="-9" r="4.4" fill="#e0533d"/><circle cx="-24" cy="10" r="3" fill="#2b9c7a"/></g></g>' +
-    emo(200, 52, "📍", 20, "pulse")
-};
-
-$$("svg.stage[data-scene]").forEach(svg => {
-  const fn = SCENES[svg.dataset.scene];
-  if (fn) svg.innerHTML = fn();
-  if (reduced && svg.pauseAnimations) svg.pauseAnimations();
-});
-
-/* =========================================================================
-   THE FINAL STAGE — thirteen stars that draw a heart
-   ========================================================================= */
-(function buildHeart(){
-  const svg = $("#heart");
-  const f = t => [16*Math.pow(Math.sin(t),3), 13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t)];
-  const P = t => { const v = f(t); return [200 + v[0]*5.3, 84 - v[1]*5.3]; };
-  let d = "";
-  for (let i = 0; i <= 160; i++){
-    const p = P(Math.PI + (Math.PI*2)*i/160);
-    d += (i ? "L" : "M") + p[0].toFixed(1) + "," + p[1].toFixed(1);
-  }
-  let s = TW + '<path class="hl" pathLength="1" d="'+d+'"/>';
-  for (let k = 0; k < 13; k++){
-    const p = P(Math.PI + (Math.PI*2)*k/13);
-    s += '<g transform="translate('+p[0].toFixed(1)+','+p[1].toFixed(1)+')"><path class="hs" style="animation-delay:'+(0.4 + 3.4*k/13).toFixed(2)+'s" ' +
-      'd="M0,-7 Q1,-1.2 7,0 Q1,1.2 0,7 Q-1,1.2 -7,0 Q-1,-1.2 0,-7Z" fill="#ffd98a" filter="url(#glow)"/></g>';
-  }
-  s += chibi({ x:170, y:238, who:"p", s:1.05, face:"happy", cls:"hop" }) +
-       chibi({ x:230, y:238, who:"g", s:1.05, face:"happy", cls:"hop" }) +
-       emo(200, 196, "💗", 16, "pulse") + emo(120, 190, "✨", 14, "fz") + emo(280, 194, "✨", 14, "fz", "animation-delay:1.8s");
-  svg.innerHTML = s;
-  if (reduced && svg.pauseAnimations) svg.pauseAnimations();
-})();
-
-/* =========================================================================
-   SKY, CHAPTERS, CONSTELLATION, NAVIGATION
-   ========================================================================= */
-const CH = [
-  "a small sky", "18 July · the invitation", "18 July · the smash", "July–August · ludo", "August · the late calls",
-  "22–23 August · the weekend", "one night · asleep on the call", "ever since · the jar", "a letter",
-  "the question", "planning · when", "planning · where", "the last star"
-];
-const SKY = ["dusk","dusk","dusk","dusk","night","night","night","night","moon","dawn","dawn","dawn","dawn"];
-const N = CH.length;
-let current = 0, maxSeen = 0;
-
-/* constellation bar */
-const CW = 560, CHT = 40;
-const CPTS = CH.map((_, i) => [14 + i*(CW-28)/(N-1), 20 + Math.sin(i*1.15)*8]);
-(function buildBar(){
-  const svg = $("#const");
-  svg.setAttribute("viewBox", "0 0 "+CW+" "+CHT);
-  let s = "";
-  for (let i = 0; i < N-1; i++)
-    s += '<line data-l="'+i+'" x1="'+CPTS[i][0]+'" y1="'+CPTS[i][1]+'" x2="'+CPTS[i+1][0]+'" y2="'+CPTS[i+1][1]+'"/>';
-  CPTS.forEach((p, i) => {
-    s += '<g class="cs" data-i="'+i+'" transform="translate('+p[0]+','+p[1]+')"><circle r="13" fill="transparent"/>' +
-         '<g class="tw2"><path d="M0,-6 Q.9,-.9 6,0 Q.9,.9 0,6 Q-.9,.9 -6,0 Q-.9,-.9 0,-6Z"/></g></g>';
-  });
-  svg.innerHTML = s;
-  svg.addEventListener("click", e => {
-    const g = e.target.closest(".cs"); if (!g) return;
-    const i = Number(g.dataset.i);
-    if (i <= maxSeen) go(i);
-  });
-})();
-
-function paintBar(){
-  $$("#const .cs").forEach(g => {
-    const i = Number(g.dataset.i);
-    g.classList.toggle("seen", i <= maxSeen && i !== current);
-    g.classList.toggle("here", i === current);
-  });
-  $$("#const line").forEach(l => l.classList.toggle("lit", Number(l.dataset.l) < maxSeen));
-  $("#chapter").textContent = CH[current];
-}
-
-/* photo background */
-let pbFlip = 0;
-function setPhotoBG(i){
-  const list = (CONFIG.photos.background || []).map(fixUrl).filter(Boolean);
-  if (!list.length) return;
-  const url = list[i % list.length];
-  const img = new Image(); img.referrerPolicy = "no-referrer";
-  img.onload = () => {
-    const layers = $$("#photobg .pb");
-    const next = layers[pbFlip % 2], prev = layers[(pbFlip+1) % 2];
-    pbFlip++;
-    next.style.backgroundImage = 'url("'+url+'")';
-    next.classList.add("on"); prev.classList.remove("on");
-  };
-  img.src = url;
-}
-$("#photobg").style.setProperty("--bgop", CONFIG.photos.bgOpacity);
-
-function setSky(i){
-  const s = SKY[i] || "dusk";
-  document.body.dataset.sky = s;
-  $$(".sky").forEach(el => el.classList.toggle("on", el.id === "sky-" + s));
-  starTarget = ({ dusk:.5, night:1, moon:1, dawn:.35 })[s];
-}
-
-function go(i){
-  i = Number(i);
-  const next = $('.panel[data-i="'+i+'"]');
-  if (!next || i === current) return;
-  $$(".panel").forEach(p => p.classList.remove("on"));
-  next.classList.add("on");
-  current = i;
-  maxSeen = Math.max(maxSeen, i);
-  setSky(i); paintBar(); setPhotoBG(i);
-  $("#back").hidden = (i === 0);
-  document.body.classList.remove("hush");
-  window.scrollTo({ top:0, behavior: reduced ? "auto" : "smooth" });
-  if (i === 4) paintHour();
-  if (i === 9) runAsk();
-  if (i === 12) runFinale();
-}
-$$("[data-go]").forEach(b => b.addEventListener("click", () => go(b.dataset.go)));
-$("#back").addEventListener("click", () => go(Math.max(0, current - 1)));
-addEventListener("keydown", e => {
-  if (e.target.matches("input,textarea")) return;
-  if (e.key === "ArrowRight" && current < maxSeen) go(current + 1);
-  if (e.key === "ArrowLeft" && current > 0) go(current - 1);
-});
-
-/* =========================================================================
-   STAR CANVAS — twinkling stars, shooting stars, drifting fireflies
-   ========================================================================= */
-let starTarget = .5;
-(function skyCanvas(){
-  const cv = $("#stars"), ctx = cv.getContext("2d");
-  let W = 0, H = 0, stars = [], flies = [], shoot = null, nextShoot = 0, alpha = .5;
-
-  function size(){
-    const dpr = Math.min(devicePixelRatio || 1, 2);
-    W = innerWidth; H = innerHeight;
-    cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
-    const n = Math.round(W*H/5200);
-    stars = Array.from({ length:n }, () => ({ x:Math.random()*W, y:Math.random()*H*.9, r:Math.random()*1.3+.3, p:Math.random()*6.28, s:Math.random()*1.4+.5 }));
-    flies = Array.from({ length:Math.max(9, Math.round(W/85)) }, () => ({ x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-.5)*.25, vy:-Math.random()*.2-.04, r:Math.random()*2+1.2, p:Math.random()*6.28 }));
-  }
-  addEventListener("resize", size); size();
-
-  function draw(t){
-    ctx.clearRect(0,0,W,H);
-    alpha += (starTarget - alpha) * .02;
-
-    for (const s of stars){
-      const a = (reduced ? .7 : .35 + .65*Math.abs(Math.sin(t/1000*s.s + s.p))) * alpha;
-      ctx.globalAlpha = a; ctx.fillStyle = "#fff6ee";
-      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.283); ctx.fill();
-    }
-
-    if (!reduced){
-      for (const f of flies){
-        f.x += f.vx + Math.sin(t/1400 + f.p)*.18; f.y += f.vy;
-        if (f.y < -10){ f.y = H + 10; f.x = Math.random()*W; }
-        if (f.x < -10) f.x = W + 10; if (f.x > W + 10) f.x = -10;
-        const a = (.25 + .5*Math.abs(Math.sin(t/900 + f.p)));
-        const g = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r*6);
-        g.addColorStop(0, "rgba(255,226,138,"+a+")"); g.addColorStop(1, "rgba(255,226,138,0)");
-        ctx.globalAlpha = 1; ctx.fillStyle = g;
-        ctx.beginPath(); ctx.arc(f.x, f.y, f.r*6, 0, 6.283); ctx.fill();
-      }
-
-      if (!shoot && t > nextShoot){
-        shoot = { x:Math.random()*W*.8 + W*.1, y:Math.random()*H*.35, vx:7+Math.random()*4, vy:3+Math.random()*2, life:0 };
-        nextShoot = t + 6000 + Math.random()*7000;
-      }
-      if (shoot){
-        shoot.x += shoot.vx; shoot.y += shoot.vy; shoot.life++;
-        const g = ctx.createLinearGradient(shoot.x, shoot.y, shoot.x - shoot.vx*9, shoot.y - shoot.vy*9);
-        g.addColorStop(0, "rgba(255,246,238,"+(.9*alpha)+")"); g.addColorStop(1, "rgba(255,246,238,0)");
-        ctx.globalAlpha = 1; ctx.strokeStyle = g; ctx.lineWidth = 2; ctx.lineCap = "round";
-        ctx.beginPath(); ctx.moveTo(shoot.x, shoot.y); ctx.lineTo(shoot.x - shoot.vx*9, shoot.y - shoot.vy*9); ctx.stroke();
-        if (shoot.life > 46 || shoot.x > W + 40 || shoot.y > H + 40) shoot = null;
-      }
-    }
-    ctx.globalAlpha = 1;
-    if (!reduced) requestAnimationFrame(draw);
-  }
-  requestAnimationFrame(draw);
-  document.addEventListener("visibilitychange", () => { if (!document.hidden && !reduced) requestAnimationFrame(draw); });
-  if (reduced) addEventListener("resize", () => requestAnimationFrame(draw));
-})();
-
-/* tap sparkles */
-addEventListener("pointerdown", e => {
-  if (reduced || e.target.closest("input,textarea,#court")) return;
-  const bits = ["✦","♡","✧","✨"];
-  for (let i = 0; i < 5; i++){
-    const s = document.createElement("span");
-    s.textContent = bits[Math.floor(Math.random()*bits.length)];
-    s.style.cssText = "position:fixed;left:"+e.clientX+"px;top:"+e.clientY+"px;z-index:120;pointer-events:none;font-size:"+(11+Math.random()*10)+"px;color:"+(Math.random()<.5?"#ffd98a":"#ff9fbd")+";";
-    document.body.appendChild(s);
-    const ang = Math.random()*6.283, dist = 26 + Math.random()*36;
-    const a = s.animate([{ transform:"translate(-50%,-50%) scale(.4)", opacity:1 },
-      { transform:"translate(calc(-50% + "+Math.cos(ang)*dist+"px), calc(-50% + "+Math.sin(ang)*dist+"px)) scale(1.1)", opacity:0 }],
-      { duration:700 + Math.random()*400, easing:"cubic-bezier(.2,.7,.3,1)", fill:"forwards" });
-    a.onfinish = () => s.remove();
-  }
-});
-
-/* =========================================================================
-   PHOTO SLOTS (polaroids) — hidden unless a link is set in CONFIG
-   ========================================================================= */
-$$("[data-slot]").forEach(box => {
-  box.hidden = true;
-  box.dataset.slot.split(",").forEach((key, idx) => {
-    const url = fixUrl(CONFIG.photos.slots[key.trim()]);
-    if (!url) return;
-    const img = new Image(); img.referrerPolicy = "no-referrer"; img.alt = "";
-    img.onload = () => {
-      const fig = document.createElement("figure");
-      fig.className = "polaroid"; fig.style.setProperty("--tilt", (idx % 2 ? 3 : -3) + "deg");
-      fig.appendChild(img);
-      const cap = document.createElement("figcaption");
-      cap.textContent = (CONFIG.photos.captions || {})[key.trim()] || "";
-      fig.appendChild(cap);
-      box.appendChild(fig); box.hidden = false;
-    };
-    img.src = url;
-  });
-});
-
-/* =========================================================================
-   1 · ASSIST
-   ========================================================================= */
-$("#assist-btn").addEventListener("click", function(){
-  $("#assist-stamp").classList.add("shown");
-  this.disabled = true; this.textContent = "Credited";
-  toast("Sakshi has been officially thanked.");
-});
-
-/* =========================================================================
-   2 · SMASH COURT
-   ========================================================================= */
-(function smash(){
-  const court = $("#court"), bird = $("#bird"), count = $("#smash-count");
-  const R = ["…", "really?", "hey", "😐", "stop", "ok wow", "PARTH", "😭"];
-  court.addEventListener("click", e => {
-    const r = court.getBoundingClientRect();
-    const tx = r.width*(.6 + Math.random()*.32), ty = r.height*(.2 + Math.random()*.6);
-    bird.style.transition = "none";
-    bird.style.left = (e.clientX - r.left - 7) + "px"; bird.style.top = (e.clientY - r.top - 7) + "px";
-    void bird.offsetWidth;
-    bird.style.transition = "left .38s cubic-bezier(.3,1.4,.5,1), top .38s cubic-bezier(.3,.2,.6,1)";
-    bird.style.left = (tx - 7) + "px"; bird.style.top = (ty - 7) + "px";
-    setTimeout(() => {
-      const m = document.createElement("div"); m.className = "ping"; m.style.left = tx + "px"; m.style.top = ty + "px";
-      court.appendChild(m); setTimeout(() => m.remove(), 750);
-      const rx = document.createElement("div"); rx.className = "rx";
-      rx.textContent = R[Math.min(state.smashes, R.length - 1)];
-      rx.style.left = Math.max(6, Math.min(r.width - 90, tx - 20)) + "px"; rx.style.top = (ty - 26) + "px";
-      court.appendChild(rx); setTimeout(() => rx.remove(), 1450);
-      state.smashes++; count.textContent = state.smashes;
-      if (state.smashes === 8) toast("Gauri's patience: officially tested.");
-    }, 380);
-  });
-})();
-
-/* =========================================================================
-   3 · LUDO
-   ========================================================================= */
-(function ludo(){
-  const board = $("#board");
-  ["q-tl","q-lane","q-tr","q-lane","q-mid","q-lane","q-bl","q-lane","q-br"].forEach(c => {
-    const d = document.createElement("div"); d.className = c;
-    if (c === "q-mid") d.textContent = "🎲";
-    board.appendChild(d);
-  });
-  const RAGE = [
-    "Fully intact. Send a piece home and let's see.",
-    "A slight pause. You said nothing, which is worse.",
-    "\"seriously?\"",
-    "You've stopped talking to me mid-game.",
-    "The \"I'm fine\" phase. You are not fine.",
-    "Rage-bait confirmed. Rolling with intent now.",
-    "Okay, I should stop. I won't, but I should."
-  ];
-  $$(".q-tl,.q-tr,.q-bl,.q-br", board).forEach(q => {
-    for (let i = 0; i < 2; i++){
-      const p = document.createElement("div"); p.className = "pawn";
-      p.style.left = (28 + Math.random()*44) + "%"; p.style.top = (28 + Math.random()*44) + "%";
-      p.addEventListener("click", () => {
-        if (p.classList.contains("home")) return;
-        p.classList.add("home"); state.homes++;
-        $("#rage-bar").style.width = Math.min(state.homes/7, 1)*100 + "%";
-        $("#rage-label").textContent = RAGE[Math.min(state.homes, RAGE.length - 1)];
-        if (state.homes === 8) toast("All eight. You'd have left the call by now.");
-      });
-      q.appendChild(p);
-    }
-  });
-})();
-
-/* =========================================================================
-   4 · THE NIGHT DIAL
-   ========================================================================= */
-const HOURS = [
-  ["10:30 PM", "Group call. Loud. Completely normal."],
-  ["11:00 PM", "Fewer voices. Still normal."],
-  ["11:30 PM", "Somehow it's just the two of us. Nobody mentions it."],
-  ["12:00 AM", "Gossip, full coverage. No topic survives."],
-  ["12:30 AM", "\"one more thing and then I'll sleep\""],
-  ["1:00 AM",  "The overthinking starts. Both of us. Enthusiastically."],
-  ["1:30 AM",  "The conversation gets quieter and more honest."],
-  ["2:00 AM",  "Secrets. Real ones."],
-  ["2:30 AM",  "\"we have office tomorrow\" (said, ignored)"],
-  ["3:00 AM",  "Still going. Nothing urgent. Nothing I'd trade."],
-  ["3:30 AM",  "You've gone quiet."],
-  ["4:00 AM",  "You're asleep. The line is still open. I didn't hang up either."]
-];
-function paintHour(){
-  const h = HOURS[Number($("#hour").value)];
-  $("#clock").textContent = h[0]; $("#hour-caption").textContent = h[1];
-}
-$("#hour").addEventListener("input", paintHour);
-paintHour();
-
-/* =========================================================================
-   5 · FLIP CARDS   6 · HUSH   7 · JAR
-   ========================================================================= */
-$$("[data-flip]").forEach(f => f.addEventListener("click", () => f.classList.toggle("open")));
-
-$("#hush").addEventListener("click", function(){
-  const on = document.body.classList.toggle("hush");
-  $("#hushnote").hidden = !on;
-  this.textContent = on ? "Turn the lights back on" : "Hush the room";
-});
-
-$$("#lights .light").forEach(b => b.addEventListener("click", () => {
-  $$("#lights .light").forEach(x => x.classList.remove("on"));
-  b.classList.add("on");
-  $("#lightnote").textContent = b.dataset.t;
-}));
-
-/* =========================================================================
-   FORM DELIVERY (Web3Forms) — fetch first, hidden-form backup second
-   ========================================================================= */
-function sendViaForm(data){
-  const form = $("#w3f-form");
-  Object.keys(data).forEach(k => {
-    let field = form.querySelector('[name="'+k+'"]');
-    if (!field){ field = document.createElement("input"); field.type = "hidden"; field.name = k; form.appendChild(field); }
-    if (field.type !== "checkbox") field.value = data[k];
-  });
-  form.submit();
-}
-async function deliver(fields, statusEl, okText, retry){
-  const data = Object.assign({ access_key: CONFIG.web3formsKey, from_name: "A small sky" }, fields);
-  if (statusEl) statusEl.textContent = "Letting " + CONFIG.myName + " know…";
-  let ok = false;
-  try {
-    const fd = new FormData(); Object.keys(data).forEach(k => fd.append(k, data[k]));
-    const res = await fetch("https://api.web3forms.com/submit", { method:"POST", body:fd });
-    const j = await res.json().catch(() => ({}));
-    ok = res.ok && j.success !== false;
-  } catch (err) { ok = false; }
-  if (ok){ if (statusEl) statusEl.textContent = okText; return; }
-  sendViaForm(data);
-  if (!statusEl) return;
-  statusEl.innerHTML = 'Sent by the backup route. <button type="button" class="resend" style="background:none;border:none;padding:0;font:inherit;color:var(--accent);font-weight:800;text-decoration:underline;cursor:pointer">Send it again</button>';
-  $(".resend", statusEl).addEventListener("click", () => deliver(fields, statusEl, okText));
-}
-
-/* =========================================================================
-   8 · THE LETTER
-   ========================================================================= */
-$("#env").addEventListener("click", function(){
-  if (this.classList.contains("open")) return;
-  this.classList.add("open");
-  $("#env-hint").hidden = true;
-  setTimeout(() => {
-    $("#env-wrap").classList.add("gone");
-    const L = $("#letter"); L.hidden = false;
-    $$("p", L).forEach((p, i) => p.style.setProperty("--n", i));
-    requestAnimationFrame(() => L.classList.add("show"));
-    setTimeout(() => { $("#letter-btns").hidden = false; }, reduced ? 100 : 2600);
-    L.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block:"start" });
-  }, reduced ? 50 : 800);
-});
-$("#not-ready").addEventListener("click", function(){
-  $("#paused").hidden = false; this.hidden = true;
-  $("#paused").scrollIntoView({ behavior: reduced ? "auto" : "smooth", block:"nearest" });
-});
-$("#reply-send").addEventListener("click", function(){
-  const t = $("#reply-text").value.trim();
-  if (!t){ toast("Write a line first, if you want to."); return; }
-  deliver({
-    subject: CONFIG.herName + " replied to your letter",
-    Answer: "REPLY TO THE LETTER",
-    Message: t
-  }, $("#reply-status"), "Sent. " + CONFIG.myName + " will read it.");
-});
-
-/* =========================================================================
-   9 · THE QUESTION
-   ========================================================================= */
-let askRan = false;
-function runAsk(){
-  if (askRan) return; askRan = true;
-  const gap = reduced ? 150 : 1000;
-  $$("#reasons .lantern").forEach((el, i) => setTimeout(() => { el.hidden = false; }, gap*(i+1)));
-  setTimeout(() => { $("#ask-q").hidden = false; }, gap*4);
-  setTimeout(() => { $("#ask-choices").hidden = false; }, gap*4.8);
-}
-$("#ask-yes").addEventListener("click", () => { $("#ask-choices").hidden = true; $("#ask-yes-box").hidden = false; });
-$("#ask-maybe").addEventListener("click", () => { $("#ask-choices").hidden = true; $("#ask-maybe-box").hidden = false; });
-
-/* =========================================================================
-   10 · WHEN + TIME
-   ========================================================================= */
-const TIME_NOTE = {
-  "Morning":"Early enough that it counts as effort from both of us.",
-  "Afternoon":"Food, wandering, and an unreasonable amount of gossip.",
-  "Sunset":"The correct answer, but I'm not biased at all.",
-  "Evening":"Lights, dinner, city noise.",
-  "Late night":"Only if we're both fine losing track of time again."
-};
-$("#when-opts").addEventListener("click", e => {
-  const b = e.target.closest(".chip"); if (!b) return;
-  $$("#when-opts .chip").forEach(x => x.classList.remove("picked")); b.classList.add("picked");
-  state.when = b.dataset.when; $("#d-date").value = ""; $("#when-note").textContent = "Noted."; refreshPlan();
-});
-$("#d-date").addEventListener("change", e => {
-  if (!e.target.value) return;
-  $$("#when-opts .chip").forEach(x => x.classList.remove("picked"));
-  const d = new Date(e.target.value + "T00:00:00");
-  state.when = d.toLocaleDateString(undefined, { weekday:"long", day:"numeric", month:"long" });
-  $("#when-note").textContent = "Locked in: " + state.when; refreshPlan();
-});
-$("#time-opts").addEventListener("click", e => {
-  const b = e.target.closest(".chip"); if (!b) return;
-  $$("#time-opts .chip").forEach(x => x.classList.remove("picked")); b.classList.add("picked");
-  state.time = b.dataset.time; $("#d-time").value = ""; $("#time-note").textContent = TIME_NOTE[state.time] || ""; refreshPlan();
-});
-$("#d-time").addEventListener("change", e => {
-  if (!e.target.value) return;
-  $$("#time-opts .chip").forEach(x => x.classList.remove("picked"));
-  state.time = e.target.value; $("#time-note").textContent = "Works for me."; refreshPlan();
-});
-
-/* =========================================================================
-   11 · PLACES + ACTIVITIES
-   ========================================================================= */
-(function buildPlaces(){
-  const grid = $("#places");
-  CONFIG.places.forEach(p => {
-    const b = document.createElement("button"); b.type = "button"; b.className = "place";
-    b.innerHTML = '<div class="ph"><span class="em"></span><span class="pin"></span></div><div class="pb2"><div class="nm"></div><div class="hr2"></div><div class="pl"></div><div class="vb"></div></div>';
-    const ph = $(".ph", b);
-    ph.style.background = "linear-gradient(135deg," + p.grad + ")";
-    $(".em", b).textContent = p.emoji;
-    $(".pin", b).textContent = "Mumbai";
-    $(".nm", b).textContent = p.name; $(".hr2", b).textContent = p.hours;
-    $(".pl", b).textContent = p.plan;  $(".vb", b).textContent = p.vibe;
-    const url = fixUrl(p.photo);
-    if (url){
-      const img = new Image(); img.referrerPolicy = "no-referrer"; img.alt = ""; img.loading = "lazy";
-      img.onload = () => { ph.insertBefore(img, ph.firstChild); };
-      img.src = url;
-    }
-    b.addEventListener("click", () => {
-      $$(".place").forEach(x => x.classList.remove("picked")); b.classList.add("picked");
-      state.place = p; $("#acts-wrap").hidden = false; $("#to-final").disabled = false; refreshPlan();
-    });
-    grid.appendChild(b);
-  });
-})();
-(function buildActs(){
-  const grid = $("#acts");
-  CONFIG.activities.forEach(a => {
-    const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = a;
-    b.addEventListener("click", () => {
-      b.classList.toggle("picked");
-      state.acts = b.classList.contains("picked") ? state.acts.concat(a) : state.acts.filter(x => x !== a);
-      refreshPlan();
-    });
-    grid.appendChild(b);
-  });
-})();
-function refreshPlan(){
-  if (!state.place) return;
-  $("#plan-card").hidden = false;
-  $("#p-where").innerHTML = "<b>Where</b> &nbsp;" + esc(state.place.name);
-  $("#p-when").innerHTML  = "<b>When</b> &nbsp;" + esc(state.when || "you tell me");
-  $("#p-time").innerHTML  = "<b>Time</b> &nbsp;" + esc(state.time || "you tell me");
-  $("#p-acts").innerHTML  = "<b>Doing</b> &nbsp;" + esc(state.acts.length ? state.acts.join(", ") : "we'll figure it out");
-}
-function esc(s){ return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
-
-/* =========================================================================
-   12 · FINALE
-   ========================================================================= */
-let finaleRan = false;
-function runFinale(){
-  if (finaleRan) return; finaleRan = true;
-  const seq = ["fl-1","fl-2","fl-3","fl-4","fl-5","final-choices"];
-  const gap = reduced ? 150 : 1150;
-  seq.forEach((id, i) => setTimeout(() => { $("#" + id).hidden = false; }, 1200 + gap*i));
-}
-
-function answerPayload(answer){
-  const p = state.place;
-  return {
-    subject: CONFIG.herName + " said " + answer,
-    Answer: answer,
-    Where: p ? p.name : "To be decided",
-    When: state.when || "Not specified",
-    Time: state.time || "Not specified",
-    Doing: state.acts.length ? state.acts.join(", ") : "Not specified",
-    Note_from_her: ($("#d-note").value || "").trim() || "None",
-    Smashes_replayed: String(state.smashes),
-    Pieces_sent_home: String(state.homes)
-  };
-}
-
-$("#f-yes").addEventListener("click", () => {
-  $("#final-choices").hidden = true; $("#f-yes-box").hidden = false;
-  const p = state.place, note = ($("#d-note").value || "").trim();
-  $("#final-card").innerHTML =
-    "<h3>Confirmed</h3>" +
-    "<p><b>Where</b> &nbsp;" + esc(p ? p.name : "to be decided") + "</p>" +
-    "<p><b>When</b> &nbsp;" + esc(state.when || "you tell me") + "</p>" +
-    "<p><b>Time</b> &nbsp;" + esc(state.time || "you tell me") + "</p>" +
-    "<p><b>Doing</b> &nbsp;" + esc(state.acts.length ? state.acts.join(", ") : "we'll figure it out") + "</p>" +
-    (note ? "<p><b>Your note</b> &nbsp;" + esc(note) + "</p>" : "");
-  confetti();
-  deliver(answerPayload("YES, date confirmed"), $("#send-status"), CONFIG.myName + " knows. It's official.");
-});
-$("#f-think").addEventListener("click", () => {
-  $("#final-choices").hidden = true; $("#f-think-box").hidden = false;
-  deliver(answerPayload("STILL THINKING"), $("#think-status"), CONFIG.myName + " knows, and he's not going anywhere.");
-});
-$("#restart").addEventListener("click", () => location.reload());
-
-function confetti(){
-  if (reduced) return;
-  const bits = ["🏸","🎲","❤️","✦","🎬","✨","🌙"];
-  for (let i = 0; i < 34; i++){
-    const s = document.createElement("span");
-    s.textContent = bits[Math.floor(Math.random()*bits.length)];
-    s.style.cssText = "position:fixed;top:-40px;z-index:200;pointer-events:none;left:" + (Math.random()*100) + "vw;font-size:" + (13 + Math.random()*16) + "px;";
-    document.body.appendChild(s);
-    const dur = 2800 + Math.random()*1800, delay = Math.random()*600;
-    s.animate([
-      { transform:"translate(0,0) rotate(0deg)", opacity:.95 },
-      { transform:"translate(" + ((Math.random()-.5)*180) + "px," + (innerHeight+80) + "px) rotate(" + ((Math.random()-.5)*720) + "deg)", opacity:.15 }
-    ], { duration:dur, delay:delay, easing:"cubic-bezier(.2,.6,.4,1)", fill:"forwards" });
-    setTimeout(() => s.remove(), dur + delay + 150);
-  }
-}
-
-/* start */
-setSky(0); paintBar();
-</script>
+    </header>
+
+    <!-- Main Story Container -->
+    <main class="max-w-3xl mx-auto px-4 pb-32 space-y-16">
+
+        <!-- EXPRESSIVE AVATAR HERO COMPONENT (Sticky on Scroll) -->
+        <div class="story-card p-4 sm:p-6 bg-gradient-to-r from-pink-50 via-white to-purple-50 flex items-center justify-between border-2 border-pink-200 sticky top-4 z-40 shadow-lg">
+            <div class="flex items-center gap-4">
+                <!-- Dynamic SVG Gauri Avatar -->
+                <div id="avatarContainer" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-pink-100 border-2 border-candyPink p-1 relative flex-shrink-0 transition-transform duration-300">
+                    <svg id="gauriSvg" viewBox="0 0 100 100" class="w-full h-full">
+                        <!-- Hair back -->
+                        <path d="M20 50 C 15 20, 85 20, 80 50 C 85 75, 82 85, 78 95 C 75 70, 78 50, 75 45 C 65 30, 35 30, 25 45 C 22 50, 25 70, 22 95 C 18 85, 15 75, 20 50 Z" fill="#4A2E18"/>
+                        <!-- Head -->
+                        <ellipse cx="50" cy="50" rx="30" ry="32" fill="#FDE2D2"/>
+                        <!-- Blushes -->
+                        <circle cx="34" cy="58" r="5" fill="#FFAAA6" opacity="0.6"/>
+                        <circle cx="66" cy="58" r="5" fill="#FFAAA6" opacity="0.6"/>
+                        <!-- Cute hair bangs -->
+                        <path d="M 22 45 C 32 30, 48 38, 50 34 C 52 38, 68 30, 78 45 C 70 36, 60 34, 50 36 C 40 34, 30 36, 22 45 Z" fill="#3D2412"/>
+                        
+                        <!-- Eyes & Mouth Elements (Swapped by JS) -->
+                        <g id="avatarFeatures">
+                            <!-- Default: curious / side-eye -->
+                            <circle cx="38" cy="48" r="3.5" fill="#2E1C0C"/>
+                            <circle cx="62" cy="48" r="3.5" fill="#2E1C0C"/>
+                            <circle cx="40" cy="46" r="1.2" fill="#FFFFFF"/>
+                            <circle cx="64" cy="46" r="1.2" fill="#FFFFFF"/>
+                            <!-- Eyebrows -->
+                            <path d="M 33 42 Q 38 40 43 43" stroke="#3D2412" stroke-width="2" fill="none" stroke-linecap="round"/>
+                            <path d="M 57 43 Q 62 40 67 42" stroke="#3D2412" stroke-width="2" fill="none" stroke-linecap="round"/>
+                            <!-- Mouth -->
+                            <path d="M 45 61 Q 50 63 55 61" stroke="#FF70A6" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                        </g>
+                    </svg>
+                    <!-- Floating mini mood indicator -->
+                    <span id="moodBadge" class="absolute -bottom-1 -right-1 text-sm bg-white rounded-full p-0.5 shadow border border-pink-200">👀</span>
+                </div>
+
+                <div>
+                    <h3 class="font-fredoka font-bold text-slate-800 text-base sm:text-lg flex items-center gap-1.5">
+                        Gauri's Live Reaction: <span id="moodTitle" class="text-candyPink">Observing Parth</span>
+                    </h3>
+                    <p id="moodQuote" class="text-xs sm:text-sm text-slate-500 italic">"Let's see what you have to say, mister."</p>
+                </div>
+            </div>
+
+            <div class="hidden sm:block text-right">
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block">Trust Meter</span>
+                <span id="trustIndicator" class="font-fredoka font-bold text-sm text-amber-500">Under Reconstruction 🚧</span>
+            </div>
+        </div>
+
+        <!-- ================= CHAPTER 1 ================= -->
+        <section class="fade-section story-card p-6 sm:p-10 relative">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="px-3 py-1 bg-pink-100 text-pink-600 rounded-full font-fredoka font-bold text-xs uppercase tracking-wider">Chapter 01</span>
+                <span class="text-xs font-semibold text-slate-400">February • The Spark</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-fredoka font-bold text-slate-800 mb-3">
+                Valentine's Day & The 10,000% Cute Radar 💌
+            </h2>
+            <p class="text-slate-600 leading-relaxed font-medium mb-6">
+                Sakshi showed me your photo on Valentine's Day. I didn't play it cool at all; my immediate honest reaction was: <strong class="text-candyPink font-semibold">"Damn, she's so cute."</strong> After gathering my courage for a few days, I hit follow.
+            </p>
+
+            <!-- Interactive Cute-O-Meter -->
+            <div class="bg-pink-50/70 border border-pink-200 rounded-3xl p-6 text-center">
+                <p class="text-xs font-bold uppercase tracking-wider text-pink-500 mb-2">Parth's Initial Reaction Scanner</p>
+                <div class="text-5xl my-3 animate-float inline-block">📸✨</div>
+                
+                <div class="max-w-xs mx-auto my-4 bg-white rounded-full p-2 border border-pink-200 shadow-inner flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-400 pl-3">Standard cute</span>
+                    <span class="text-xs font-bold text-candyPink pr-3">Astronomical</span>
+                </div>
+
+                <button id="scanBtn" onclick="runCuteRadar()" class="px-6 py-3 bg-gradient-to-r from-candyPink to-purple-400 text-white rounded-2xl font-fredoka font-bold text-sm shadow-md hover:shadow-lg transition-all active:scale-95 flex items-center gap-2 mx-auto">
+                    <span>Scan Her Photo Again</span>
+                    <span class="text-lg">💖</span>
+                </button>
+
+                <div id="radarResult" class="hidden mt-4 pt-4 border-t border-pink-200">
+                    <p class="text-lg font-fredoka font-bold text-candyPink animate-bounce">
+                        Result: 99,999% Cute Overload Detected! 🔥
+                    </p>
+                    <p class="text-xs text-slate-500 mt-1">Status: Follow request sent immediately with shivering hands.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= CHAPTER 2 ================= -->
+        <section class="fade-section story-card p-6 sm:p-10 relative">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="px-3 py-1 bg-purple-100 text-purple-600 rounded-full font-fredoka font-bold text-xs uppercase tracking-wider">Chapter 02</span>
+                <span class="text-xs font-semibold text-slate-400">Feb 28 • The Text That Shook My World</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-fredoka font-bold text-slate-800 mb-3">
+                The Birthday Text & The Cheesecake Diplomacy 🍰
+            </h2>
+            <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                On my birthday, my phone chimed. It was you wishing me. Gauri, you were literally the <strong class="text-purple-600 underline decoration-purple-300">first girl in history</strong> to text me first. My heartbeat spiked instantly.
+            </p>
+
+            <!-- Interactive First Text Simulator -->
+            <div class="bg-slate-900 text-white rounded-3xl p-5 mb-6 shadow-xl relative overflow-hidden">
+                <div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span class="font-fredoka text-sm text-slate-200">Incoming Message from Gauri</span>
+                    </div>
+                    <span class="text-xs text-slate-400">Feb 28</span>
+                </div>
+
+                <!-- Text bubble -->
+                <div class="bg-pink-600/30 border border-pink-500/40 rounded-2xl rounded-tl-sm p-3.5 max-w-xs text-sm mb-4">
+                    "Happy Birthday Parth!! 🎉🎂 Hope you have an awesome day!"
+                </div>
+
+                <div class="bg-slate-800/80 rounded-2xl p-4 border border-slate-700">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-fredoka text-amber-400 uppercase tracking-wider">Parth's Brain Activity:</span>
+                        <span id="bpmCounter" class="text-xs font-bold text-red-400">Heart Rate: 168 BPM 💓</span>
+                    </div>
+                    <p id="brainMonologue" class="text-xs sm:text-sm text-slate-300 italic">
+                        "Wait... did a real girl text me first?! Act natural! Don't reply too fast or you look desperate! Wait 3 minutes? No, 7 minutes!"
+                    </p>
+                    <button onclick="revealBrainThought()" class="mt-3 text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1.5 rounded-lg font-semibold transition">
+                        Tap to see real-time overthinking 💭
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cheesecake Delivery Box -->
+            <div class="bg-purple-50/80 border border-purple-200 rounded-3xl p-6 text-center">
+                <h4 class="font-fredoka font-bold text-purple-800 text-base mb-1">Phase 2: Ending the "Late Reply" Era</h4>
+                <p class="text-xs text-slate-500 mb-4">
+                    After 2-3 months of polite slow replies, I knew I had to deploy special sweets. Click the cheesecake to open my delivery note!
+                </p>
+
+                <div id="cheesecakeItem" onclick="unboxCheesecake()" class="cursor-pointer inline-block transform hover:scale-110 active:scale-95 transition p-4 bg-white rounded-3xl border-2 border-dashed border-purple-300 shadow-sm">
+                    <span class="text-6xl block">🍰</span>
+                    <span class="text-[11px] font-fredoka font-bold text-purple-600 uppercase tracking-wider mt-1 block">Tap to Unbox</span>
+                </div>
+
+                <div id="cheesecakeNote" class="hidden mt-4 p-4 bg-white rounded-2xl border border-purple-200 text-sm font-medium text-slate-700 max-w-sm mx-auto shadow-sm">
+                    <span class="text-xl">✨</span>
+                    <p class="mt-1 font-semibold text-purple-700">"Special delivery for someone whose smile makes late replies totally forgiven."</p>
+                    <p class="text-xs text-slate-400 mt-2 font-fredoka">Mission Accomplished: She loved it! 😋</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= CHAPTER 3 ================= -->
+        <section class="fade-section story-card p-6 sm:p-10 relative">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="px-3 py-1 bg-emerald-100 text-emerald-600 rounded-full font-fredoka font-bold text-xs uppercase tracking-wider">Chapter 03</span>
+                <span class="text-xs font-semibold text-slate-400">July 18 • In-Person Debut</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-fredoka font-bold text-slate-800 mb-3">
+                The 18th July Badminton Smash Fiasco 🏸💨
+            </h2>
+            <p class="text-slate-600 leading-relaxed font-medium mb-6">
+                Sakshi brought you to play badminton. Our very first time meeting in person! And how did my nervous brain try to show athletic coolness? By firing supersonic smashes right near your face! 😂 Your shocked face was iconic.
+            </p>
+
+            <!-- Mini Game: Badminton Dodge -->
+            <div class="bg-gradient-to-b from-emerald-100/60 to-emerald-50 border-2 border-emerald-300 rounded-3xl p-6 relative overflow-hidden shadow-inner">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-xs font-fredoka font-bold text-emerald-800 uppercase tracking-wider">Interactive Court: Help Gauri Duck!</span>
+                    <span id="smashScore" class="text-xs font-bold text-emerald-700 bg-white/80 px-2.5 py-1 rounded-full border border-emerald-200">Dodges: 0</span>
+                </div>
+
+                <!-- Play Court -->
+                <div class="h-44 bg-emerald-600/10 rounded-2xl border-2 border-white relative overflow-hidden flex items-center justify-between px-6">
+                    <!-- Net line -->
+                    <div class="absolute inset-y-0 left-1/2 w-1 bg-white/80 border-r border-dashed border-emerald-400"></div>
+
+                    <!-- Parth Side -->
+                    <div class="text-center z-10">
+                        <div class="text-4xl mb-1">👦🏻🏸</div>
+                        <span class="text-[10px] font-fredoka font-bold bg-white/90 px-2 py-0.5 rounded-full text-slate-600 shadow-sm">Parth (Smashing)</span>
+                    </div>
+
+                    <!-- Flying Shuttlecock -->
+                    <div id="shuttle" class="absolute left-20 top-1/2 -translate-y-1/2 text-3xl transition-all duration-300 pointer-events-none">
+                        🏸
+                    </div>
+
+                    <!-- Gauri Side -->
+                    <div id="gauriCourtTarget" class="text-center z-10 transition-transform duration-200">
+                        <div id="courtGauriAvatar" class="text-5xl mb-1 transition-all">👧🏻</div>
+                        <span id="courtGauriStatus" class="text-[10px] font-fredoka font-bold bg-white/90 px-2 py-0.5 rounded-full text-emerald-700 shadow-sm">Gauri</span>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="mt-4 flex flex-wrap gap-3 justify-center items-center">
+                    <button onclick="triggerSmash()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-fredoka font-bold text-xs shadow-md transition active:scale-95 flex items-center gap-2">
+                        <span>Smash Shot! ⚡</span>
+                    </button>
+                    <button onclick="gauriDuck()" class="px-5 py-2.5 bg-pink-500 hover:bg-pink-600 text-white rounded-xl font-fredoka font-bold text-xs shadow-md transition active:scale-95 flex items-center gap-2">
+                        <span>Gauri: DUCK DOWN! 🙈</span>
+                    </button>
+                </div>
+                <p id="gameFeedback" class="text-center text-xs font-semibold text-emerald-800 mt-3 h-5"></p>
+            </div>
+        </section>
+
+        <!-- ================= CHAPTER 4 ================= -->
+        <section class="fade-section story-card p-6 sm:p-10 relative">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full font-fredoka font-bold text-xs uppercase tracking-wider">Chapter 04</span>
+                <span class="text-xs font-semibold text-slate-400">Competitive Petty Wars</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-fredoka font-bold text-slate-800 mb-3">
+                Ludo Online & Gauri's Righteous Revenge 🎲💥
+            </h2>
+            <p class="text-slate-600 leading-relaxed font-medium mb-6">
+                Remember those 4-player online matches with Sakshi and Viraj? I kept targeting your token and sending it straight home until you were ready to murder me through the screen. Well, today the tables are turned...
+            </p>
+
+            <!-- Ludo Revenge Mini-Game -->
+            <div class="bg-amber-50/70 border-2 border-amber-200 rounded-3xl p-6 text-center">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xs font-fredoka font-bold text-amber-800 uppercase tracking-wider">Gauri's Instant Karma Simulator</span>
+                    <span class="text-xs bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full font-bold">Rigged 100% in your favor</span>
+                </div>
+
+                <div class="h-28 bg-white rounded-2xl border-2 border-amber-200 p-3 relative flex items-center justify-between overflow-hidden shadow-inner mb-4">
+                    <!-- Gauri token -->
+                    <div id="gauriToken" class="text-4xl transition-all duration-500 z-10">
+                        👑
+                    </div>
+
+                    <!-- Track track lines -->
+                    <div class="absolute inset-x-8 top-1/2 h-1 bg-amber-100 -translate-y-1/2 flex justify-between">
+                        <span class="w-2 h-2 rounded-full bg-amber-300"></span>
+                        <span class="w-2 h-2 rounded-full bg-amber-300"></span>
+                        <span class="w-2 h-2 rounded-full bg-amber-300"></span>
+                        <span class="w-2 h-2 rounded-full bg-amber-300"></span>
+                    </div>
+
+                    <!-- Parth Target Token -->
+                    <div id="parthToken" class="text-4xl z-10 transition-transform">
+                        😭
+                    </div>
+                </div>
+
+                <button id="ludoDiceBtn" onclick="rollLudoKarma()" class="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl font-fredoka font-bold text-sm shadow-md transition active:scale-95 flex items-center gap-2 mx-auto">
+                    <span id="diceIcon" class="text-xl">🎲</span>
+                    <span>Roll Rigged 6 & Obliterate Parth</span>
+                </button>
+
+                <p id="ludoKarmaStatus" class="text-xs font-bold text-amber-800 mt-3 h-5"></p>
+            </div>
+        </section>
+
+        <!-- ================= CHAPTER 5 ================= -->
+        <section class="fade-section story-card p-6 sm:p-10 relative bg-gradient-to-b from-[#161426] to-[#201c38] text-white border-purple-900/50">
+            <!-- Stars background -->
+            <div class="absolute inset-0 pointer-events-none overflow-hidden rounded-[2rem]">
+                <div class="star-dot w-1 h-1 top-4 left-10"></div>
+                <div class="star-dot w-1.5 h-1.5 top-12 right-20" style="animation-delay: 0.7s;"></div>
+                <div class="star-dot w-1 h-1 bottom-10 left-1/3" style="animation-delay: 1.4s;"></div>
+                <div class="star-dot w-1 h-1 top-1/2 right-12" style="animation-delay: 0.3s;"></div>
+            </div>
+
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full font-fredoka font-bold text-xs uppercase tracking-wider border border-purple-500/30">Chapter 05</span>
+                    <span class="text-xs font-semibold text-purple-300/60">Midnight Chronicles</span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-fredoka font-bold text-pink-200 mb-3">
+                    Sleeping on Calls, Spidey Theories & Arcade Claws 🌙🧸
+                </h2>
+                <p class="text-purple-100/90 leading-relaxed font-medium mb-6">
+                    Group calls turned into one-on-one midnight calls. We talked about overthinking, our pasts, funny secrets, and fell asleep with the phone call still running on pillow corners. Watching Spider-Man, shameless board game cheating, late drives, and winning that plush toy for you... you gradually became the sweetest part of my day.
+                </p>
+
+                <!-- Interactive Arcade Claw Machine -->
+                <div class="bg-purple-950/60 border border-purple-500/30 rounded-3xl p-5 text-center">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-fredoka font-bold text-purple-300 uppercase tracking-wider">Arcade Claw Machine Simulator</span>
+                        <span class="text-xs text-purple-300">Tokens: Unlimited 🪙</span>
+                    </div>
+
+                    <div class="h-36 bg-purple-900/40 rounded-2xl border border-purple-500/40 relative overflow-hidden flex items-end justify-center pb-2">
+                        <!-- Claw Cable & Prongs -->
+                        <div id="clawArm" class="absolute top-0 left-1/2 -translate-x-1/2 flex flex-col items-center transition-all duration-700">
+                            <div id="clawWire" class="w-1 bg-slate-300 h-6"></div>
+                            <div class="text-2xl -mt-1 transform rotate-180">🦀</div>
+                        </div>
+
+                        <!-- Prize Pit -->
+                        <div class="flex gap-4 items-center">
+                            <span class="text-2xl opacity-60">🌸</span>
+                            <div id="plushiePrize" class="text-5xl transition-all duration-500">🧸</div>
+                            <span class="text-2xl opacity-60">🕷️</span>
+                        </div>
+                    </div>
+
+                    <button id="clawDropBtn" onclick="dropArcadeClaw()" class="mt-4 px-6 py-2.5 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white rounded-xl font-fredoka font-bold text-xs shadow-lg transition active:scale-95">
+                        Grab Plushie For Gauri! 🕹️
+                    </button>
+                    <p id="clawResultText" class="text-xs font-bold text-pink-300 mt-2 h-4"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= CHAPTER 6 (THE APOLOGY & ACCOUNTABILITY) ================= -->
+        <section class="fade-section story-card p-6 sm:p-10 relative border-2 border-rose-300">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full font-fredoka font-bold text-xs uppercase tracking-wider">Chapter 06</span>
+                <span class="text-xs font-semibold text-slate-400">Honest Reflection</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-fredoka font-bold text-slate-800 mb-3">
+                Where My Brain Glitched & I Let You Down 🥀
+            </h2>
+            <div class="text-slate-600 leading-relaxed font-medium space-y-4 mb-6">
+                <p>
+                    Alongside all those special moments, there were times where I was stupid, insensitive, and completely careless with your feelings.
+                </p>
+                
+                <!-- The specific mistakes detailed honestly -->
+                <div class="space-y-3 my-4">
+                    <div class="p-3.5 bg-rose-50/70 border border-rose-200 rounded-2xl flex items-start gap-3">
+                        <span class="text-xl">🤦‍♂️</span>
+                        <div>
+                            <strong class="text-rose-800 text-sm block">Teasing you as "MS Gauri"</strong>
+                            <p class="text-xs text-slate-600">I thought I was being playfully sarcastic, but it was annoying and disrespectful. I should have read the room and stopped.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 bg-rose-50/70 border border-rose-200 rounded-2xl flex items-start gap-3">
+                        <span class="text-xl">🚗</span>
+                        <div>
+                            <strong class="text-rose-800 text-sm block">Saying No on Dahi Handi because of "Traffic"</strong>
+                            <p class="text-xs text-slate-600">You were genuinely excited to go together, and I dismissed it with a lame, lazy excuse. You deserved effort, not excuses.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 bg-rose-50/70 border border-rose-200 rounded-2xl flex items-start gap-3">
+                        <span class="text-xl">🤫</span>
+                        <div>
+                            <strong class="text-rose-800 text-sm block">Spilling the Flower Secret to Sakshi</strong>
+                            <p class="text-xs text-slate-600">Things shared between us should have stayed strictly between us. Loose lips break trust, and I blew it.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 bg-red-100/70 border-2 border-red-300 rounded-2xl flex items-start gap-3">
+                        <span class="text-2xl">💔</span>
+                        <div>
+                            <strong class="text-red-900 text-sm block font-fredoka font-bold">The Sakshi vs. Gauri Answer (My Worst Blunder)</strong>
+                            <p class="text-xs text-red-950 font-semibold mt-0.5">
+                                When you asked who I'd choose in a fight between you and Sakshi, my brain panicked and blurted out Sakshi without giving you the reassurance, priority, and emotional security you deserved.
+                            </p>
+                            <p class="text-xs text-slate-600 mt-1">
+                                Looking back, that was hurtful and foolish. In trying to give an impulsive answer, I made you feel like you weren't valued. It still haunts me, and I take full responsibility.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-sm">
+                    I understand why you pulled back. Once someone loses confidence and emotional safety in someone, distancing is just self-defense. I don't blame you at all for pulling away.
+                </p>
+            </div>
+
+            <!-- Interactive "Parth's Brain Reboot & Accountability Engine" -->
+            <div class="bg-gradient-to-r from-pink-50 to-purple-50 rounded-3xl p-6 border border-pink-200 text-center">
+                <h4 class="font-fredoka font-bold text-slate-800 text-base mb-1">
+                    Parth's Lesson-Learned Progress Slider 🧠✨
+                </h4>
+                <p class="text-xs text-slate-500 mb-4">
+                    Drag the slider to examine how much I've reflected on each of these things.
+                </p>
+
+                <div class="text-5xl my-2" id="rebootEmoji">🤦‍♂️💨</div>
+                <p id="rebootTitle" class="font-fredoka font-bold text-candyPink text-base">State: Immature Impulsive Goof</p>
+                <p id="rebootDesc" class="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-5">
+                    "Made dumb jokes, blurted out reckless answers, gave traffic excuses."
+                </p>
+
+                <input type="range" id="growthSlider" min="0" max="100" value="15" oninput="updateGrowth(this.value)">
+
+                <div class="flex justify-between text-[11px] font-fredoka font-bold text-slate-400 mt-2 px-1">
+                    <span>Clueless 😴</span>
+                    <span>Reflecting 💭</span>
+                    <span>Truly Ready to Earn Trust 🌸</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= CHAPTER 7: SINCERE LETTER & WHATSAPP HOTLINE ================= -->
+        <section class="fade-section story-card p-6 sm:p-10 relative bg-gradient-to-b from-white via-pink-50/50 to-pink-100/70 border-4 border-candyPink">
+            <div class="w-14 h-14 bg-candyPink text-white rounded-full flex items-center justify-center text-2xl mx-auto -mt-12 sm:-mt-14 shadow-lg border-4 border-white">
+                💌
+            </div>
+
+            <h2 class="text-3xl sm:text-4xl font-fredoka font-bold text-center text-slate-800 mt-4 mb-2">
+                A Humble Request, Not a Pressure Pitch
+            </h2>
+            <p class="text-center font-hand text-2xl text-candyPink mb-6">"Take all the time you need, Gauri."</p>
+
+            <div class="prose text-slate-600 font-medium text-sm sm:text-base leading-relaxed space-y-4 max-w-xl mx-auto">
+                <p>
+                    I am not writing this to beg for an instant date or force things back to how they were overnight. 
+                </p>
+                <p>
+                    I just genuinely miss our late night laughter, our banter, and having you in my life. More than anything, I want a fair chance to slowly earn your confidence and trust back—at your own pace, on your terms.
+                </p>
+                <p class="font-bold text-slate-700">
+                    No pressure, no guilt trips. If you want to yell at me first, demand cheesecake reparations, or start with simple small talks, I'm right here.
+                </p>
+            </div>
+
+            <!-- WhatsApp Hotline Buttons -->
+            <div class="mt-8 pt-6 border-t border-pink-200">
+                <p class="text-center font-fredoka font-bold text-xs uppercase tracking-wider text-slate-500 mb-4">
+                    Choose Gauri's Verdict & Tap to Send Directly:
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto">
+                    <!-- Option 1: Cheesecake penalty -->
+                    <button onclick="sendToWhatsApp('penalty')" class="p-3.5 bg-white hover:bg-emerald-50 rounded-2xl border-2 border-emerald-300 text-left transition active:scale-95 shadow-sm group">
+                        <div class="flex items-center justify-between">
+                            <span class="font-fredoka font-bold text-xs text-emerald-700">🍰 The Penalty Route</span>
+                            <span class="text-base group-hover:translate-x-1 transition">💬</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 mt-1 font-medium">"You owe me unlimited cheesecake and badminton lessons first."</p>
+                    </button>
+
+                    <!-- Option 2: Thoughtful second chance -->
+                    <button onclick="sendToWhatsApp('gentle')" class="p-3.5 bg-white hover:bg-pink-50 rounded-2xl border-2 border-candyPink text-left transition active:scale-95 shadow-sm group">
+                        <div class="flex items-center justify-between">
+                            <span class="font-fredoka font-bold text-xs text-candyPink">🌸 Let's Talk Slowly</span>
+                            <span class="text-base group-hover:translate-x-1 transition">💬</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 mt-1 font-medium">"I appreciate the honesty. Let's restart gently, step by step."</p>
+                    </button>
+
+                    <!-- Option 3: Playful roasting -->
+                    <button onclick="sendToWhatsApp('roast')" class="p-3.5 bg-white hover:bg-amber-50 rounded-2xl border-2 border-amber-300 text-left transition active:scale-95 shadow-sm group">
+                        <div class="flex items-center justify-between">
+                            <span class="font-fredoka font-bold text-xs text-amber-700">😼 The Ludo Rematch</span>
+                            <span class="text-base group-hover:translate-x-1 transition">💬</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 mt-1 font-medium">"Your website is cute, but I'm still beating you in Ludo."</p>
+                    </button>
+
+                    <!-- Option 4: Custom note -->
+                    <button onclick="sendToWhatsApp('custom')" class="p-3.5 bg-white hover:bg-purple-50 rounded-2xl border-2 border-purple-300 text-left transition active:scale-95 shadow-sm group">
+                        <div class="flex items-center justify-between">
+                            <span class="font-fredoka font-bold text-xs text-purple-700">💭 Custom Message</span>
+                            <span class="text-base group-hover:translate-x-1 transition">💬</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 mt-1 font-medium">"I have a few words of my own to say to you, Parth..."</p>
+                    </button>
+                </div>
+
+                <div class="mt-8 text-center">
+                    <p class="text-[11px] text-slate-400 font-semibold">
+                        Always waiting for your answer on WhatsApp. Whenever you're ready. 🕊️
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-8 text-xs text-slate-400 font-medium">
+        Made with sincerity, code & cheesecake cravings • For Gauri
+    </footer>
+
+    <!-- JS Logic & Web Audio Synthesizer -->
+    <script>
+        let audioMuted = false;
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioCtxClass();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playSynth(type, freqStart, freqEnd, duration, gainLevel = 0.1) {
+            if (audioMuted) return;
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = type;
+                osc.frequency.setValueAtTime(freqStart, ctx.currentTime);
+                if (freqEnd) {
+                    osc.frequency.exponentialRampToValueAtTime(Math.max(freqEnd, 20), ctx.currentTime + duration);
+                }
+
+                gain.gain.setValueAtTime(gainLevel, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {
+                console.warn("Audio unavailable", e);
+            }
+        }
+
+        // SFX presets
+        function sfxSparkle() {
+            playSynth('sine', 523.25, 1046.50, 0.25, 0.12);
+            setTimeout(() => playSynth('sine', 659.25, 1318.51, 0.25, 0.12), 80);
+            setTimeout(() => playSynth('sine', 783.99, 1567.98, 0.35, 0.12), 160);
+        }
+
+        function sfxSmash() {
+            playSynth('triangle', 380, 60, 0.2, 0.25);
+        }
+
+        function sfxDodge() {
+            playSynth('sine', 200, 600, 0.15, 0.15);
+        }
+
+        function sfxBoom() {
+            playSynth('sawtooth', 180, 30, 0.4, 0.2);
+        }
+
+        function sfxChime() {
+            playSynth('sine', 880, 440, 0.3, 0.1);
+        }
+
+        function toggleMute() {
+            audioMuted = !audioMuted;
+            document.getElementById('soundIcon').textContent = audioMuted ? '🔇' : '🔊';
+            document.getElementById('soundText').textContent = audioMuted ? 'Sound OFF' : 'Sound ON';
+            if (!audioMuted) {
+                sfxChime();
+            }
+        }
+
+        const moods = {
+            sideEye: {
+                title: "Observing Parth 😒",
+                quote: `"Parth... you really think you're funny, don't you?"`,
+                badge: "👀",
+                svg: `
+                    <circle cx="36" cy="48" r="3.5" fill="#2E1C0C"/>
+                    <circle cx="60" cy="48" r="3.5" fill="#2E1C0C"/>
+                    <circle cx="34" cy="47" r="1.2" fill="#FFFFFF"/>
+                    <circle cx="58" cy="47" r="1.2" fill="#FFFFFF"/>
+                    <path d="M 32 41 Q 38 39 44 42" stroke="#3D2412" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path d="M 56 42 Q 62 39 68 41" stroke="#3D2412" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path d="M 44 62 Q 50 60 56 61" stroke="#FF70A6" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                `
+            },
+            shocked: {
+                title: "Badminton PTSD 😱",
+                quote: `"WHY WOULD YOU SMASH AT MY NOSE ON DAY 1?!"`,
+                badge: "💥",
+                svg: `
+                    <!-- Wide round eyes -->
+                    <circle cx="36" cy="48" r="5.5" fill="#2E1C0C"/>
+                    <circle cx="64" cy="48" r="5.5" fill="#2E1C0C"/>
+                    <circle cx="38" cy="46" r="2" fill="#FFFFFF"/>
+                    <circle cx="66" cy="46" r="2" fill="#FFFFFF"/>
+                    <!-- Raised high eyebrows -->
+                    <path d="M 31 38 Q 36 34 43 37" stroke="#3D2412" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <path d="M 57 37 Q 64 34 69 38" stroke="#3D2412" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <!-- O-shaped shocked mouth -->
+                    <ellipse cx="50" cy="62" rx="4.5" ry="6.5" fill="#FF70A6"/>
+                `
+            },
+            angry: {
+                title: "Ludo Karma Rage 😤",
+                quote: `"Send my piece home one more time and you won't survive."`,
+                badge: "🔥",
+                svg: `
+                    <!-- Angled sharp eyes -->
+                    <circle cx="37" cy="49" r="4" fill="#2E1C0C"/>
+                    <circle cx="63" cy="49" r="4" fill="#2E1C0C"/>
+                    <!-- Furious eyebrows -->
+                    <path d="M 31 40 L 44 46" stroke="#3D2412" stroke-width="2.8" stroke-linecap="round"/>
+                    <path d="M 69 40 L 56 46" stroke="#3D2412" stroke-width="2.8" stroke-linecap="round"/>
+                    <!-- Pouting angry mouth -->
+                    <path d="M 44 63 Q 50 58 56 63" stroke="#D9383A" stroke-width="3" fill="none" stroke-linecap="round"/>
+                `
+            },
+            soft: {
+                title: "Cheesecake & Late Talks 🥰",
+                quote: `"Okay, that was actually really sweet... don't ruin it."`,
+                badge: "🌸",
+                svg: `
+                    <!-- Happy curved squint eyes -->
+                    <path d="M 32 49 Q 38 43 44 49" stroke="#3D2412" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <path d="M 56 49 Q 62 43 68 49" stroke="#3D2412" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <!-- Gentle curved brows -->
+                    <path d="M 32 41 Q 38 38 44 40" stroke="#3D2412" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path d="M 56 40 Q 62 38 68 41" stroke="#3D2412" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <!-- Warm smile -->
+                    <path d="M 43 59 Q 50 67 57 59" stroke="#FF70A6" stroke-width="2.5" fill="#FFE5EC" stroke-linecap="round"/>
+                `
+            },
+            unimpressed: {
+                title: "Traffic Excuse Face 🤦‍♀️",
+                quote: `"Traffic on Dahi Handi? Really Parth? That's your excuse?"`,
+                badge: "🙄",
+                svg: `
+                    <!-- Eye roll looking upward -->
+                    <circle cx="38" cy="45" r="3.5" fill="#2E1C0C"/>
+                    <circle cx="62" cy="45" r="3.5" fill="#2E1C0C"/>
+                    <circle cx="39" cy="43" r="1.2" fill="#FFFFFF"/>
+                    <circle cx="63" cy="43" r="1.2" fill="#FFFFFF"/>
+                    <!-- Flat unimpressed eyebrows -->
+                    <line x1="33" y1="41" x2="43" y2="41" stroke="#3D2412" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="57" y1="41" x2="67" y2="41" stroke="#3D2412" stroke-width="2" stroke-linecap="round"/>
+                    <!-- Flat straight line mouth -->
+                    <line x1="44" y1="62" x2="56" y2="62" stroke="#FF70A6" stroke-width="2.5" stroke-linecap="round"/>
+                `
+            }
+        };
+
+        function setAvatarMood(moodKey) {
+            const data = moods[moodKey];
+            if (!data) return;
+
+            sfxChime();
+            const container = document.getElementById('avatarContainer');
+            container.classList.add('animate-headshake');
+            setTimeout(() => container.classList.remove('animate-headshake'), 500);
+
+            document.getElementById('avatarFeatures').innerHTML = data.svg;
+            document.getElementById('moodTitle').textContent = data.title;
+            document.getElementById('moodQuote').textContent = data.quote;
+            document.getElementById('moodBadge').textContent = data.badge;
+        }
+
+        function runCuteRadar() {
+            sfxSparkle();
+            const btn = document.getElementById('scanBtn');
+            const result = document.getElementById('radarResult');
+
+            btn.disabled = true;
+            btn.innerHTML = `<span>Scanning photo...</span> <span>⏳</span>`;
+
+            setTimeout(() => {
+                result.classList.remove('hidden');
+                btn.innerHTML = `<span>Scan Complete!</span> <span>✨</span>`;
+                setAvatarMood('soft');
+                
+                confetti({
+                    particleCount: 60,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#FF70A6', '#FFD670', '#C084FC']
+                });
+            }, 800);
+        }
+
+        const thoughts = [
+            `"Wait, she texted first... DOES THIS MEAN SHE THINKS I'M COOL?!" 🤯`,
+            `"Quick, formulate a response that is 60% funny, 40% mysterious, 0% weird." ✍️`,
+            `"Sakshi warned me not to be goofy... don't send 12 emojis!" 💀`,
+            `"Okay, just be a gentleman: 'Thank you so much Gauri! Made my day.' ...nailed it." 😎`
+        ];
+        let thoughtIdx = 0;
+
+        function revealBrainThought() {
+            sfxChime();
+            thoughtIdx = (thoughtIdx + 1) % thoughts.length;
+            document.getElementById('brainMonologue').textContent = thoughts[thoughtIdx];
+            
+            const bpm = 160 + Math.floor(Math.random() * 25);
+            document.getElementById('bpmCounter').textContent = `Heart Rate: ${bpm} BPM 💓`;
+            setAvatarMood('sideEye');
+        }
+
+        function unboxCheesecake() {
+            sfxSparkle();
+            const note = document.getElementById('cheesecakeNote');
+            const item = document.getElementById('cheesecakeItem');
+
+            note.classList.remove('hidden');
+            item.innerHTML = `<span class="text-6xl block">🍰✨</span><span class="text-[11px] font-fredoka font-bold text-emerald-600 uppercase tracking-wider mt-1 block">Delivered with Care!</span>`;
+            setAvatarMood('soft');
+
+            confetti({
+                particleCount: 50,
+                spread: 60,
+                origin: { y: 0.65 },
+                colors: ['#F59E0B', '#FDE68A', '#FF70A6']
+            });
+        }
+
+        let dodges = 0;
+        let isDucking = false;
+
+        function gauriDuck() {
+            sfxDodge();
+            isDucking = true;
+            const target = document.getElementById('gauriCourtTarget');
+            const avatar = document.getElementById('courtGauriAvatar');
+            const status = document.getElementById('courtGauriStatus');
+
+            target.style.transform = "translateY(35px)";
+            avatar.textContent = "🙈";
+            status.textContent = "Ducking safely!";
+            status.className = "text-[10px] font-fredoka font-bold bg-pink-100 px-2 py-0.5 rounded-full text-pink-600 shadow-sm";
+
+            setTimeout(() => {
+                target.style.transform = "translateY(0px)";
+                avatar.textContent = "👧🏻";
+                status.textContent = "Gauri";
+                status.className = "text-[10px] font-fredoka font-bold bg-white/90 px-2 py-0.5 rounded-full text-emerald-700 shadow-sm";
+                isDucking = false;
+            }, 1200);
+        }
+
+        function triggerSmash() {
+            sfxSmash();
+            const shuttle = document.getElementById('shuttle');
+            const feedback = document.getElementById('gameFeedback');
+
+            // Fly toward Gauri
+            shuttle.style.transform = "translate(220px, -20px) rotate(120deg) scale(1.3)";
+
+            setTimeout(() => {
+                if (isDucking) {
+                    sfxSparkle();
+                    dodges++;
+                    document.getElementById('smashScore').textContent = `Dodges: ${dodges}`;
+                    feedback.textContent = "Clean Dodge! Gauri laughed at Parth's wild aim! 💨✨";
+                    setAvatarMood('soft');
+                } else {
+                    sfxBoom();
+                    feedback.textContent = "OOF! Shuttlecock grazed her bangs! Gauri is SHOCKED! 😱";
+                    setAvatarMood('shocked');
+                    const courtAvatar = document.getElementById('courtGauriAvatar');
+                    courtAvatar.textContent = "😱";
+                    setTimeout(() => courtAvatar.textContent = "👧🏻", 1000);
+                }
+
+                // Reset shuttlecock position
+                setTimeout(() => {
+                    shuttle.style.transform = "translate(0, -50%) rotate(0deg) scale(1)";
+                }, 400);
+            }, 300);
+        }
+
+        let ludoKarmaActive = false;
+
+        function rollLudoKarma() {
+            if (ludoKarmaActive) return;
+            ludoKarmaActive = true;
+            sfxSmash();
+
+            const dice = document.getElementById('diceIcon');
+            const gauriToken = document.getElementById('gauriToken');
+            const parthToken = document.getElementById('parthToken');
+            const status = document.getElementById('ludoKarmaStatus');
+
+            dice.classList.add('animate-spin');
+
+            setTimeout(() => {
+                dice.classList.remove('animate-spin');
+                dice.textContent = '⚅'; // Rolled a 6!
+                sfxChime();
+
+                // Gauri zooms across board
+                gauriToken.style.transform = "translateX(200px)";
+
+                setTimeout(() => {
+                    sfxBoom();
+                    // Parth gets sent to outer space
+                    parthToken.classList.add('animate-orbit');
+                    parthToken.textContent = "🚀😭";
+                    status.textContent = "K.O.! Parth's piece sent back to base! Justice served! 👑";
+                    setAvatarMood('angry');
+
+                    confetti({
+                        particleCount: 70,
+                        spread: 80,
+                        origin: { y: 0.6 },
+                        colors: ['#F59E0B', '#EF4444', '#10B981']
+                    });
+
+                    // Reset after 2.8s
+                    setTimeout(() => {
+                        gauriToken.style.transform = "translateX(0)";
+                        parthToken.classList.remove('animate-orbit');
+                        parthToken.textContent = "😭";
+                        ludoKarmaActive = false;
+                    }, 2800);
+                }, 550);
+            }, 600);
+        }
+
+        let clawBusy = false;
+
+        function dropArcadeClaw() {
+            if (clawBusy) return;
+            clawBusy = true;
+            sfxChime();
+
+            const arm = document.getElementById('clawArm');
+            const wire = document.getElementById('clawWire');
+            const plushie = document.getElementById('plushiePrize');
+            const result = document.getElementById('clawResultText');
+
+            result.textContent = "Descending claw... 🕹️";
+            wire.style.height = "75px";
+
+            setTimeout(() => {
+                sfxSparkle();
+                plushie.style.transform = "translateY(-40px) scale(1.1)";
+                wire.style.height = "16px";
+                result.textContent = "PRIZE WON! Soft Toy Secured for Gauri! 🧸🎁";
+                setAvatarMood('soft');
+
+                confetti({
+                    particleCount: 50,
+                    spread: 60,
+                    origin: { y: 0.7 },
+                    colors: ['#C084FC', '#FF70A6', '#60A5FA']
+                });
+
+                setTimeout(() => {
+                    plushie.style.transform = "translateY(0) scale(1)";
+                    clawBusy = false;
+                }, 2200);
+            }, 800);
+        }
+
+        const growthStates = [
+            {
+                min: 0,
+                max: 30,
+                emoji: "🤦‍♂️💨",
+                title: "State: Immature Impulsive Goof",
+                desc: "Said silly things without thinking. Blurted out Sakshi during the hypothetical question. Didn't realize how much it hurt your confidence.",
+                mood: "unimpressed",
+                trust: "Rebuilding 10%"
+            },
+            {
+                min: 31,
+                max: 75,
+                emoji: "🥺💭",
+                title: "State: Honest Reflection & Accountability",
+                desc: "Understanding that teasing, careless choices, and breaking confidences hurt you deeply. You deserve security, respect, and priority.",
+                mood: "sideEye",
+                trust: "Reflection 60%"
+            },
+            {
+                min: 76,
+                max: 100,
+                emoji: "🌸🤝",
+                title: "State: Sincere & Ready to Earn Trust",
+                desc: "No excuses, no rush. Completely committed to being a reliable, considerate friend who proves himself through actions.",
+                mood: "soft",
+                trust: "Hopeful 100% 💖"
+            }
+        ];
+
+        function updateGrowth(val) {
+            const num = parseInt(val);
+            const state = growthStates.find(s => num >= s.min && num <= s.max);
+            if (!state) return;
+
+            document.getElementById('rebootEmoji').textContent = state.emoji;
+            document.getElementById('rebootTitle').textContent = state.title;
+            document.getElementById('rebootDesc').textContent = `"${state.desc}"`;
+            document.getElementById('trustIndicator').textContent = state.trust;
+
+            if (num === 100) {
+                sfxSparkle();
+                setAvatarMood('soft');
+            } else if (num === 50) {
+                sfxChime();
+            }
+        }
+
+        function sendToWhatsApp(optionType) {
+            sfxSparkle();
+
+            let message = "";
+            switch (optionType) {
+                case 'penalty':
+                    message = "Hey Parth, I saw the story website... 😂 You definitely owe me unlimited cheesecake and a badminton rematch first!";
+                    break;
+                case 'gentle':
+                    message = "Hey Parth, I read through the website. I appreciate you taking accountability and being honest. Let's restart slowly and talk.";
+                    break;
+                case 'roast':
+                    message = "Parth, your website is cute, but don't think you're forgiven for that Ludo match yet! 🎲😤 Let's talk though.";
+                    break;
+                case 'custom':
+                default:
+                    message = "Hey Parth, I just finished reading your website story...";
+                    break;
+            }
+
+            const encoded = encodeURIComponent(message);
+            // Uses standard WhatsApp universal web/app link without hardcoding private phone number
+            const waUrl = `https://wa.me/?text=${encoded}`;
+            window.open(waUrl, '_blank');
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.fade-section').forEach(sec => observer.observe(sec));
+
+        // Initial welcome audio prompt
+        window.addEventListener('click', () => {
+            if (!audioCtx) getAudioContext();
+        }, { once: true });
+    </script>
 </body>
 </html>
